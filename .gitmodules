@@ -1,0 +1,4 @@
+[submodule "deps/llvm"]
+	path = deps/llvm
+	url = https://github.com/llvm-mirror/llvm.git
+	branch = master

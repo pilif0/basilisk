@@ -1,0 +1,11 @@
+# Ignore the build target directory
+bin
+
+# Ignore Vim swap files
+*.swp
+
+# Ignore IntelliJ IDE files
+.idea
+
+# Generated files
+include/basilisk/config.h
