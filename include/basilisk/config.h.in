@@ -1,0 +1,29 @@
+/** \file config.h
+ * Header file configurated by CMake
+ *
+ * \author Filip Smola
+ */
+#ifndef BASILISK_CONFIG_H
+#define BASILISK_CONFIG_H
+
+#include <string>
+
+namespace basilisk {
+    //! Major version number
+    constexpr int version_major = @basilisk_VERSION_MAJOR@;
+    //! Minor version number
+    constexpr int version_minor = @basilisk_VERSION_MINOR@;
+    //! Patch version number
+    constexpr int version_patch = @basilisk_VERSION_PATCH@;
+    //! Extra version string
+    constexpr char version_extra[] = "@basilisk_VERSION_EXTRA@";
+    //! Version string (\c major.minor.patch)
+    constexpr char version_version[] = "@basilisk_VERSION@";
+    //! Full version string (\c major.minor.patchextra)
+    constexpr char version_full[] = "@basilisk_VERSION_FULL@";
+
+    //! Whether debug logging should be enabled
+    constexpr bool debug_log = @basilisk_DEBUG_LOG_VALUE@;
+}
+
+#endif //BASILISK_CONFIG_H
