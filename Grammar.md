@@ -1,6 +1,6 @@
 # Basilisk Grammar
 Basilisk grammar is built for a hand-written recursive descent parser.
-Therefore it is a valid LL grammar.
+The grammar as written here is supposed to be a description, not necessary an exact mirror of the implementation.
 
 ## Tokens
 - `IDENTIFIER`
@@ -22,13 +22,17 @@ Therefore it is a valid LL grammar.
 - `STAR`
 - `SLASH`
 - `PERCENT`
+- `EOF`
+    - End of input
+- `ERROR`
+    - Lexing error
 
 ## Grammar
 Non-terminals are in lower-case, terminals are in upper-case.
 
 ```
-program := definition
-         | definition definition-set
+program := definition EOF
+         | definition program
 
 definition := definition-func
             | definition-var
