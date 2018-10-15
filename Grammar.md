@@ -3,34 +3,32 @@ Basilisk grammar is built for a hand-written recursive descent parser.
 Therefore it is a valid LL grammar.
 
 ## Tokens
-- IDENTIFIER
+- `IDENTIFIER`
     - Letter character followed by alphanumeric characters or '_'
-- LPAR, RPAR
+- `LPAR`, `RPAR`
     - Left and right parenthesis respectively
-- LBRAC, RBRAC
+- `LBRAC`, `RBRAC`
     - Left and right bracket respectively
-- COMMA
-- SEMICOLON
-- ASSIGN
+- `COMMA`
+- `SEMICOLON`
+- `ASSIGN`
     - Single equals sign
-- RETURN
+- `RETURN`
     - Keyword `return`
-- DOUBLE\_LITERAL
+- `DOUBLE\_LITERAL`
     - At least one digit, followed by a decimal point and then at least one digit
-- PLUS
-- MINUS
-- STAR
-- SLASH
-- PERCENT
+- `PLUS`
+- `MINUS`
+- `STAR`
+- `SLASH`
+- `PERCENT`
 
 ## Grammar
 Non-terminals are in lower-case, terminals are in upper-case.
 
 ```
-program := definition-set
-
-definition-set := definition
-                | definition definition-set
+program := definition
+         | definition definition-set
 
 definition := definition-func
             | definition-var
@@ -50,16 +48,16 @@ statement := definition-var
 
 definition-var := IDENTIFIER ASSIGN expression SEMICOLON
 
-expression := expr1 PERCENT expr1
+expression := expr1 PERCENT expression
             | expr1
 
-expr1 := expr2 PLUS expr2
-       | expr2 MINUS expr2 | expr2
+expr1 := expr2 PLUS expr1
+       | expr2 MINUS expr1 | expr2
 
-expr2 := expr3 STAR expr3
-       | expr3 SLASH expr3 | expr3
+expr2 := expr3 STAR expr2
+       | expr3 SLASH expr2 | expr3
 
-expr3 := MINUS expr4
+expr3 := MINUS expr3
        | expr4
 
 expr4 := literal
