@@ -7,6 +7,7 @@
 #define BASILISK_TOKENS_H
 
 #include <string>
+#include <ostream>
 
 //! Token definitions
 namespace basilisk::tokens {
@@ -57,7 +58,8 @@ namespace basilisk::tokens {
             STAR,
             SLASH,
             PERCENT,
-            ERROR
+            ERROR,
+            END
         };
     }
 
@@ -78,6 +80,12 @@ namespace basilisk::tokens {
         }
 
         friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
+
+        friend std::ostream &operator<<(std::ostream &os, const Token &token) {
+            //TODO: implement with tag names
+            os << "tag: " << token.tag << " content: " << token.content;
+            return os;
+        }
     };
 
 
