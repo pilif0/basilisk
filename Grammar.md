@@ -22,7 +22,7 @@ The grammar as written here is supposed to be a description, not necessary an ex
 - `STAR`
 - `SLASH`
 - `PERCENT`
-- `EOF`
+- `END`
     - End of input
 - `ERROR`
     - Lexing error
@@ -31,7 +31,7 @@ The grammar as written here is supposed to be a description, not necessary an ex
 Non-terminals are in lower-case, terminals are in upper-case.
 
 ```
-program := definition EOF
+program := definition END
          | definition program
 
 definition := definition-func
