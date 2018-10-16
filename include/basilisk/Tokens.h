@@ -82,8 +82,39 @@ namespace basilisk::tokens {
         friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
 
         friend std::ostream &operator<<(std::ostream &os, const Token &token) {
-            //TODO: implement with tag names
-            os << "tag: " << token.tag << " content: " << token.content;
+            // Tag labels in the same order as the enumeration
+            static const char* labels[] = {
+                    "IDENTIFIER",
+                    "LPAR",
+                    "RPAR",
+                    "LBRAC",
+                    "RBRAC",
+                    "COMMA",
+                    "SEMICOLON",
+                    "ASSIGN",
+                    "RETURN",
+                    "DOUBLE_LITERAL",
+                    "PLUS",
+                    "MINUS",
+                    "STAR",
+                    "SLASH",
+                    "PERCENT",
+                    "ERROR",
+                    "END"
+            };
+
+            // Append the tag
+            if (static_cast<std::size_t>(token.tag) < sizeof(labels) / sizeof(*labels)) {
+                os << labels[token.tag];
+            } else {
+                os << static_cast<int>(token.tag);
+            }
+
+            // Append the contents if non-empty
+            if (!token.content.empty()) {
+                os << "{" << token.content << "}";
+            }
+
             return os;
         }
     };
