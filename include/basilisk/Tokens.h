@@ -44,7 +44,7 @@ namespace basilisk::tokens {
         enum token_tag {
             IDENTIFIER,
             LPAR,
-            RPAR.
+            RPAR,
             LBRAC,
             RBRAC,
             COMMA,
@@ -72,6 +72,12 @@ namespace basilisk::tokens {
         tags::token_tag tag;
         //! Tag content if tag is not enough, empty otherwise
         std::string content;
+
+        friend bool operator==(const Token &lhs, const Token &rhs) {
+            return lhs.tag == rhs.tag && lhs.content == rhs.content;
+        }
+
+        friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
     };
 
 
