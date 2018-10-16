@@ -28,6 +28,7 @@ set(basilisk_LLVM "/opt/llvm" CACHE PATH "LLVM directory")
 set(SRC_DIR "${basilisk_SOURCE_DIR}/src")
 set(INCL_DIR "${basilisk_SOURCE_DIR}/include")
 set(DEP_DIR "${basilisk_SOURCE_DIR}/deps")
+set(TEST_DIR "${basilisk_SOURCE_DIR}/test")
 
 # Boost
 set(BOOST_ROOT ${basilisk_BOOST})
@@ -63,5 +64,13 @@ if (basilisk_BUILD_DOC)
 endif()
 
 if (basilisk_BUILD_TEST)
+    # Enable testing
+    enable_testing()
+
     add_subdirectory(test)
+
+    # Add the tests
+    foreach(test ${basilisk_TESTS})
+        add_test(NAME ${test} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test COMMAND ${CMAKE_BINARY_DIR}/test/${test})
+    endforeach(test)
 endif()
