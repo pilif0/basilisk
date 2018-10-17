@@ -267,7 +267,16 @@ BOOST_AUTO_TEST_CASE(double_whitespace) {
 BOOST_AUTO_TEST_SUITE_END() // special_end_complex
 
 //TODO: test errors and exceptions happen where expected
-//TODO: check identifier starting with "return" is lexed properly into an identifier
+
+//! Test identifier starting with "return" is lexed properly into an identifier
+BOOST_AUTO_TEST_CASE(return_like_identifier) {
+    // Data
+    std::string input = "return_like_identifier";
+    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "return_like_identifier"}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
 
 //! Test more complex identifier lexing
 BOOST_AUTO_TEST_CASE(complex_identifier) {
