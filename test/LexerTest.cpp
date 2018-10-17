@@ -268,6 +268,15 @@ BOOST_AUTO_TEST_SUITE_END() // special_end_complex
 
 //TODO: test errors and exceptions happen where expected
 //TODO: check identifier starting with "return" is lexed properly into an identifier
-//TODO: check a more complex identiier (alphanum + underscore) is lexed properly
+
+//! Test more complex identifier lexing
+BOOST_AUTO_TEST_CASE(complex_identifier) {
+    // Data
+    std::string input = "this_identifier_15_c0mpl3x";
+    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "this_identifier_15_c0mpl3x"}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
 
 BOOST_AUTO_TEST_SUITE_END() // Lexer
