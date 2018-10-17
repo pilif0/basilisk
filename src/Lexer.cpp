@@ -123,7 +123,7 @@ namespace basilisk::lexer {
                         std::ostringstream message;
                         message << "Invalid identifier or return character: \'" << c << "\'.";
                         append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        //TODO: throw exception
+                        throw LexerException(message.str());
                     }
                 } else if (double_literal) {
                     // Expecting double literal --> valid: digits and period (iff not yet encountered)
@@ -133,7 +133,7 @@ namespace basilisk::lexer {
                             std::ostringstream message;
                             message << "Invalid period in double literal.";
                             append(tokens::Token{tokens::tags::ERROR, message.str()});
-                            //TODO: throw exception
+                            throw LexerException(message.str());
                         } else {
                             // Add to the content and update flag
                             content << c;
@@ -147,7 +147,7 @@ namespace basilisk::lexer {
                         std::ostringstream message;
                         message << "Invalid double literal character: \'" << c << "\'.";
                         append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        //TODO: throw exception
+                        throw LexerException(message.str());
                     }
                 } else {
                     // Not expecting anything --> valid: alpha for identifier or return, digit for double literal
@@ -174,7 +174,7 @@ namespace basilisk::lexer {
                         std::ostringstream message;
                         message << "Unknown character: \'" << c << "\'.";
                         append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        //TODO: throw exception
+                        throw LexerException(message.str());
                     }
                 }
             }

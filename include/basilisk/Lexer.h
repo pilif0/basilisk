@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <functional>
+#include <exception>
 
 // Forward declarations
 namespace basilisk::tokens {
@@ -33,6 +34,14 @@ namespace basilisk::lexer {
     typedef std::function<void (tokens::Token)> append_function_t;
 
     void lex(get_function_t get, append_function_t append);
+
+    /** \class LexerException
+     * \brief Exception during lexing (for example an invalid character)
+     */
+    class LexerException : public std::runtime_error {
+        public:
+            explicit LexerException(const std::string &message) : std::runtime_error(message) {}
+    };
 
     /**
      * @}

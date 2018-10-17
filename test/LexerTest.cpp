@@ -267,6 +267,94 @@ BOOST_AUTO_TEST_CASE(double_whitespace) {
 BOOST_AUTO_TEST_SUITE_END() // special_end_complex
 
 //TODO: test errors and exceptions happen where expected
+//! Test exceptions and errors on invalid input
+BOOST_AUTO_TEST_SUITE(exceptions_and_errors)
+
+//! Test exception and error on invalid input when expecting identifier
+BOOST_AUTO_TEST_CASE(invalid_identifier) {
+    // Note: does not require the exact error message, just that an exception is thrown and error appended
+
+    // Data
+    std::string input = "identifier$";
+
+    // Prepare fixture
+    QueuesFixture q;
+    q.load(input);
+
+    // Lex the input (should throw LexerException)
+    BOOST_CHECK_THROW(q.lex(), lexer::LexerException);
+
+    // Check only one token was added
+    BOOST_TEST_CHECK(q.output.size() == 1);
+
+    // Check the last token is an ERROR
+    BOOST_TEST_CHECK(q.output.front().tag == tags::ERROR);
+}
+
+//! Test exception and error on second period in double literal
+BOOST_AUTO_TEST_CASE(second_period) {
+    // Note: does not require the exact error message, just that an exception is thrown and error appended
+
+    // Data
+    std::string input = "3.1.4";
+
+    // Prepare fixture
+    QueuesFixture q;
+    q.load(input);
+
+    // Lex the input (should throw LexerException)
+    BOOST_CHECK_THROW(q.lex(), lexer::LexerException);
+
+    // Check only one token was added
+    BOOST_TEST_CHECK(q.output.size() == 1);
+
+    // Check the last token is an ERROR
+    BOOST_TEST_CHECK(q.output.front().tag == tags::ERROR);
+}
+
+//! Test exception and error on invalid input when expecting double literal
+BOOST_AUTO_TEST_CASE(invalid_double) {
+    // Note: does not require the exact error message, just that an exception is thrown and error appended
+
+    // Data
+    std::string input = "3.14$";
+
+    // Prepare fixture
+    QueuesFixture q;
+    q.load(input);
+
+    // Lex the input (should throw LexerException)
+    BOOST_CHECK_THROW(q.lex(), lexer::LexerException);
+
+    // Check only one token was added
+    BOOST_TEST_CHECK(q.output.size() == 1);
+
+    // Check the last token is an ERROR
+    BOOST_TEST_CHECK(q.output.front().tag == tags::ERROR);
+}
+
+//! Test exception and error on invalid input when not expecting anything
+BOOST_AUTO_TEST_CASE(invalid_input) {
+    // Note: does not require the exact error message, just that an exception is thrown and error appended
+
+    // Data
+    std::string input = "$";
+
+    // Prepare fixture
+    QueuesFixture q;
+    q.load(input);
+
+    // Lex the input (should throw LexerException)
+    BOOST_CHECK_THROW(q.lex(), lexer::LexerException);
+
+    // Check only one token was added
+    BOOST_TEST_CHECK(q.output.size() == 1);
+
+    // Check the last token is an ERROR
+    BOOST_TEST_CHECK(q.output.front().tag == tags::ERROR);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 //! Test identifier starting with "return" is lexed properly into an identifier
 BOOST_AUTO_TEST_CASE(return_like_identifier) {
