@@ -9,3 +9,6 @@ bin
 
 # Generated files
 include/basilisk/config.h
+
+# clang-tidy log
+clang-tidy.log
