@@ -50,6 +50,13 @@ struct QueuesFixture {
     }
 
     /**
+     * \brief Peek at the character at the front of the input queue
+     *
+     * \return Character at the front of the input queue
+     */
+    char peek() { return input.front(); }
+
+    /**
      * \brief Push a token to the end of the output queue
      *
      * \param t Token to push
@@ -72,8 +79,9 @@ struct QueuesFixture {
      */
     void lex() {
         auto get_f = std::bind(&QueuesFixture::get, this);
+        auto peek_f = std::bind(&QueuesFixture::peek, this);
         auto append_f = std::bind(&QueuesFixture::append, this, std::placeholders::_1);
-        lexer::lex(get_f, append_f);
+        lexer::lex(get_f, peek_f, append_f);
     }
 };
 
@@ -121,6 +129,9 @@ BOOST_AUTO_TEST_CASE( fixture_test ) {
 
     // Check input size
     BOOST_CHECK(q.input.size() == 1);
+
+    // Check peek
+    BOOST_CHECK(q.peek() == subject_character);
 
     // Get input
     BOOST_CHECK(q.get() == subject_character);

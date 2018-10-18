@@ -30,9 +30,10 @@ namespace basilisk::lexer {
      *  them into an output Token buffer.
      *
      * \param get Function to get next input character
+     * \param peek Function to peek at next input character
      * \param append Function to write next output Token
      */
-    void lex(get_function_t get, append_function_t append) {
+    void lex(get_function_t get, peek_function_t /*peek*/, append_function_t append) {
         // Prepare the state variables
         bool stop = false;
         std::ostringstream content;

@@ -30,10 +30,12 @@ namespace basilisk::lexer {
 
     //! Input get function type - no arguments and return a single character
     typedef std::function<char ()> get_function_t;
+    //! Input peek function type - no arguments and return a single character
+    typedef std::function<char ()> peek_function_t;
     //! Output append function type - single Token argument and no return
     typedef std::function<void (tokens::Token)> append_function_t;
 
-    void lex(get_function_t get, append_function_t append);
+    void lex(get_function_t get, peek_function_t peek, append_function_t append);
 
     /** \class LexerException
      * \brief Exception during lexing (for example an invalid character)
