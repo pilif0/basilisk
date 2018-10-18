@@ -23,6 +23,124 @@ namespace basilisk::lexer {
     //! End of file character
     constexpr char end_of_file = std::char_traits<char>::eof();
 
+    // Character classification helpers
+    /**
+     * \brief Whether a character is end of input
+     *
+     * \param c Character to check
+     * \return `true` when end of input, `false` otherwise
+     */
+    bool is_end(char c) { return c == '\0' || c == end_of_file; }
+
+    /**
+     * \brief Compute index of the character in the special symbols array, or `-1` if not found
+     *
+     * \param c Character to find
+     * \return index into the special symbols array, or `-1` if not found
+     */
+    long which_special(char c) {
+        const char *p = std::find(std::begin(special_symbols), std::end(special_symbols), c);
+        if (p == std::end(special_symbols)) {
+            return -1;
+        } else {
+            return p - special_symbols;
+        }
+    }
+
+    // Specific lexing cases
+    /**
+     * \brief Lex from an input character buffer into an output Token buffer, assuming an alpha character was peeked.
+     *
+     * Use `get` function to obtain characters from an input buffer, lex the resulting string, and use `append` to write
+     *  them into an output Token buffer.
+     * We are expecting either an identifier or a keyword.
+     * By principle of maximum munch, consume the maximum valid identifier and before tokenization check it against the
+     *  valid keywords.
+     *
+     * \param get Function to get next input character
+     * \param peek Function to peek at next input character
+     * \param append Function to write next output Token
+     */
+    void lex_alpha(const get_function_t &get, const peek_function_t &peek, const append_function_t &append) {
+        // Alpha was detected and we are not expecting anything --> expect return or identifier
+        constexpr auto return_pattern = "return";
+        std::ostringstream stream;
+
+        // Consume characters until the next one is not alphanumeric or underscore
+        // Note: the requirement for the first character to be only alpha is satisfied by how this function is called
+        //TODO allow underscore to start identifiers? (common C++ convention)
+        for (char c = peek(); std::isalnum(c) > 0 || c == '_'; c = peek()) {
+            stream << get();
+        }
+
+        // Decide what token to append
+        std::string content = stream.str();
+        if (content == return_pattern) {
+            append(tokens::Token{tokens::tags::RETURN, ""});
+        } else {
+            append(tokens::Token{tokens::tags::IDENTIFIER, content});
+        }
+    }
+
+
+    /**
+     * \brief Lex from an input character buffer into an output Token buffer, assuming an digit was peeked.
+     *
+     * Use `get` function to obtain characters from an input buffer, lex the resulting string, and use `append` to write
+     *  them into an output Token buffer.
+     * We are expecting a double literal.
+     * Consume a sequence of digits, a decimal point, and a sequence of digits.
+     *
+     * \param get Function to get next input character
+     * \param peek Function to peek at next input character
+     * \param append Function to write next output Token
+     */
+    void lex_digit(const get_function_t &get, const peek_function_t &peek, const append_function_t &append) {
+        // Digit was detected and we are not expecting anything --> expect double literal
+        std::ostringstream stream;
+
+        // Consume digits
+        for (char c = peek(); std::isdigit(c) > 0; c = peek()) {
+            stream << get();
+        }
+
+        // Check that the next character is a decimal point
+        {
+            char c = get();
+            if (c != '.') {
+                // Invalid input --> append error token and throw exception
+                std::ostringstream message;
+                message << "Unexpected character: \'" << c << "\', expecting a decimal point.";
+                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                throw LexerException(message.str());
+            } else {
+                stream << c;
+            }
+        }
+
+        // Check at least one digit follows
+        {
+            char c = peek();
+            if (std::isdigit(c) == 0) {
+                // Invalid input --> eat it, append error token and throw exception
+                get();
+                std::ostringstream message;
+                message << "Unexpected character: \'" << c << "\', expecting a digit.";
+                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                throw LexerException(message.str());
+            }
+        }
+
+        // Consume digits
+        for (char c = peek(); std::isdigit(c) > 0; c = peek()) {
+            stream << get();
+        }
+
+        // Append the token
+        append(tokens::Token{tokens::tags::DOUBLE_LITERAL, stream.str()});
+    }
+
+    // Lexing itself
     /**
      * \brief Lex from an input character buffer into an output Token buffer
      *
@@ -33,151 +151,35 @@ namespace basilisk::lexer {
      * \param peek Function to peek at next input character
      * \param append Function to write next output Token
      */
-    void lex(get_function_t get, peek_function_t /*peek*/, append_function_t append) {
-        // Prepare the state variables
+    void lex(const get_function_t &get, const peek_function_t &peek, const append_function_t &append) {
         bool stop = false;
-        std::ostringstream content;
-        constexpr char ret_pattern[] = {'r', 'e', 't', 'u', 'r', 'n'};
-        unsigned ret_idx = 0;
-        bool ret = false;
-        bool identifier = false;
-        bool double_literal = false;
-        bool after_period = false;
 
-        // Keep grabbing input until told to stop
         do {
-            // Grab the next character
-            char c = get();
+            // Peek at the next character
+            char next = peek();
 
-            // Find the character in the special symbols array
-            const char *p = std::find(std::begin(special_symbols), std::end(special_symbols), c);
-            bool is_special = p != std::end(special_symbols);
-
-            // Check if the character is end of input
-            bool is_end =  c == '\0' || c == end_of_file;
-
-            // Handle special symbols, whitespace and end of input
-            if (is_special || std::isspace(c) != 0 || is_end) {
-                // Check if return was read
-                if (ret_idx == 6) {
-                    // Append the return token
-                    append(tokens::Token{tokens::tags::RETURN, ""});
-
-                    // Set identifier to false as this was a valid return
-                    identifier = false;
-                }
-
-                // Check if identifier was read
-                if (identifier) {
-                    // Append the identifier token
-                    append(tokens::Token{tokens::tags::IDENTIFIER, content.str()});
-                }
-
-                // Check if double literal was read
-                if (double_literal) {
-                    // Append the double literal token
-                    append(tokens::Token{tokens::tags::DOUBLE_LITERAL, content.str()});
-                }
-
-                // Reset complex token state variables
-                //TODO: try clearing instead of creating a new stream
-                content = std::ostringstream();
-                ret_idx = 0;
-                ret = false;
-                identifier = false;
-                double_literal = false;
-                after_period = false;
-
-                // Append the relevant token if special or stop if end of input
-                if (is_special) {
-                    // Compute the index of the special symbol
-                    auto i = p - special_symbols;
-
-                    // Append the relevant token
-                    append(tokens::Token{special_tags[i], ""});
-                } else if (is_end) {
-                    // Append the end token
-                    append(tokens::Token{tokens::tags::END, ""});
-
-                    // Stop
-                    stop = true;
-                }
+            if (is_end(next)) {                         // Detect end of input
+                // Eat it, append token, stop
+                get();
+                append(tokens::Token{tokens::tags::END, ""});
+                stop = true;
+            } else if (std::isspace(next) > 0) {        // Detect whitespace
+                // Eat it
+                get();
+            } else if (std::isalpha(next) > 0) {        // Detect alpha
+                lex_alpha(get, peek, append);
+            } else if (std::isdigit(next) > 0) {        // Detect digit
+                lex_digit(get, peek, append);
+            } else if (which_special(next) >= 0) {      // Detect special characters
+                // Eat it and append the token
+                append(tokens::Token{special_tags[which_special(get())], ""});
             } else {
-                // The character is a part of a complex token or is an error --> check expectations
-                if (identifier) {
-                    // Expecting identifier (or return) --> valid: alphanumeric and underscore
-                    if (std::isalnum(c) != 0 || c == '_') {
-                        // Add to the content
-                        content << c;
-
-                        // Check if next return character
-                        if (ret && ret_idx < 6 && c == ret_pattern[ret_idx]) {
-                            // Advance
-                            ret_idx++;
-                        } else {
-                            // Not return
-                            ret_idx = 0;
-                            ret = false;
-                        }
-                    } else {
-                        // Invalid --> append error token and throw exception
-                        std::ostringstream message;
-                        message << "Invalid identifier or return character: \'" << c << "\'.";
-                        append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        throw LexerException(message.str());
-                    }
-                } else if (double_literal) {
-                    // Expecting double literal --> valid: digits and period (iff not yet encountered)
-                    if (c == '.') {
-                        if (after_period) {
-                            // Period already encountered --> append error token and throw exception
-                            std::ostringstream message;
-                            message << "Invalid period in double literal.";
-                            append(tokens::Token{tokens::tags::ERROR, message.str()});
-                            throw LexerException(message.str());
-                        } else {
-                            // Add to the content and update flag
-                            content << c;
-                            after_period = true;
-                        }
-                    } else if (std::isdigit(c) != 0) {
-                        // Add to the content
-                        content << c;
-                    } else {
-                        // Invalid --> append error token and throw exception
-                        std::ostringstream message;
-                        message << "Invalid double literal character: \'" << c << "\'.";
-                        append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        throw LexerException(message.str());
-                    }
-                } else {
-                    // Not expecting anything --> valid: alpha for identifier or return, digit for double literal
-                    if (std::isalpha(c) != 0) {
-                        // Add to content
-                        content << c;
-
-                        // Expect identifier
-                        identifier = true;
-
-                        // Decide whether to expect return
-                        if (c == 'r') {
-                            ret = true;
-                            ret_idx = 1;
-                        }
-                    } else if (std::isdigit(c) != 0) {
-                        // Add to content
-                        content << c;
-
-                        // Expect double literal
-                        double_literal = true;
-                    } else {
-                        // Invalid --> append error token and throw exception
-                        std::ostringstream message;
-                        message << "Unknown character: \'" << c << "\'.";
-                        append(tokens::Token{tokens::tags::ERROR, message.str()});
-                        throw LexerException(message.str());
-                    }
-                }
+                // Invalid input --> eat it, append error token and throw exception
+                get();
+                std::ostringstream message;
+                message << "Unknown character: \'" << next << "\'.";
+                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                throw LexerException(message.str());
             }
         } while (!stop);
     }
