@@ -36,7 +36,7 @@ struct QueuesFixture {
     /**
      * \brief Pop a character from the front of the input queue and return it
      *
-     * \return Popped character
+     * \return Popped character, or the null character when empty
      */
     char get() {
         // Return null char if empty
@@ -52,9 +52,16 @@ struct QueuesFixture {
     /**
      * \brief Peek at the character at the front of the input queue
      *
-     * \return Character at the front of the input queue
+     * \return Character at the front of the input queue, or the null character when empty
      */
-    char peek() { return input.front(); }
+    char peek() {
+        // Return null char if empty
+        if (input.empty()) {
+            return '\0';
+        }
+
+        return input.front();
+    }
 
     /**
      * \brief Push a token to the end of the output queue
