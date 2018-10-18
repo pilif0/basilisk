@@ -149,47 +149,6 @@ BOOST_AUTO_TEST_CASE( fixture_test ) {
     BOOST_CHECK(q.output.front() == subject_token);
 }
 
-//! Test single naive tokens lex (excluding special tokens END and ERROR)
-BOOST_AUTO_TEST_CASE(unit_naive_lexes) {
-    // Dataset - (input, token) pairs
-    std::map<std::string, tokens::Token> data{
-        {"identifier", {tags::IDENTIFIER, "identifier"}},
-        {"(", {tags::LPAR, ""}},
-        {")", {tags::RPAR, ""}},
-        {"{", {tags::LBRAC, ""}},
-        {"}", {tags::RBRAC, ""}},
-        {",", {tags::COMMA, ""}},
-        {";", {tags::SEMICOLON, ""}},
-        {"=", {tags::ASSIGN, ""}},
-        {"return", {tags::RETURN, ""}},
-        {"3.14", {tags::DOUBLE_LITERAL, "3.14"}},
-        {"+", {tags::PLUS, ""}},
-        {"-", {tags::MINUS, ""}},
-        {"*", {tags::STAR, ""}},
-        {"/", {tags::SLASH, ""}},
-        {"%", {tags::PERCENT, ""}}};
-
-    // Test each input results in the assigned token
-    for (auto pair : data) {
-        // Prepare fixture
-        QueuesFixture q;
-        q.load(pair.first);
-
-        // Lex the input
-        q.lex();
-
-        // Check tokens were added (token for input and END)
-        BOOST_TEST_CHECK(q.output.size() == 2);
-
-        // Check the token is correct if present
-        if (q.output.size() == 2) {
-            BOOST_TEST_CHECK(q.output.front() == pair.second,
-                             "\"" << pair.first << "\" should lex to " << pair.second << ", lexes to "
-                                  << q.output.front());
-        }
-    }
-}
-
 /**
  * \brief Test whether the provided input lexes into the correct tokens
  *
@@ -211,6 +170,146 @@ void test_input(const std::string &input, QueuesFixture::out_queue_t correct) {
     BOOST_TEST_CHECK(q.output == correct, "\"" << input << "\" should lex to " << print_queue(correct)
                                                << ", lexes to "<< print_queue(q.output));
 }
+
+//! Test single naive tokens lex (excluding special tokens END and ERROR)
+BOOST_AUTO_TEST_SUITE(unit_naive_lexes)
+
+BOOST_AUTO_TEST_CASE(identifier) {
+    // Data
+    std::string input = "identifier";
+    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "identifier"}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(lpar) {
+    // Data
+    std::string input = "(";
+    QueuesFixture::out_queue_t correct({{tags::LPAR, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(rpar) {
+    // Data
+    std::string input = ")";
+    QueuesFixture::out_queue_t correct({{tags::RPAR, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(lbrac) {
+    // Data
+    std::string input = "{";
+    QueuesFixture::out_queue_t correct({{tags::LBRAC, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(rbrac) {
+    // Data
+    std::string input = "}";
+    QueuesFixture::out_queue_t correct({{tags::RBRAC, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(comma) {
+    // Data
+    std::string input = ",";
+    QueuesFixture::out_queue_t correct({{tags::COMMA, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(semicolon) {
+    // Data
+    std::string input = ";";
+    QueuesFixture::out_queue_t correct({{tags::SEMICOLON, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(assign) {
+    // Data
+    std::string input = "=";
+    QueuesFixture::out_queue_t correct({{tags::ASSIGN, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(unit_return) {
+    // Data
+    std::string input = "return";
+    QueuesFixture::out_queue_t correct({{tags::RETURN, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(double_literal) {
+    // Data
+    std::string input = "3.14";
+    QueuesFixture::out_queue_t correct({{tags::DOUBLE_LITERAL, "3.14"}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(plus) {
+    // Data
+    std::string input = "+";
+    QueuesFixture::out_queue_t correct({{tags::PLUS, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(minus) {
+    // Data
+    std::string input = "-";
+    QueuesFixture::out_queue_t correct({{tags::MINUS, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(star) {
+    // Data
+    std::string input = "*";
+    QueuesFixture::out_queue_t correct({{tags::STAR, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(slash) {
+    // Data
+    std::string input = "/";
+    QueuesFixture::out_queue_t correct({{tags::SLASH, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_CASE(percent) {
+    // Data
+    std::string input = "%";
+    QueuesFixture::out_queue_t correct({{tags::PERCENT, ""}, {tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
+BOOST_AUTO_TEST_SUITE_END() // unit_naive_lexes
 
 //! Test special symbols and whitespace ending complex tokens (identifier, return, double literal)
 BOOST_AUTO_TEST_SUITE(special_end_complex)
