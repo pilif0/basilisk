@@ -430,4 +430,14 @@ BOOST_AUTO_TEST_CASE(complex_identifier) {
     test_input(input, correct);
 }
 
+//! Test no input lexing
+BOOST_AUTO_TEST_CASE(empty) {
+    // Data
+    std::string input;
+    QueuesFixture::out_queue_t correct({{tags::END, ""}});
+
+    // Test
+    test_input(input, correct);
+}
+
 BOOST_AUTO_TEST_SUITE_END() // Lexer
