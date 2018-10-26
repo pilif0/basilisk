@@ -21,6 +21,7 @@ set(basilisk_VERSION_FULL "${basilisk_VERSION_MAJOR}.${basilisk_VERSION_MINOR}.$
 # Declare options
 option(basilisk_BUILD_DOC "Build documentation" ON)
 option(basilisk_BUILD_TEST "Build tests" ON)
+option(basilisk_BUILD_TOOLS "Build tools" ON)
 set(basilisk_BOOST "/opt/boost" CACHE PATH "Boost directory")
 set(basilisk_LLVM "/opt/llvm" CACHE PATH "LLVM directory")
 
@@ -73,4 +74,9 @@ if (basilisk_BUILD_TEST)
     foreach(test ${basilisk_TESTS})
         add_test(NAME ${test} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test COMMAND ${CMAKE_BINARY_DIR}/test/${test})
     endforeach(test)
+endif()
+
+
+if (basilisk_BUILD_TOOLS)
+    add_subdirectory(tools)
 endif()
