@@ -42,24 +42,27 @@ namespace basilisk::tokens {
         /** \enum token_tag
          *  \brief Token tag
          */
+        // Note: These identifiers are used to represent the tags in code, text should still use the names as the
+        //  grammar definition states them for consistency with documentation.
+        // Note: Prefix "kw_" used to signify keyword (and prevent recognition by compiler)
         enum token_tag {
-            IDENTIFIER,
-            LPAR,
-            RPAR,
-            LBRAC,
-            RBRAC,
-            COMMA,
-            SEMICOLON,
-            ASSIGN,
-            RETURN,
-            DOUBLE_LITERAL,
-            PLUS,
-            MINUS,
-            STAR,
-            SLASH,
-            PERCENT,
-            ERROR,
-            END
+            identifier,
+            lpar,
+            rpar,
+            lbrac,
+            rbrac,
+            comma,
+            semicolon,
+            assign,
+            kw_return,
+            double_literal,
+            plus,
+            minus,
+            star,
+            slash,
+            percent,
+            error,
+            end_of_input
         };
     }
 

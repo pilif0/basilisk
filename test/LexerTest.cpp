@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_SUITE(Lexer)
 BOOST_AUTO_TEST_CASE( fixture_test ) {
     // Constants in this test
     constexpr char subject_character = 'a';
-    tokens::Token subject_token{tags::ASSIGN, {}};
+    tokens::Token subject_token{tags::assign, {}};
 
     // Construct fixture
     QueuesFixture q;
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_SUITE(unit_naive_lexes)
 BOOST_AUTO_TEST_CASE(identifier) {
     // Data
     std::string input = "identifier";
-    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "identifier"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::identifier, "identifier"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(identifier) {
 BOOST_AUTO_TEST_CASE(lpar) {
     // Data
     std::string input = "(";
-    QueuesFixture::out_queue_t correct({{tags::LPAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::lpar, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(lpar) {
 BOOST_AUTO_TEST_CASE(rpar) {
     // Data
     std::string input = ")";
-    QueuesFixture::out_queue_t correct({{tags::RPAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::rpar, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(rpar) {
 BOOST_AUTO_TEST_CASE(lbrac) {
     // Data
     std::string input = "{";
-    QueuesFixture::out_queue_t correct({{tags::LBRAC, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::lbrac, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(lbrac) {
 BOOST_AUTO_TEST_CASE(rbrac) {
     // Data
     std::string input = "}";
-    QueuesFixture::out_queue_t correct({{tags::RBRAC, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::rbrac, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(rbrac) {
 BOOST_AUTO_TEST_CASE(comma) {
     // Data
     std::string input = ",";
-    QueuesFixture::out_queue_t correct({{tags::COMMA, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::comma, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(comma) {
 BOOST_AUTO_TEST_CASE(semicolon) {
     // Data
     std::string input = ";";
-    QueuesFixture::out_queue_t correct({{tags::SEMICOLON, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::semicolon, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(semicolon) {
 BOOST_AUTO_TEST_CASE(assign) {
     // Data
     std::string input = "=";
-    QueuesFixture::out_queue_t correct({{tags::ASSIGN, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::assign, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(assign) {
 BOOST_AUTO_TEST_CASE(unit_return) {
     // Data
     std::string input = "return";
-    QueuesFixture::out_queue_t correct({{tags::RETURN, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::kw_return, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(unit_return) {
 BOOST_AUTO_TEST_CASE(double_literal) {
     // Data
     std::string input = "3.14";
-    QueuesFixture::out_queue_t correct({{tags::DOUBLE_LITERAL, "3.14"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::double_literal, "3.14"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(double_literal) {
 BOOST_AUTO_TEST_CASE(plus) {
     // Data
     std::string input = "+";
-    QueuesFixture::out_queue_t correct({{tags::PLUS, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::plus, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(plus) {
 BOOST_AUTO_TEST_CASE(minus) {
     // Data
     std::string input = "-";
-    QueuesFixture::out_queue_t correct({{tags::MINUS, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::minus, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(minus) {
 BOOST_AUTO_TEST_CASE(star) {
     // Data
     std::string input = "*";
-    QueuesFixture::out_queue_t correct({{tags::STAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::star, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(star) {
 BOOST_AUTO_TEST_CASE(slash) {
     // Data
     std::string input = "/";
-    QueuesFixture::out_queue_t correct({{tags::SLASH, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::slash, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(slash) {
 BOOST_AUTO_TEST_CASE(percent) {
     // Data
     std::string input = "%";
-    QueuesFixture::out_queue_t correct({{tags::PERCENT, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::percent, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_SUITE(special_end_complex)
 BOOST_AUTO_TEST_CASE(identifier_special) {
     // Data
     std::string input = "identifier)";
-    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "identifier"}, {tags::RPAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::identifier, "identifier"}, {tags::rpar, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(identifier_special) {
 BOOST_AUTO_TEST_CASE(identifier_whitespace) {
     // Data
     std::string input = "identifier  ";
-    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "identifier"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::identifier, "identifier"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(identifier_whitespace) {
 BOOST_AUTO_TEST_CASE(return_special) {
     // Data
     std::string input = "return)";
-    QueuesFixture::out_queue_t correct({{tags::RETURN, ""}, {tags::RPAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::kw_return, ""}, {tags::rpar, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(return_special) {
 BOOST_AUTO_TEST_CASE(return_whitespace) {
     // Data
     std::string input = "return  ";
-    QueuesFixture::out_queue_t correct({{tags::RETURN, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::kw_return, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -365,7 +365,7 @@ BOOST_AUTO_TEST_CASE(return_whitespace) {
 BOOST_AUTO_TEST_CASE(double_special) {
     // Data
     std::string input = "3.14)";
-    QueuesFixture::out_queue_t correct({{tags::DOUBLE_LITERAL, "3.14"}, {tags::RPAR, ""}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::double_literal, "3.14"}, {tags::rpar, ""}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -375,7 +375,7 @@ BOOST_AUTO_TEST_CASE(double_special) {
 BOOST_AUTO_TEST_CASE(double_whitespace) {
     // Data
     std::string input = "3.14  ";
-    QueuesFixture::out_queue_t correct({{tags::DOUBLE_LITERAL, "3.14"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::double_literal, "3.14"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -405,7 +405,7 @@ BOOST_AUTO_TEST_CASE(invalid_input) {
     BOOST_TEST_CHECK(q.output.size() == 1);
 
     // Check the last token is an ERROR
-    BOOST_TEST_CHECK(q.output.front().tag == tags::ERROR);
+    BOOST_TEST_CHECK(q.output.front().tag == tags::error);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_CASE(return_like_identifier) {
     // Data
     std::string input = "return_like_identifier";
-    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "return_like_identifier"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::identifier, "return_like_identifier"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE(return_like_identifier) {
 BOOST_AUTO_TEST_CASE(complex_identifier) {
     // Data
     std::string input = "this_identifier_15_c0mpl3x";
-    QueuesFixture::out_queue_t correct({{tags::IDENTIFIER, "this_identifier_15_c0mpl3x"}, {tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::identifier, "this_identifier_15_c0mpl3x"}, {tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(complex_identifier) {
 BOOST_AUTO_TEST_CASE(empty) {
     // Data
     std::string input;
-    QueuesFixture::out_queue_t correct({{tags::END, ""}});
+    QueuesFixture::out_queue_t correct({{tags::end_of_input, ""}});
 
     // Test
     test_input(input, correct);

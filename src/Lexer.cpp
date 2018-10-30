@@ -16,10 +16,10 @@ namespace basilisk::lexer {
     //! Symbols that translate directly to tokens
     constexpr char special_symbols[] = {'(', ')', '{', '}', ',', ';', '=', '+', '-', '*', '/', '%'};
     //! Tags for the special symbols in the same order
-    constexpr tokens::tags::token_tag special_tags[] = {tokens::tags::LPAR, tokens::tags::RPAR, tokens::tags::LBRAC,
-                                                        tokens::tags::RBRAC, tokens::tags::COMMA, tokens::tags::SEMICOLON,
-                                                        tokens::tags::ASSIGN, tokens::tags::PLUS, tokens::tags::MINUS,
-                                                        tokens::tags::STAR, tokens::tags::SLASH, tokens::tags::PERCENT};
+    constexpr tokens::tags::token_tag special_tags[] = {tokens::tags::lpar, tokens::tags::rpar, tokens::tags::lbrac,
+                                                        tokens::tags::rbrac, tokens::tags::comma, tokens::tags::semicolon,
+                                                        tokens::tags::assign, tokens::tags::plus, tokens::tags::minus,
+                                                        tokens::tags::star, tokens::tags::slash, tokens::tags::percent};
     //! End of file character
     constexpr char end_of_file = std::char_traits<char>::eof();
 
@@ -76,9 +76,9 @@ namespace basilisk::lexer {
         // Decide what token to append
         std::string content = stream.str();
         if (content == return_pattern) {
-            append(tokens::Token{tokens::tags::RETURN, ""});
+            append(tokens::Token{tokens::tags::kw_return, ""});
         } else {
-            append(tokens::Token{tokens::tags::IDENTIFIER, content});
+            append(tokens::Token{tokens::tags::identifier, content});
         }
     }
 
@@ -111,7 +111,7 @@ namespace basilisk::lexer {
                 // Invalid input --> append error token and throw exception
                 std::ostringstream message;
                 message << "Unexpected character: \'" << c << "\', expecting a decimal point.";
-                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                append(tokens::Token{tokens::tags::error, message.str()});
                 throw LexerException(message.str());
             } else {
                 stream << c;
@@ -126,7 +126,7 @@ namespace basilisk::lexer {
                 get();
                 std::ostringstream message;
                 message << "Unexpected character: \'" << c << "\', expecting a digit.";
-                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                append(tokens::Token{tokens::tags::error, message.str()});
                 throw LexerException(message.str());
             }
         }
@@ -137,7 +137,7 @@ namespace basilisk::lexer {
         }
 
         // Append the token
-        append(tokens::Token{tokens::tags::DOUBLE_LITERAL, stream.str()});
+        append(tokens::Token{tokens::tags::double_literal, stream.str()});
     }
 
     // Lexing itself
@@ -161,7 +161,7 @@ namespace basilisk::lexer {
             if (is_end(next)) {                         // Detect end of input
                 // Eat it, append token, stop
                 get();
-                append(tokens::Token{tokens::tags::END, ""});
+                append(tokens::Token{tokens::tags::end_of_input, ""});
                 stop = true;
             } else if (std::isspace(next) > 0) {        // Detect whitespace
                 // Eat it
@@ -178,7 +178,7 @@ namespace basilisk::lexer {
                 get();
                 std::ostringstream message;
                 message << "Unknown character: \'" << next << "\'.";
-                append(tokens::Token{tokens::tags::ERROR, message.str()});
+                append(tokens::Token{tokens::tags::error, message.str()});
                 throw LexerException(message.str());
             }
         } while (!stop);
