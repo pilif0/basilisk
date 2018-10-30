@@ -1,0 +1,9 @@
+# Include Boost and Basilisk headers
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+include_directories(${INCL_DIR})
+
+# Link libraries
+link_libraries(${Boost_LIBRARIES} basilisk)
+
+# Add lexer executable
+add_executable(lexer_executable lexer_executable.cpp)

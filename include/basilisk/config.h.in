@@ -21,9 +21,6 @@ namespace basilisk {
     constexpr char version_version[] = "@basilisk_VERSION@";
     //! Full version string (\c major.minor.patchextra)
     constexpr char version_full[] = "@basilisk_VERSION_FULL@";
-
-    //! Whether debug logging should be enabled
-    constexpr bool debug_log = @basilisk_DEBUG_LOG_VALUE@;
 }
 
 #endif //BASILISK_CONFIG_H

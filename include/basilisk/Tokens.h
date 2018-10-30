@@ -7,6 +7,7 @@
 #define BASILISK_TOKENS_H
 
 #include <string>
+#include <ostream>
 
 //! Token definitions
 namespace basilisk::tokens {
@@ -41,23 +42,27 @@ namespace basilisk::tokens {
         /** \enum token_tag
          *  \brief Token tag
          */
+        // Note: These identifiers are used to represent the tags in code, text should still use the names as the
+        //  grammar definition states them for consistency with documentation.
+        // Note: Prefix "kw_" used to signify keyword (and prevent recognition by compiler)
         enum token_tag {
-            IDENTIFIER,
-            LPAR,
-            RPAR,
-            LBRAC,
-            RBRAC,
-            COMMA,
-            SEMICOLON,
-            ASSIGN,
-            RETURN,
-            DOUBLE_LITERAL,
-            PLUS,
-            MINUS,
-            STAR,
-            SLASH,
-            PERCENT,
-            ERROR
+            identifier,
+            lpar,
+            rpar,
+            lbrac,
+            rbrac,
+            comma,
+            semicolon,
+            assign,
+            kw_return,
+            double_literal,
+            plus,
+            minus,
+            star,
+            slash,
+            percent,
+            error,
+            end_of_input
         };
     }
 
@@ -78,6 +83,43 @@ namespace basilisk::tokens {
         }
 
         friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
+
+        friend std::ostream &operator<<(std::ostream &os, const Token &token) {
+            // Tag labels in the same order as the enumeration
+            static const char* labels[] = {
+                    "IDENTIFIER",
+                    "LPAR",
+                    "RPAR",
+                    "LBRAC",
+                    "RBRAC",
+                    "COMMA",
+                    "SEMICOLON",
+                    "ASSIGN",
+                    "RETURN",
+                    "DOUBLE_LITERAL",
+                    "PLUS",
+                    "MINUS",
+                    "STAR",
+                    "SLASH",
+                    "PERCENT",
+                    "ERROR",
+                    "END"
+            };
+
+            // Append the tag
+            if (static_cast<std::size_t>(token.tag) < sizeof(labels) / sizeof(*labels)) {
+                os << labels[token.tag];
+            } else {
+                os << static_cast<int>(token.tag);
+            }
+
+            // Append the contents if non-empty
+            if (!token.content.empty()) {
+                os << "{" << token.content << "}";
+            }
+
+            return os;
+        }
     };
 
 
