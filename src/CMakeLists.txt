@@ -7,7 +7,8 @@ include_directories(${INCL_DIR})
 set(basilisk_HEADERS
         "${INCL_DIR}/basilisk/config.h"
         "${INCL_DIR}/basilisk/Lexer.h"
-        "${INCL_DIR}/basilisk/Tokens.h")
+        "${INCL_DIR}/basilisk/Tokens.h"
+        "${INCL_DIR}/basilisk/Parser.h")
 set(basilisk_SOURCES
         "${SRC_DIR}/Lexer.cpp")
 
