@@ -121,7 +121,7 @@ namespace basilisk::ast {
         /** \class MulExpression
          * \brief Expression of multiply operation `lhs * rhs`
          */
-        class MulExpression : Expression2 {
+        class MulExpression : public Expression2 {
             public:
                 const std::unique_ptr<Expression3> lhs;
                 const std::unique_ptr<Expression2> rhs;
@@ -133,7 +133,7 @@ namespace basilisk::ast {
         /** \class DivExpression
          * \brief Expression of divide operation `lhs / rhs`
          */
-        class DivExpression : Expression2 {
+        class DivExpression : public Expression2 {
             public:
                 const std::unique_ptr<Expression3> lhs;
                 const std::unique_ptr<Expression2> rhs;
@@ -146,7 +146,7 @@ namespace basilisk::ast {
         /** \class NegExpression
          * \brief Expression of negate operation `- x`
          */
-        class NegExpression : Expression3 {
+        class NegExpression : public Expression3 {
             public:
                 const std::unique_ptr<Expression4> x;
 
@@ -158,7 +158,7 @@ namespace basilisk::ast {
         /** \class DoubleLitExpression
          * \brief Expression of double literal (e.g. `3.14`)
          */
-        class DoubleLitExpression : Expression4 {
+        class DoubleLitExpression : public Expression4 {
             public:
                 //! Value of the literal
                 const double value;
@@ -170,7 +170,7 @@ namespace basilisk::ast {
         /** \class ParExpression
          * \brief Expression in parentheses
          */
-        class ParExpression : Expression4 {
+        class ParExpression : public Expression4 {
             public:
                 //! Inner expression
                 const std::unique_ptr<Expression> expression;
@@ -182,7 +182,7 @@ namespace basilisk::ast {
         /** \class IdentifierExpression
          * \brief Expression of an identifier
          */
-        class IdentifierExpression : Expression4 {
+        class IdentifierExpression : public Expression4 {
             public:
                 //! Contained identifier
                 const Identifier identifier;
@@ -194,7 +194,7 @@ namespace basilisk::ast {
         /** \class FuncExpression
          * \brief Expression of a function call
          */
-        class FuncExpression : Expression4 {
+        class FuncExpression : public Expression4 {
             public:
                 //! Function identifier
                 const Identifier identifier;
