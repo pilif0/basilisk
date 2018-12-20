@@ -85,10 +85,11 @@ namespace basilisk::ast {
          */
         class ModExpression : public Expression {
             public:
-                const Expression1 x;
-                const Expression m;
+                const std::unique_ptr<Expression1> x;
+                const std::unique_ptr<Expression> m;
 
-                ModExpression(const Expression1 &x, const Expression &m) : x(x), m(m) {}
+                ModExpression(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
+                    : x(std::move(x)), m(std::move(m)) {}
         };
 
         // 1st level
@@ -97,10 +98,11 @@ namespace basilisk::ast {
          */
         class SumExpression : public Expression1 {
             public:
-                const Expression2 lhs;
-                const Expression1 rhs;
+                const std::unique_ptr<Expression2> lhs;
+                const std::unique_ptr<Expression1> rhs;
 
-                SumExpression(const Expression2 &lhs, const Expression1 &rhs) : lhs(lhs), rhs(rhs) {}
+                SumExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
+                    : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
         };
 
         /** \class SubExpression
@@ -108,10 +110,11 @@ namespace basilisk::ast {
          */
         class SubExpression : public Expression1 {
             public:
-                const Expression2 lhs;
-                const Expression1 rhs;
+                const std::unique_ptr<Expression2> lhs;
+                const std::unique_ptr<Expression1> rhs;
 
-                SubExpression(const Expression2 &lhs, const Expression1 &rhs) : lhs(lhs), rhs(rhs) {}
+                SubExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
+                    : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
         };
 
         // 2nd level
@@ -120,10 +123,11 @@ namespace basilisk::ast {
          */
         class MulExpression : Expression2 {
             public:
-                const Expression3 lhs;
-                const Expression2 rhs;
+                const std::unique_ptr<Expression3> lhs;
+                const std::unique_ptr<Expression2> rhs;
 
-                MulExpression(const Expression3 &lhs, const Expression2 &rhs) : lhs(lhs), rhs(rhs) {}
+                MulExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
+                    : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
         };
 
         /** \class DivExpression
@@ -131,10 +135,11 @@ namespace basilisk::ast {
          */
         class DivExpression : Expression2 {
             public:
-                const Expression3 lhs;
-                const Expression2 rhs;
+                const std::unique_ptr<Expression3> lhs;
+                const std::unique_ptr<Expression2> rhs;
 
-                DivExpression(const Expression3 &lhs, const Expression2 &rhs) : lhs(lhs), rhs(rhs) {}
+                DivExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
+                    : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
         };
 
         // 3rd level
@@ -143,9 +148,10 @@ namespace basilisk::ast {
          */
         class NegExpression : Expression3 {
             public:
-                const Expression4 x;
+                const std::unique_ptr<Expression4> x;
 
-                explicit NegExpression(const Expression4 &x) : x(x) {}
+                explicit NegExpression(std::unique_ptr<Expression4> x)
+                    : x(std::move(x)) {}
         };
 
         // 4th level
@@ -157,7 +163,8 @@ namespace basilisk::ast {
                 //! Value of the literal
                 const double value;
 
-                explicit DoubleLitExpression(const double value) : value(value) {}
+                explicit DoubleLitExpression(const double value)
+                    : value(value) {}
         };
 
         /** \class ParExpression
@@ -166,9 +173,10 @@ namespace basilisk::ast {
         class ParExpression : Expression4 {
             public:
                 //! Inner expression
-                const Expression expression;
+                const std::unique_ptr<Expression> expression;
 
-                explicit ParExpression(const Expression &expression) : expression(expression) {}
+                explicit ParExpression(std::unique_ptr<Expression> expression)
+                    : expression(std::move(expression)) {}
         };
 
         /** \class IdentifierExpression
@@ -179,7 +187,8 @@ namespace basilisk::ast {
                 //! Contained identifier
                 const Identifier identifier;
 
-                explicit IdentifierExpression(Identifier identifier) : identifier(std::move(identifier)) {}
+                explicit IdentifierExpression(Identifier identifier)
+                    : identifier(std::move(identifier)) {}
         };
 
         /** \class FuncExpression
@@ -237,9 +246,10 @@ namespace basilisk::ast {
             //! Variable identifier
             const Identifier identifier;
             //! Value expression
-            const Expression value;
+            const std::unique_ptr<Expression> value;
 
-            VariableDefinition(Identifier id, Expression val) : identifier(std::move(id)), value(val) {}
+            VariableDefinition(Identifier id, std::unique_ptr<Expression> val)
+                : identifier(std::move(id)), value(std::move(val)) {}
     };
 
     /** \class Program
@@ -254,7 +264,8 @@ namespace basilisk::ast {
             const std::vector<std::unique_ptr<Definition>> definitions;
 
             //TODO make variadic?
-            explicit Program(std::vector<std::unique_ptr<Definition>> defs) : definitions(std::move(defs)) {}
+            explicit Program(std::vector<std::unique_ptr<Definition>> defs)
+                : definitions(std::move(defs)) {}
     };
 
     /**
