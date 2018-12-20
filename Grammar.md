@@ -72,7 +72,7 @@ expr4 := literal
 literal := DOUBLE_LITERAL
 
 function-call := IDENTIFIER LPAR RPAR SEMICOLON
-               | IDENTIFIER LPAR expression-list RPAR SEMICOLON
+               | IDENTIFIER LPAR expression-list RPAR
 
 expression-list := expression
                  | expression COMMA expression-list
