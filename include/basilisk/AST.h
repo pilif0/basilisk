@@ -85,8 +85,8 @@ namespace basilisk::ast {
          */
         class ModExpression : public Expression {
             public:
-                const std::unique_ptr<Expression1> x;
-                const std::unique_ptr<Expression> m;
+                std::unique_ptr<Expression1> x;
+                std::unique_ptr<Expression> m;
 
                 ModExpression(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
                     : x(std::move(x)), m(std::move(m)) {}
@@ -98,8 +98,8 @@ namespace basilisk::ast {
          */
         class SumExpression : public Expression1 {
             public:
-                const std::unique_ptr<Expression2> lhs;
-                const std::unique_ptr<Expression1> rhs;
+                std::unique_ptr<Expression2> lhs;
+                std::unique_ptr<Expression1> rhs;
 
                 SumExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
@@ -110,8 +110,8 @@ namespace basilisk::ast {
          */
         class SubExpression : public Expression1 {
             public:
-                const std::unique_ptr<Expression2> lhs;
-                const std::unique_ptr<Expression1> rhs;
+                std::unique_ptr<Expression2> lhs;
+                std::unique_ptr<Expression1> rhs;
 
                 SubExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
@@ -123,8 +123,8 @@ namespace basilisk::ast {
          */
         class MulExpression : public Expression2 {
             public:
-                const std::unique_ptr<Expression3> lhs;
-                const std::unique_ptr<Expression2> rhs;
+                std::unique_ptr<Expression3> lhs;
+                std::unique_ptr<Expression2> rhs;
 
                 MulExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
@@ -135,8 +135,8 @@ namespace basilisk::ast {
          */
         class DivExpression : public Expression2 {
             public:
-                const std::unique_ptr<Expression3> lhs;
-                const std::unique_ptr<Expression2> rhs;
+                std::unique_ptr<Expression3> lhs;
+                std::unique_ptr<Expression2> rhs;
 
                 DivExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
@@ -148,7 +148,7 @@ namespace basilisk::ast {
          */
         class NegExpression : public Expression3 {
             public:
-                const std::unique_ptr<Expression3> x;
+                std::unique_ptr<Expression3> x;
 
                 explicit NegExpression(std::unique_ptr<Expression3> x)
                     : x(std::move(x)) {}
@@ -161,9 +161,9 @@ namespace basilisk::ast {
         class DoubleLitExpression : public Expression4 {
             public:
                 //! Value of the literal
-                const double value;
+                double value;
 
-                explicit DoubleLitExpression(const double value)
+                explicit DoubleLitExpression(double value)
                     : value(value) {}
         };
 
@@ -173,7 +173,7 @@ namespace basilisk::ast {
         class ParExpression : public Expression4 {
             public:
                 //! Inner expression
-                const std::unique_ptr<Expression> expression;
+                std::unique_ptr<Expression> expression;
 
                 explicit ParExpression(std::unique_ptr<Expression> expression)
                     : expression(std::move(expression)) {}
@@ -185,7 +185,7 @@ namespace basilisk::ast {
         class IdentifierExpression : public Expression4 {
             public:
                 //! Contained identifier
-                const Identifier identifier;
+                Identifier identifier;
 
                 explicit IdentifierExpression(Identifier identifier)
                     : identifier(std::move(identifier)) {}
@@ -197,9 +197,9 @@ namespace basilisk::ast {
         class FuncExpression : public Expression4 {
             public:
                 //! Function identifier
-                const Identifier identifier;
+                Identifier identifier;
                 //! Supplied expressions for arguments
-                const std::vector<std::unique_ptr<Expression>> arguments;
+                std::vector<std::unique_ptr<Expression>> arguments;
 
                 FuncExpression(Identifier identifier, std::vector<std::unique_ptr<Expression>> arguments)
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
@@ -222,7 +222,7 @@ namespace basilisk::ast {
     class ReturnStatement : public Statement {
         public:
             //! Returned expression
-            const std::unique_ptr<Expression> expression;
+            std::unique_ptr<Expression> expression;
 
             explicit ReturnStatement(std::unique_ptr<Expression> expression)
                 : expression(std::move(expression)) {}
@@ -236,7 +236,7 @@ namespace basilisk::ast {
      //TODO better name? VoidStatement?
     class StandaloneStatement : public Statement {
         public:
-            const std::unique_ptr<Expression> expression;
+            std::unique_ptr<Expression> expression;
 
             explicit StandaloneStatement(std::unique_ptr<Expression> expression)
                 : expression(std::move(expression)) {}
@@ -258,11 +258,11 @@ namespace basilisk::ast {
     class FunctionDefinition : public Definition {
         public:
             //! Function identifier
-            const Identifier identifier;
+            Identifier identifier;
             //! Arguments of the function in order of declaration
-            const std::vector<Identifier> arguments;
+            std::vector<Identifier> arguments;
             //! Non-empty block of statements acting as the function body
-            const std::vector<std::unique_ptr<Statement>> body;
+            std::vector<std::unique_ptr<Statement>> body;
 
             FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
                 : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
@@ -276,9 +276,9 @@ namespace basilisk::ast {
     class VariableDefinition : public Definition, public Statement {
         public:
             //! Variable identifier
-            const Identifier identifier;
+            Identifier identifier;
             //! Value expression
-            const std::unique_ptr<Expression> value;
+            std::unique_ptr<Expression> value;
 
             VariableDefinition(Identifier id, std::unique_ptr<Expression> val)
                 : identifier(std::move(id)), value(std::move(val)) {}
@@ -293,7 +293,7 @@ namespace basilisk::ast {
     class Program {
         public:
             //! Pointers to definitions in this program in order of definition
-            const std::vector<std::unique_ptr<Definition>> definitions;
+            std::vector<std::unique_ptr<Definition>> definitions;
 
             //TODO make variadic?
             explicit Program(std::vector<std::unique_ptr<Definition>> defs)
