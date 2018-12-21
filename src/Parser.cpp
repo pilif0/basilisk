@@ -86,7 +86,7 @@ namespace basilisk::parser {
             throw ParserException(message.str());
         }
 
-        return std::make_unique<exp::ParExpression>(expression);
+        return std::make_unique<exp::ParExpression>(std::move(expression));
     }
 
     /**
@@ -176,7 +176,7 @@ namespace basilisk::parser {
                 }   // RPAR -> expression list may remain empty
 
                 // Return FuncExpression
-                return std::make_unique<exp::FuncExpression>(identifier, expression_list);
+                return std::make_unique<exp::FuncExpression>(identifier, std::move(expression_list));
             } else {
                 // Was just identifier
                 return std::make_unique<exp::IdentifierExpression>(identifier);
@@ -209,7 +209,7 @@ namespace basilisk::parser {
             auto exp3 = parse_exp3();
 
             // Return MulExpression
-            return std::make_unique<exp::NegExpression>(exp3);
+            return std::make_unique<exp::NegExpression>(std::move(exp3));
         } else {
             // Absent -> parse ex Expression4
             return parse_exp4();
@@ -239,7 +239,7 @@ namespace basilisk::parser {
             auto exp2 = parse_exp2();
 
             // Return MulExpression
-            return std::make_unique<exp::MulExpression>(exp3, exp2);
+            return std::make_unique<exp::MulExpression>(std::move(exp3), std::move(exp2));
         } else if (t.tag == tokens::tags::slash) {
             // Minus -> combine with a rhs
 
@@ -250,7 +250,7 @@ namespace basilisk::parser {
             auto exp2 = parse_exp2();
 
             // Return DivExpression
-            return std::make_unique<exp::DivExpression>(exp3, exp2);
+            return std::make_unique<exp::DivExpression>(std::move(exp3), std::move(exp2));
         } else {
             // Absent -> return just the lhs
             return exp3;
@@ -280,7 +280,7 @@ namespace basilisk::parser {
             auto exp1 = parse_exp1();
 
             // Return SumExpression
-            return std::make_unique<exp::SumExpression>(exp2, exp1);
+            return std::make_unique<exp::SumExpression>(std::move(exp2), std::move(exp1));
         } else if (t.tag == tokens::tags::minus) {
             // Minus -> combine with a rhs
 
@@ -291,7 +291,7 @@ namespace basilisk::parser {
             auto exp1 = parse_exp1();
 
             // Return SubExpression
-            return std::make_unique<exp::SubExpression>(exp2, exp1);
+            return std::make_unique<exp::SubExpression>(std::move(exp2), std::move(exp1));
         } else {
             // Absent -> return just the lhs
             return exp2;
@@ -320,7 +320,7 @@ namespace basilisk::parser {
             auto exp = parse_expression();
 
             // Return ModExpression
-            return std::make_unique<exp::ModExpression>(exp1, exp);
+            return std::make_unique<exp::ModExpression>(std::move(exp1), std::move(exp));
         } else {
             // Absent -> return just the lhs
             return exp1;
@@ -390,7 +390,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::VariableDefinition>(id, val);
+        return std::make_unique<ast::VariableDefinition>(id, std::move(val));
     }
 
     /**
@@ -427,7 +427,7 @@ namespace basilisk::parser {
             }
 
             // Return result
-            return std::make_unique<ast::ReturnStatement>(expression);
+            return std::make_unique<ast::ReturnStatement>(std::move(expression));
         } else if (t.tag == tokens::tags::identifier) {
             // IDENTIFIER -> VariableDefinition or StandaloneStatement
 
@@ -443,7 +443,7 @@ namespace basilisk::parser {
                 auto expression = ExpressionParser(get, peek).parse_expression();
 
                 // Return StandaloneStatement
-                return std::make_unique<ast::StandaloneStatement>(expression);
+                return std::make_unique<ast::StandaloneStatement>(std::move(expression));
             }
         } else {
             // Otherwise -> StandaloneStatement
@@ -452,7 +452,7 @@ namespace basilisk::parser {
             auto expression = ExpressionParser(get, peek).parse_expression();
 
             // Return StandaloneStatement
-            return std::make_unique<ast::StandaloneStatement>(expression);
+            return std::make_unique<ast::StandaloneStatement>(std::move(expression));
         }
     }
 
@@ -591,7 +591,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::FunctionDefinition>(id, args, body);
+        return std::make_unique<ast::FunctionDefinition>(id, args, std::move(body));
     }
 
     /**
@@ -661,6 +661,6 @@ namespace basilisk::parser {
         }
 
         // Return the program with the gathered definitions
-        return ast::Program(definitions);
+        return ast::Program(std::move(definitions));
     }
 }
