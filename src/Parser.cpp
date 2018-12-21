@@ -75,7 +75,10 @@ namespace basilisk::parser {
         auto expression = parse_expression();
 
         // Check for closing RPAR
-        if (peek().tag != tokens::tags::rpar) {
+        if (peek().tag == tokens::tags::rpar) {
+            // Present -> consume
+            get();
+        } else {
             // Unexpected token
             //TODO test
             std::ostringstream message;
