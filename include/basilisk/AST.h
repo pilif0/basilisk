@@ -206,8 +206,40 @@ namespace basilisk::ast {
         };
     }
 
+    /** \class Statement
+     * \brief Base class for statements
+     */
     class Statement {
-            //TODO implement
+        protected:
+            Statement() = default;
+    };
+
+    /** \class ReturnStatement
+     * \brief Return Statement node
+     *
+     * Return Statement node contains an expression whose value is returned from a function.
+     */
+    class ReturnStatement : public Statement {
+        public:
+            //! Returned expression
+            const std::unique_ptr<Expression> expression;
+
+            explicit ReturnStatement(std::unique_ptr<Expression> expression)
+                : expression(std::move(expression)) {}
+    };
+
+    /** \class StandaloneStatement
+     * \brief Standalone Statement node
+     *
+     * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
+     */
+     //TODO better name? VoidStatement?
+    class StandaloneStatement : public Statement {
+        public:
+            const std::unique_ptr<Expression> expression;
+
+            explicit StandaloneStatement(std::unique_ptr<Expression> expression)
+                : expression(std::move(expression)) {}
     };
 
     /** \class Definition
@@ -241,7 +273,7 @@ namespace basilisk::ast {
      *
      * Variable Definition contains the variable identifier and the value expression.
      */
-    class VariableDefinition : public Definition {
+    class VariableDefinition : public Definition, public Statement {
         public:
             //! Variable identifier
             const Identifier identifier;
