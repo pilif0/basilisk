@@ -501,8 +501,37 @@ namespace basilisk::parser {
         }
 
         // Arguments
-        //TODO
         std::vector<ast::Identifier> args;
+        {
+            // Gather identifiers until right parenthesis
+            tokens::Token t = peek(0);
+            while (t.tag != tokens::tags::rpar) {
+                // Check the token is identifier
+                if (t.tag != tokens::tags::identifier) {
+                    // Unexpected token
+                    //TODO test
+                    std::ostringstream message;
+                    message << "Unexpected token " << t << " when parsing Function Definition and expecting IDENTIFIER.";
+                    throw ParserException(message.str());
+                }
+
+                // Add the identifier content, consuming the token
+                args.push_back(get().content);
+
+                // Check next is COMMA or RPAR
+                t = peek(0);
+                if (t.tag == tokens::tags::comma) {
+                    // COMMA -> consume
+                    get();
+                } else if (t.tag != tokens::tags::rpar) {
+                    // Not RPAR -> unexpected token
+                    //TODO test
+                    std::ostringstream message;
+                    message << "Unexpected token " << t << " when parsing Function Definition and expecting COMMA or RPAR.";
+                    throw ParserException(message.str());
+                }   // RPAR -> leave to terminate
+            }
+        }
 
         // Right parenthesis
         {
