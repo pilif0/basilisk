@@ -63,11 +63,11 @@ namespace basilisk::parser {
         // Parenthesised expression -> expecting LPAR Expression RPAR
 
         // Check starting LPAR
-        if (peek().tag != tokens::tags::lpar) {
+        if (peek(0).tag != tokens::tags::lpar) {
             // Unexpected token
             //TODO test
             std::ostringstream message;
-            message << "Unexpected token " << peek() << " when parsing ParExpression and expecting LPAR.";
+            message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting LPAR.";
             throw ParserException(message.str());
         }
 
@@ -75,14 +75,14 @@ namespace basilisk::parser {
         auto expression = parse_expression();
 
         // Check for closing RPAR
-        if (peek().tag == tokens::tags::rpar) {
+        if (peek(0).tag == tokens::tags::rpar) {
             // Present -> consume
             get();
         } else {
             // Unexpected token
             //TODO test
             std::ostringstream message;
-            message << "Unexpected token " << peek() << " when parsing ParExpression and expecting RPAR.";
+            message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting RPAR.";
             throw ParserException(message.str());
         }
 
@@ -104,7 +104,7 @@ namespace basilisk::parser {
         result.push_back(parse_expression());
 
         // On each following comma, parse another one
-        for (tokens::Token t = peek(); t.tag == tokens::tags::comma; t = peek()) {
+        for (tokens::Token t = peek(0); t.tag == tokens::tags::comma; t = peek(0)) {
             // Consume the comma
             get();
 
@@ -125,7 +125,7 @@ namespace basilisk::parser {
         // Expression4 -> DOUBLE_LITERAL, LPAR Expression RPAR, IDENTIFIER, IDENTIFIER LPAR (optional expression list) RPAR
 
         // Check next token
-        tokens::Token t = peek();
+        tokens::Token t = peek(0);
         if (t.tag == tokens::tags::double_literal) {
             // Double literal -> return contents as literal expression
 
@@ -162,7 +162,7 @@ namespace basilisk::parser {
             ast::Identifier identifier = get().content;
 
             // Peek at the next token
-            if (peek().tag == tokens::tags::lpar) {
+            if (peek(0).tag == tokens::tags::lpar) {
                 // LPAR -> either RPAR or expression list RPAR
 
                 // Consume token
@@ -170,7 +170,7 @@ namespace basilisk::parser {
 
                 // Peek at the next token
                 std::vector<std::unique_ptr<ast::Expression>> expression_list;
-                if (peek().tag != tokens::tags::rpar) {
+                if (peek(0).tag != tokens::tags::rpar) {
                     // Not RPAR -> parse expression list
                     expression_list = parse_exp_list();
                 }   // RPAR -> expression list may remain empty
@@ -199,7 +199,7 @@ namespace basilisk::parser {
         // Expression3 -> Expression4 or MINUS Expression3
 
         // Check for operator
-        if (peek().tag == tokens::tags::minus) {
+        if (peek(0).tag == tokens::tags::minus) {
             // Minus -> negate rhs
 
             // Consume operator
@@ -228,7 +228,7 @@ namespace basilisk::parser {
         auto exp3 = parse_exp3();
 
         // Check for operator
-        tokens::Token t = peek();
+        tokens::Token t = peek(0);
         if (t.tag == tokens::tags::star) {
             // Star -> combine with a rhs
 
@@ -269,7 +269,7 @@ namespace basilisk::parser {
         auto exp2 = parse_exp2();
 
         // Check for operator
-        tokens::Token t = peek();
+        tokens::Token t = peek(0);
         if (t.tag == tokens::tags::plus) {
             // Plus -> combine with a rhs
 
@@ -310,7 +310,7 @@ namespace basilisk::parser {
         auto exp1 = parse_exp1();
 
         // Check for modulo operator
-        if (peek().tag == tokens::tags::percent) {
+        if (peek(0).tag == tokens::tags::percent) {
             // Present -> combine with a rhs
 
             // Consume operator
@@ -502,7 +502,7 @@ namespace basilisk::parser {
      */
     std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek) {
         // Definition -> expecting IDENTIFIER followed by LPAR for function definition, ASSIGN for variable definition
-        tokens::Token t = peek();
+        tokens::Token t = peek(0);
         if (t.tag == tokens::tags::lpar) {
             // Function definition
             return parse_definition_func(get, peek);
@@ -532,7 +532,7 @@ namespace basilisk::parser {
         std::vector<std::unique_ptr<ast::Definition>> definitions{};
 
         // Try to gather definitions until END
-        for (tokens::Token t = peek(); t.tag != tokens::tags::end_of_input; t = peek()) {
+        for (tokens::Token t = peek(0); t.tag != tokens::tags::end_of_input; t = peek(0)) {
             // All definitions start with an identifier
             if (t.tag == tokens::tags::identifier) {
                 // Consume definition

@@ -33,8 +33,8 @@ namespace basilisk::parser {
 
     //! Input get function type - no arguments and return a single character
     typedef std::function<tokens::Token ()> get_function_t;
-    //! Input peek function type - no arguments and return a single character
-    typedef std::function<tokens::Token ()> peek_function_t;
+    //! Input peek function type - one input (offset to peek at with next being `0`) and return a single character
+    typedef std::function<tokens::Token (unsigned)> peek_function_t;
 
     ast::Program parse(const get_function_t &get, const peek_function_t &peek);
 
