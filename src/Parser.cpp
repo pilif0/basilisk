@@ -394,6 +394,69 @@ namespace basilisk::parser {
     }
 
     /**
+     * \brief Parse Statement from an input token buffer
+     *
+     * \param get Function to get the next input token
+     * \param peek Function to peek at the next input token
+     * \return Pointer to resulting Statement node
+     */
+    std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek) {
+        // Statement -> expecting RETURN Expression SEMICOLON, VariableDefinition, or Expression SEMICOLON
+
+        // Check first token
+        tokens::Token t = peek(0);
+        if (t.tag == tokens::tags::kw_return) {
+            // RETURN -> ReturnStatement
+
+            // Consume tag
+            get();
+
+            // Parse Expression
+            auto expression = ExpressionParser(get, peek).parse_expression();
+
+            // Check SEMICOLON
+            if (t.tag == tokens::tags::semicolon) {
+                // Present -> consume
+                get();
+            } else {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Return Statement and expecting SEMICOLON.";
+                throw ParserException(message.str());
+            }
+
+            // Return result
+            return std::make_unique<ast::ReturnStatement>(expression);
+        } else if (t.tag == tokens::tags::identifier) {
+            // IDENTIFIER -> VariableDefinition or StandaloneStatement
+
+            // Check second token
+            if (peek(1).tag == tokens::tags::assign) {
+                // ASSIGN -> VariableDefinition (Expression cannot contain ASSIGN)
+
+                return parse_definition_var(get, peek);
+            } else {
+                // Otherwise -> StandaloneStatement (VariableDefinition requires ASSIGN)
+
+                // Parse expression
+                auto expression = ExpressionParser(get, peek).parse_expression();
+
+                // Return StandaloneStatement
+                return std::make_unique<ast::StandaloneStatement>(expression);
+            }
+        } else {
+            // Otherwise -> StandaloneStatement
+
+            // Parse expression
+            auto expression = ExpressionParser(get, peek).parse_expression();
+
+            // Return StandaloneStatement
+            return std::make_unique<ast::StandaloneStatement>(expression);
+        }
+    }
+
+    /**
      * \brief Parse Function Definition from an input token buffer
      *
      * \param get Function to get the next input token
@@ -472,8 +535,17 @@ namespace basilisk::parser {
         }
 
         // Body
-        //TODO
-        std::vector<ast::Statement> body;
+        std::vector<std::unique_ptr<ast::Statement>> body;
+        {
+            // Gather statements until right bracket
+            for (tokens::Token t = peek(0); t.tag != tokens::tags::rbrac; t = peek(0)) {
+                // Parse statement
+                auto statement = parse_statement(get, peek);
+
+                // Add to body
+                body.push_back(std::move(statement));
+            }
+        }
 
         // Right bracket
         {
