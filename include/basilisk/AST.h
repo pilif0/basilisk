@@ -262,9 +262,9 @@ namespace basilisk::ast {
             //! Arguments of the function in order of declaration
             const std::vector<Identifier> arguments;
             //! Non-empty block of statements acting as the function body
-            const std::vector<Statement> body;
+            const std::vector<std::unique_ptr<Statement>> body;
 
-            FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<Statement> body)
+            FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
                 : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
     };
 
