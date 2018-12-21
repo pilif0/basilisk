@@ -8,6 +8,8 @@
 #include <basilisk/Tokens.h>
 #include <basilisk/AST.h>
 
+namespace exp = basilisk::ast::expressions;
+
 #include <vector>
 #include <sstream>
 #include <memory>
@@ -17,6 +19,311 @@
 //TODO improve reporting of unexpected tokens (might require a substantial redesign to have sufficient information)
 //TODO expose more functions in interface to enable partial parsing and testing?
 namespace basilisk::parser {
+
+    /** \class ExpressionParser
+     * \brief Parser dedicated to expressions
+     *
+     * Dedicated parser for expressions.
+     * This class is required due to the cyclic dependencies arising from nested expressions.
+     * Additionally it groups expression-specific parsing together.
+     */
+    class ExpressionParser {
+        private:
+            //! Function to get the next input token
+            const get_function_t &get;
+            //! Function to peek at the next input token
+            const peek_function_t &peek;
+
+            std::unique_ptr<exp::ParExpression> parse_exp_par();
+            std::vector<std::unique_ptr<ast::Expression>> parse_exp_list();
+            std::unique_ptr<exp::Expression4> parse_exp4();
+            std::unique_ptr<exp::Expression3> parse_exp3();
+            std::unique_ptr<exp::Expression2> parse_exp2();
+            std::unique_ptr<exp::Expression1> parse_exp1();
+        public:
+            /**
+             * \brief Construct an ExpressionParser on an input token buffer
+             *
+             * \param get Function to get the next input token
+             * \param peek Function to peek at the next input token
+             */
+            ExpressionParser(const get_function_t &get, const peek_function_t &peek)
+                : get(get), peek(peek) {}
+
+            std::unique_ptr<ast::Expression> parse_expression();
+    };
+
+    //--- Start ExpressionParser implementation
+    /**
+     * \brief Parse ParExpression from an input token buffer
+     *
+     * \return Pointer to resulting ParExpression node
+     */
+    std::unique_ptr<exp::ParExpression> ExpressionParser::parse_exp_par() {
+        // Parenthesised expression -> expecting LPAR Expression RPAR
+
+        // Check starting LPAR
+        if (peek().tag != tokens::tags::lpar) {
+            // Unexpected token
+            //TODO test
+            std::ostringstream message;
+            message << "Unexpected token " << peek() << " when parsing ParExpression and expecting LPAR.";
+            throw ParserException(message.str());
+        }
+
+        // Parse contained Expression
+        auto expression = parse_expression();
+
+        // Check for closing RPAR
+        if (peek().tag != tokens::tags::rpar) {
+            // Unexpected token
+            //TODO test
+            std::ostringstream message;
+            message << "Unexpected token " << peek() << " when parsing ParExpression and expecting RPAR.";
+            throw ParserException(message.str());
+        }
+
+        return std::make_unique<exp::ParExpression>(expression);
+    }
+
+    /**
+     * \brief Parse list of Expressions from an input token buffer
+     *
+     * \return Vector of pointers to resulting Expression nodes
+     */
+    std::vector<std::unique_ptr<ast::Expression>> ExpressionParser::parse_exp_list() {
+        // Expression list -> expecting one or more Expressions separated by COMMA
+
+        // Prepare result
+        std::vector<std::unique_ptr<ast::Expression>> result;
+
+        // Parse first Expression
+        result.push_back(parse_expression());
+
+        // On each following comma, parse another one
+        for (tokens::Token t = peek(); t.tag == tokens::tags::comma; t = peek()) {
+            // Consume the comma
+            get();
+
+            // Parse the Expression
+            result.push_back(parse_expression());
+        }
+
+        // Not a comma -> end
+        return result;
+    }
+
+    /**
+     * \brief Parse Expression4 from an input token buffer
+     *
+     * \return Pointer to resulting Expression4 node
+     */
+    std::unique_ptr<exp::Expression4> ExpressionParser::parse_exp4() {
+        // Expression4 -> DOUBLE_LITERAL, LPAR Expression RPAR, IDENTIFIER, IDENTIFIER LPAR (optional expression list) RPAR
+
+        // Check next token
+        tokens::Token t = peek();
+        if (t.tag == tokens::tags::double_literal) {
+            // Double literal -> return contents as literal expression
+
+            // Consume token
+            get();
+
+            // Parse value
+            double value;
+            try {
+                value = std::stod(t.content);
+            } catch (const std::invalid_argument &/*e*/) {
+                // Value cannot be parsed
+                //TODO test
+                std::ostringstream message;
+                message << "Double literal \'" << t.content << "\' cannot be parsed into a double value.";
+                throw ParserException(message.str());
+            } catch (const std::out_of_range &/*e*/) {
+                // Value out of range
+                //TODO test
+                std::ostringstream message;
+                message << "Double literal \'" << t.content << "\' is out of the range of double.";
+                throw ParserException(message.str());
+            }
+
+            // Return DoubleLitExpression
+            return std::make_unique<exp::DoubleLitExpression>(value);
+        } else if (t.tag == tokens::tags::lpar) {
+            // LPAR -> parse and return the ParExpression
+            return parse_exp_par();
+        } else if (t.tag == tokens::tags::identifier) {
+            // IDENTIFIER -> either IDENTIFIER or function call
+
+            // Unpack and consume identifier
+            ast::Identifier identifier = get().content;
+
+            // Peek at the next token
+            if (peek().tag == tokens::tags::lpar) {
+                // LPAR -> either RPAR or expression list RPAR
+
+                // Consume token
+                get();
+
+                // Peek at the next token
+                std::vector<std::unique_ptr<ast::Expression>> expression_list;
+                if (peek().tag != tokens::tags::rpar) {
+                    // Not RPAR -> parse expression list
+                    expression_list = parse_exp_list();
+                }   // RPAR -> expression list may remain empty
+
+                // Return FuncExpression
+                return std::make_unique<exp::FuncExpression>(identifier, expression_list);
+            } else {
+                // Was just identifier
+                return std::make_unique<exp::IdentifierExpression>(identifier);
+            }
+        } else {
+            // Otherwise -> unexpected token
+            //TODO test
+            std::ostringstream message;
+            message << "Unexpected token " << t << " when parsing Expression(4) and expecting DOUBLE_LITERAL, LPAR or IDENTIFIER.";
+            throw ParserException(message.str());
+        }
+    }
+
+    /**
+     * \brief Parse Expression3 from an input token buffer
+     *
+     * \return Pointer to resulting Expression3 node
+     */
+    std::unique_ptr<exp::Expression3> ExpressionParser::parse_exp3() {
+        // Expression3 -> Expression4 or MINUS Expression3
+
+        // Check for operator
+        if (peek().tag == tokens::tags::minus) {
+            // Minus -> negate rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp3 = parse_exp3();
+
+            // Return MulExpression
+            return std::make_unique<exp::NegExpression>(exp3);
+        } else {
+            // Absent -> parse ex Expression4
+            return parse_exp4();
+        }
+    }
+
+    /**
+     * \brief Parse Expression2 from an input token buffer
+     *
+     * \return Pointer to resulting Expression2 node
+     */
+    std::unique_ptr<exp::Expression2> ExpressionParser::parse_exp2() {
+        // Expression2 -> Expression3 with optional (STAR or SLASH) Expression2
+
+        // Expression3
+        auto exp3 = parse_exp3();
+
+        // Check for operator
+        tokens::Token t = peek();
+        if (t.tag == tokens::tags::star) {
+            // Star -> combine with a rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp2 = parse_exp2();
+
+            // Return MulExpression
+            return std::make_unique<exp::MulExpression>(exp3, exp2);
+        } else if (t.tag == tokens::tags::slash) {
+            // Minus -> combine with a rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp2 = parse_exp2();
+
+            // Return DivExpression
+            return std::make_unique<exp::DivExpression>(exp3, exp2);
+        } else {
+            // Absent -> return just the lhs
+            return exp3;
+        }
+    }
+
+    /**
+     * \brief Parse Expression1 from an input token buffer
+     *
+     * \return Pointer to resulting Expression1 node
+     */
+    std::unique_ptr<exp::Expression1> ExpressionParser::parse_exp1() {
+        // Expression1 -> Expression2 with optional (PLUS or MINUS) Expression1
+
+        // Expression2
+        auto exp2 = parse_exp2();
+
+        // Check for operator
+        tokens::Token t = peek();
+        if (t.tag == tokens::tags::plus) {
+            // Plus -> combine with a rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp1 = parse_exp1();
+
+            // Return SumExpression
+            return std::make_unique<exp::SumExpression>(exp2, exp1);
+        } else if (t.tag == tokens::tags::minus) {
+            // Minus -> combine with a rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp1 = parse_exp1();
+
+            // Return SubExpression
+            return std::make_unique<exp::SubExpression>(exp2, exp1);
+        } else {
+            // Absent -> return just the lhs
+            return exp2;
+        }
+    }
+
+    /**
+     * \brief Parse Expression from an input token buffer
+     *
+     * \return Pointer to resulting Expression node
+     */
+    std::unique_ptr<ast::Expression> ExpressionParser::parse_expression() {
+        // Expression -> Expression1 with optional PERCENT Expression
+
+        // Expression1
+        auto exp1 = parse_exp1();
+
+        // Check for modulo operator
+        if (peek().tag == tokens::tags::percent) {
+            // Present -> combine with a rhs
+
+            // Consume operator
+            get();
+
+            // Parse rhs
+            auto exp = parse_expression();
+
+            // Return ModExpression
+            return std::make_unique<exp::ModExpression>(exp1, exp);
+        } else {
+            // Absent -> return just the lhs
+            return exp1;
+        }
+    }
+    //--- End ExpressionParser implementation
 
     /**
      * \brief Parse Function Definition from an input token buffer
@@ -163,8 +470,7 @@ namespace basilisk::parser {
         }
 
         // Value expression
-        //TODO
-        ast::Expression val;
+        auto val = ExpressionParser(get, peek).parse_expression();
 
         // Semicolon
         {
