@@ -148,9 +148,9 @@ namespace basilisk::ast {
          */
         class NegExpression : public Expression3 {
             public:
-                const std::unique_ptr<Expression4> x;
+                const std::unique_ptr<Expression3> x;
 
-                explicit NegExpression(std::unique_ptr<Expression4> x)
+                explicit NegExpression(std::unique_ptr<Expression3> x)
                     : x(std::move(x)) {}
         };
 
