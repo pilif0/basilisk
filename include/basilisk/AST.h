@@ -1,9 +1,3 @@
-#include <utility>
-
-#include <utility>
-
-#include <utility>
-
 /** \file AST.h
  * Abstract Syntax Tree definitions
  *
@@ -19,6 +13,7 @@
 //TODO review usage of std::move once stable
 //TODO add docs to constructors
 //TODO should invariants (e.g. at least one definition in program) be checked here or in parser?
+//TODO determine whether definition order in program should matter
 //! Abstract Syntax Tree definitions
 namespace basilisk::ast {
     /** \addtogroup AST
@@ -29,7 +24,23 @@ namespace basilisk::ast {
      * @{
      */
 
-    //TODO: extract a base class
+    /** \class Node
+     * \brief Base class for all AST nodes
+     */
+    class Node {
+        protected:
+            Node() = default;
+        public:
+            /**
+             * \brief Whether this node is equal to another
+             *
+             * \param other Node to compare to
+             * \return Whether the nodes are equal
+             */
+            virtual bool equals(Node *other) = 0;
+
+            virtual ~Node() = default;
+    };
 
     //! Identifiers are strings
     typedef std::string Identifier;
@@ -38,7 +49,7 @@ namespace basilisk::ast {
     /** \class Expression
      * \brief Base class for expression nodes
      */
-    class Expression {
+    class Expression : public Node {
         protected:
             Expression() = default;
     };
@@ -90,6 +101,8 @@ namespace basilisk::ast {
 
                 ModExpression(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
                     : x(std::move(x)), m(std::move(m)) {}
+
+                bool equals(Node *other) override;
         };
 
         // 1st level
@@ -103,6 +116,8 @@ namespace basilisk::ast {
 
                 SumExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+
+                bool equals(Node *other) override;
         };
 
         /** \class SubExpression
@@ -115,6 +130,8 @@ namespace basilisk::ast {
 
                 SubExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+
+                bool equals(Node *other) override;
         };
 
         // 2nd level
@@ -128,6 +145,8 @@ namespace basilisk::ast {
 
                 MulExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+
+                bool equals(Node *other) override;
         };
 
         /** \class DivExpression
@@ -140,6 +159,8 @@ namespace basilisk::ast {
 
                 DivExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
+
+                bool equals(Node *other) override;
         };
 
         // 3rd level
@@ -152,6 +173,8 @@ namespace basilisk::ast {
 
                 explicit NegExpression(std::unique_ptr<Expression3> x)
                     : x(std::move(x)) {}
+
+                bool equals(Node *other) override;
         };
 
         // 4th level
@@ -165,6 +188,8 @@ namespace basilisk::ast {
 
                 explicit DoubleLitExpression(double value)
                     : value(value) {}
+
+                bool equals(Node *other) override;
         };
 
         /** \class ParExpression
@@ -177,6 +202,8 @@ namespace basilisk::ast {
 
                 explicit ParExpression(std::unique_ptr<Expression> expression)
                     : expression(std::move(expression)) {}
+
+                bool equals(Node *other) override;
         };
 
         /** \class IdentifierExpression
@@ -189,6 +216,8 @@ namespace basilisk::ast {
 
                 explicit IdentifierExpression(Identifier identifier)
                     : identifier(std::move(identifier)) {}
+
+                bool equals(Node *other) override;
         };
 
         /** \class FuncExpression
@@ -203,13 +232,15 @@ namespace basilisk::ast {
 
                 FuncExpression(Identifier identifier, std::vector<std::unique_ptr<Expression>> arguments)
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
+
+                bool equals(Node *other) override;
         };
     }
 
     /** \class Statement
      * \brief Base class for statements
      */
-    class Statement {
+    class Statement : public Node {
         protected:
             Statement() = default;
     };
@@ -226,6 +257,8 @@ namespace basilisk::ast {
 
             explicit ReturnStatement(std::unique_ptr<Expression> expression)
                 : expression(std::move(expression)) {}
+
+            bool equals(Node *other) override;
     };
 
     /** \class StandaloneStatement
@@ -240,12 +273,14 @@ namespace basilisk::ast {
 
             explicit StandaloneStatement(std::unique_ptr<Expression> expression)
                 : expression(std::move(expression)) {}
+
+            bool equals(Node *other) override;
     };
 
     /** \class Definition
      * \brief Base class for both function and variable definitions
      */
-    class Definition {
+    class Definition : public Node {
         protected:
             Definition() = default;
     };
@@ -266,6 +301,8 @@ namespace basilisk::ast {
 
             FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
                 : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
+
+            bool equals(Node *other) override;
     };
 
     /** \class VariableDefinition
@@ -282,6 +319,8 @@ namespace basilisk::ast {
 
             VariableDefinition(Identifier id, std::unique_ptr<Expression> val)
                 : identifier(std::move(id)), value(std::move(val)) {}
+
+            bool equals(Node *other) override;
     };
 
     /** \class Program
@@ -290,7 +329,7 @@ namespace basilisk::ast {
      * Program node contains a set of one or more definitions.
      * Root node of the AST.
      */
-    class Program {
+    class Program : public Node{
         public:
             //! Pointers to definitions in this program in order of definition
             std::vector<std::unique_ptr<Definition>> definitions;
@@ -298,6 +337,8 @@ namespace basilisk::ast {
             //TODO make variadic?
             explicit Program(std::vector<std::unique_ptr<Definition>> defs)
                 : definitions(std::move(defs)) {}
+
+            bool equals(Node *other) override;
     };
 
     /**

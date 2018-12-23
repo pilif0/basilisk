@@ -9,10 +9,12 @@ set(basilisk_HEADERS
         "${INCL_DIR}/basilisk/Lexer.h"
         "${INCL_DIR}/basilisk/Tokens.h"
         "${INCL_DIR}/basilisk/AST.h"
+        "${INCL_DIR}/basilisk/AST_util.h"
         "${INCL_DIR}/basilisk/Parser.h")
 set(basilisk_SOURCES
         "${SRC_DIR}/Lexer.cpp"
-        "${SRC_DIR}/Parser.cpp")
+        "${SRC_DIR}/Parser.cpp"
+        "${SRC_DIR}/AST.cpp")
 
 # Copy source and header lists to parent for use in documentation
 set(basilisk_HEADERS ${basilisk_HEADERS} PARENT_SCOPE)
