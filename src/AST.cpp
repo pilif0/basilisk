@@ -226,11 +226,6 @@ namespace basilisk::ast {
             return false;
         }
 
-        // Check sizes match
-        if (definitions.size() != rhs->definitions.size()) {
-            return false;
-        }
-
         return util::vec_equals(definitions, rhs->definitions);
     }
     //--- End node equality
