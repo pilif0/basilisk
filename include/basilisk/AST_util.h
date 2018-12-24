@@ -45,7 +45,7 @@ namespace basilisk::ast::util {
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
