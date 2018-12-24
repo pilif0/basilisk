@@ -28,6 +28,11 @@ namespace basilisk::ast::util {
     }
 
     //--- Start node printing
+    template<typename T>
+    void visit(T */*node*/, std::ostringstream &stream, std::vector<node_ind> &/*queue*/, unsigned /*indent*/) {
+        stream << "- Unknown Node";
+    }
+
     void visit(expressions::ModExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent) {
         // Check for null
         if (!node) {

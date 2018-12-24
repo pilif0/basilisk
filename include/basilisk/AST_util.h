@@ -11,6 +11,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <sstream>
 
 //! AST utility functions
 namespace basilisk::ast::util {
@@ -52,14 +53,59 @@ namespace basilisk::ast::util {
 
     /**
      * \brief Helper for `print_ast` that visits a given node
-     * 
-     * \param node Pointer to node to visit 
+     *
+     * \param node Pointer to node to visit
      * \param stream Stream to which to print the node's description
      * \param queue Node queue to which to push child nodes
-     * \param indent Current indentation level
+     * \param indent Current indentation level (to be propagated incremented to children)
      */
     template <typename T>
     void visit(T* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::ModExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::SumExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::SubExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::MulExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::DivExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::NegExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::DoubleLitExpression* node, std::ostringstream &stream, std::vector<node_ind> &/*queue*/, unsigned /*indent*/);
+
+    template <>
+    void visit(expressions::ParExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(expressions::IdentifierExpression* node, std::ostringstream &stream, std::vector<node_ind> &/*queue*/, unsigned /*indent*/);
+
+    template <>
+    void visit(expressions::FuncExpression* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(ReturnStatement* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(StandaloneStatement* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(FunctionDefinition* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(VariableDefinition* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    template <>
+    void visit(Program* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
 
     /**
      * \brief Print the AST under the provided node to a string
