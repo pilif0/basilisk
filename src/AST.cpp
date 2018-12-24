@@ -234,4 +234,119 @@ namespace basilisk::ast {
         return util::vec_equals(definitions, rhs->definitions);
     }
     //--- End node equality
+
+    //--- Start node descriptions
+    std::string expressions::ModExpression::describe() { return "Modulo Expression: (1) % (2)"; }
+
+    std::string expressions::SumExpression::describe() { return "Sum Expression: (1) + (2)"; }
+
+    std::string expressions::SubExpression::describe() { return "Subtraction Expression: (1) - (2)"; }
+
+    std::string expressions::MulExpression::describe() { return "Multiplication Expression: (1) * (2)"; }
+
+    std::string expressions::DivExpression::describe() { return "Division Expression: (1) / (2)"; }
+
+    std::string expressions::NegExpression::describe() { return "Negation Expression: - (1)"; }
+
+    std::string expressions::DoubleLitExpression::describe() {
+        std::ostringstream result;
+        result << "Double Literal Expression: " << value;
+        return result.str();
+
+    }
+    std::string expressions::ParExpression::describe() { return "Parenthesised Expression: ( (1) )"; }
+
+    std::string expressions::IdentifierExpression::describe() {
+        std::ostringstream result;
+        result << "Identifier Expression: " << identifier;
+        return result.str();
+    }
+
+    std::string expressions::FuncExpression::describe() {
+        std::ostringstream result;
+        result << "Function Call Expression: " << identifier << "(...)";
+        return result.str();
+    }
+
+    std::string ReturnStatement::describe() { return "Return Statement: return (1) ;"; }
+
+    std::string StandaloneStatement::describe() { return "Standalone Statement: (1) ;"; }
+
+    std::string FunctionDefinition::describe() {
+        std::ostringstream result;
+        result << "Function Definition: " << identifier << "(";
+        bool not_first = false;
+        for (auto &c : arguments) {
+            // Print divider
+            if (not_first) {
+                result << ", ";
+            } else {
+                not_first = true;
+            }
+
+            // Print argument
+            result << c;
+        }
+        result << ")";
+        return result.str();
+    }
+
+    std::string VariableDefinition::describe() {
+        std::ostringstream result;
+        result << "Variable Definition: " << identifier << " = (1) ;";
+        return result.str();
+    }
+
+    std::string Program::describe() { return "Program:"; }
+    //--- End node descriptions
+
+    //--- Start node children
+    std::vector<Node *> expressions::ModExpression::children() { return {x.get(), m.get()}; }
+
+    std::vector<Node *> expressions::SumExpression::children() { return {lhs.get(), rhs.get()}; }
+
+    std::vector<Node *> expressions::SubExpression::children() { return {lhs.get(), rhs.get()}; }
+
+    std::vector<Node *> expressions::MulExpression::children() { return {lhs.get(), rhs.get()}; }
+
+    std::vector<Node *> expressions::DivExpression::children() { return {lhs.get(), rhs.get()}; }
+
+    std::vector<Node *> expressions::NegExpression::children() { return {x.get()}; }
+
+    std::vector<Node *> expressions::DoubleLitExpression::children() { return {}; }
+
+    std::vector<Node *> expressions::ParExpression::children() { return {expression.get()}; }
+
+    std::vector<Node *> expressions::IdentifierExpression::children() { return {}; }
+
+    std::vector<Node *> expressions::FuncExpression::children() {
+        std::vector<Node *> result;
+        for (auto &e : arguments) {
+            result.push_back(e.get());
+        }
+        return result;
+    }
+
+    std::vector<Node *> ReturnStatement::children() { return {expression.get()}; }
+
+    std::vector<Node *> StandaloneStatement::children() { return {expression.get()}; }
+
+    std::vector<Node *> FunctionDefinition::children() {
+        std::vector<Node *> result;
+        for (auto &e : body) {
+            result.push_back(e.get());
+        }
+        return result;
+    }
+
+    std::vector<Node *> VariableDefinition::children() { return {value.get()}; }
+
+    std::vector<Node *> Program::children() {
+        std::vector<Node *> result;
+        for (auto &e : definitions) {
+            result.push_back(e.get());
+        }
+        return result;
+    }
+    //--- End node children
 }

@@ -38,6 +38,18 @@ namespace basilisk::ast {
              * \return Whether the nodes are equal
              */
             virtual bool equals(Node *other) = 0;
+            /**
+             * \brief Describe this node in one line
+             *
+             * \return One line string description
+             */
+            virtual std::string describe() = 0;
+            /**
+             * \brief Vector of pointers to child nodes of this node
+             *
+             * \return Vector of pointers to Node
+             */
+            virtual std::vector<Node*> children() = 0;
 
             virtual ~Node() = default;
     };
@@ -103,6 +115,8 @@ namespace basilisk::ast {
                     : x(std::move(x)), m(std::move(m)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         // 1st level
@@ -118,6 +132,8 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         /** \class SubExpression
@@ -132,6 +148,8 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         // 2nd level
@@ -147,6 +165,8 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         /** \class DivExpression
@@ -161,6 +181,8 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         // 3rd level
@@ -175,6 +197,8 @@ namespace basilisk::ast {
                     : x(std::move(x)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         // 4th level
@@ -190,6 +214,8 @@ namespace basilisk::ast {
                     : value(value) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         /** \class ParExpression
@@ -204,6 +230,8 @@ namespace basilisk::ast {
                     : expression(std::move(expression)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         /** \class IdentifierExpression
@@ -218,6 +246,8 @@ namespace basilisk::ast {
                     : identifier(std::move(identifier)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
 
         /** \class FuncExpression
@@ -234,6 +264,8 @@ namespace basilisk::ast {
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
 
                 bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
         };
     }
 
@@ -259,6 +291,8 @@ namespace basilisk::ast {
                 : expression(std::move(expression)) {}
 
             bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
     };
 
     /** \class StandaloneStatement
@@ -275,6 +309,8 @@ namespace basilisk::ast {
                 : expression(std::move(expression)) {}
 
             bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
     };
 
     /** \class Definition
@@ -303,6 +339,8 @@ namespace basilisk::ast {
                 : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
 
             bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
     };
 
     /** \class VariableDefinition
@@ -321,6 +359,8 @@ namespace basilisk::ast {
                 : identifier(std::move(id)), value(std::move(val)) {}
 
             bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
     };
 
     /** \class Program
@@ -339,6 +379,8 @@ namespace basilisk::ast {
                 : definitions(std::move(defs)) {}
 
             bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
     };
 
     /**
