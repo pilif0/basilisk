@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 //! AST utility functions
 namespace basilisk::ast::util {
@@ -45,6 +46,28 @@ namespace basilisk::ast::util {
 
         return false;
     }
+
+    //! Pairing of node pointer with its indentation level
+    typedef std::pair<Node*, unsigned> node_ind;
+
+    /**
+     * \brief Helper for `print_ast` that visits a given node
+     * 
+     * \param node Pointer to node to visit 
+     * \param stream Stream to which to print the node's description
+     * \param queue Node queue to which to push child nodes
+     * \param indent Current indentation level
+     */
+    template <typename T>
+    void visit(T* node, std::ostringstream &stream, std::vector<node_ind> &queue, unsigned indent);
+
+    /**
+     * \brief Print the AST under the provided node to a string
+     *
+     * \param root AST root
+     * \return Resulting string
+     */
+    std::string print_ast(Node *root);
 }
 
 #endif //BASILISK_AST_UTIL_H
