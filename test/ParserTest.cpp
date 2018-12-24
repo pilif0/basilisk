@@ -72,6 +72,24 @@ struct QueuesFixture {
 
 BOOST_AUTO_TEST_SUITE(Parser)
 
+BOOST_AUTO_TEST_SUITE(equals)
+
+BOOST_AUTO_TEST_CASE( program ) {
+    // Check that two empty programs are equal
+    {
+        // Prepare two empty programs
+        std::vector<std::unique_ptr<ast::Definition>> defs_a;
+        std::vector<std::unique_ptr<ast::Definition>> defs_b;
+        ast::Program a(std::move(defs_a));
+        ast::Program b(std::move(defs_b));
+
+        // Check equals
+        BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal");
+    }
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_CASE( variable_definition ) {
     // Construct fixture
     QueuesFixture qf;
