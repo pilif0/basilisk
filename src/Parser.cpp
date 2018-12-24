@@ -603,7 +603,9 @@ namespace basilisk::parser {
      */
     std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek) {
         // Definition -> expecting IDENTIFIER followed by LPAR for function definition, ASSIGN for variable definition
-        tokens::Token t = peek(0);
+
+        // Decide by second token
+        tokens::Token t = peek(1);
         if (t.tag == tokens::tags::lpar) {
             // Function definition
             return parse_definition_func(get, peek);
