@@ -20,22 +20,7 @@ namespace basilisk::ast::util {
      * \param rhs Second pointer
      * \return `true` when the two pointers contain equal nodes or are both `null`, `false` otherwise
      */
-    bool ptr_equals(Node *lhs, Node *rhs) {
-        // Check for equal pointers
-        if (lhs == rhs) {
-            // Equal pointers -> both null or both point to the same node
-            return true;
-        }
-
-        // Check for null
-        if (!lhs || !rhs) {
-            // One is null -> distinct
-            return false;
-        }
-
-        // Check nodes
-        return lhs->equals(rhs);
-    }
+    bool ptr_equals(Node *lhs, Node *rhs);
 
     /**
      * \brief Check whether two vectors of pointers to nodes contain equal nodes in the same order
