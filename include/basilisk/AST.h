@@ -348,7 +348,7 @@ namespace basilisk::ast {
      *
      * Variable Definition contains the variable identifier and the value expression.
      */
-    class VariableDefinition : public Definition, public Statement {
+    class VariableDefinition : public Definition {
         public:
             //! Variable identifier
             Identifier identifier;
@@ -357,6 +357,24 @@ namespace basilisk::ast {
 
             VariableDefinition(Identifier id, std::unique_ptr<Expression> val)
                 : identifier(std::move(id)), value(std::move(val)) {}
+
+            bool equals(Node *other) override;
+            std::string describe() override;
+            std::vector<Node *> children() override;
+    };
+
+    /** \class VariableStatement
+     * \brief Variable Definition Statement node
+     *
+     * Variable Definition Statement node contains a variable definition.
+     */
+    // Note: this is to prevent multiple inheritance problem with VariableDefinition being both Statement and Definition
+    class VariableStatement : public Statement {
+        public:
+            std::unique_ptr<VariableDefinition> definition;
+
+            explicit VariableStatement(std::unique_ptr<VariableDefinition> definition)
+            : definition(std::move(definition)) {}
 
             bool equals(Node *other) override;
             std::string describe() override;

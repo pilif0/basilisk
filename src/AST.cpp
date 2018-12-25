@@ -216,6 +216,19 @@ namespace basilisk::ast {
         return util::ptr_equals(value.get(), rhs->value.get());
     }
 
+    bool VariableStatement::equals(Node *other) {
+        // Two variable statements are equal if their definition is equal
+
+        // Check type
+        auto rhs = dynamic_cast<VariableStatement*>(other);
+        if (!rhs) {
+            return false;
+        }
+
+        // Check value expressions
+        return util::ptr_equals(definition.get(), rhs->definition.get());
+    }
+
     //TODO adjust when determined whether definition order matters
     bool Program::equals(Node *other) {
         // Two programs are equal if they have equivalent definitions
@@ -292,6 +305,8 @@ namespace basilisk::ast {
         return result.str();
     }
 
+    std::string VariableStatement::describe() { return "Variable Definition Statement: (1) ;"; }
+
     std::string Program::describe() { return "Program:"; }
     //--- End node descriptions
 
@@ -335,6 +350,8 @@ namespace basilisk::ast {
     }
 
     std::vector<Node *> VariableDefinition::children() { return {value.get()}; }
+
+    std::vector<Node *> VariableStatement::children() { return {definition.get()}; }
 
     std::vector<Node *> Program::children() {
         std::vector<Node *> result;

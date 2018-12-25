@@ -435,7 +435,11 @@ namespace basilisk::parser {
             if (peek(1).tag == tokens::tags::assign) {
                 // ASSIGN -> VariableDefinition (Expression cannot contain ASSIGN)
 
-                return parse_definition_var(get, peek);
+                // Parse the definition
+                auto def = parse_definition_var(get, peek);
+
+                // Return variable statement
+                return std::make_unique<ast::VariableStatement>(std::move(def));
             } else {
                 // Otherwise -> StandaloneStatement (VariableDefinition requires ASSIGN)
 
