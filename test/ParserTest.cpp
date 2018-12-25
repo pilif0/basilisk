@@ -72,51 +72,51 @@ struct QueuesFixture {
 
 BOOST_AUTO_TEST_SUITE(Parser)
 
-BOOST_AUTO_TEST_SUITE(equals)
+    BOOST_AUTO_TEST_SUITE(equals)
 
-BOOST_AUTO_TEST_CASE( program ) {
-    // Check that two empty programs are equal
-    {
-        // Prepare two empty programs
-        std::vector<std::unique_ptr<ast::Definition>> defs_a;
-        std::vector<std::unique_ptr<ast::Definition>> defs_b;
-        ast::Program a(std::move(defs_a));
-        ast::Program b(std::move(defs_b));
+        BOOST_AUTO_TEST_CASE( program ) {
+            // Check that two empty programs are equal
+            {
+                // Prepare two empty programs
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                std::vector<std::unique_ptr<ast::Definition>> defs_b;
+                ast::Program a(std::move(defs_a));
+                ast::Program b(std::move(defs_b));
 
-        // Check equals
-        BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal");
+                // Check equals
+                BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal");
+            }
+        }
+
+    BOOST_AUTO_TEST_SUITE_END()
+
+    BOOST_AUTO_TEST_CASE( variable_definition ) {
+        // Construct fixture
+        QueuesFixture qf;
+        qf.input = {
+                {tags::identifier, "x"},
+                {tags::assign, {}},
+                {tags::double_literal, "1.0"},
+                {tags::semicolon, {}},
+                {tags::end_of_input, {}}
+        };
+        std::reverse(qf.input.begin(), qf.input.end());
+
+        // Correct result
+        auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+        auto var_def = std::make_unique<ast::VariableDefinition>("x", std::move(value));
+        std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
+        corr_defs.push_back(std::move(var_def));
+        ast::Program correct(std::move(corr_defs));
+        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+
+        // Parse
+        ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+
+        // Compare
+        BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
     }
-}
 
-BOOST_AUTO_TEST_SUITE_END()
-
-BOOST_AUTO_TEST_CASE( variable_definition ) {
-    // Construct fixture
-    QueuesFixture qf;
-    qf.input = {
-            {tags::identifier, "x"},
-            {tags::assign, {}},
-            {tags::double_literal, "1.0"},
-            {tags::semicolon, {}},
-            {tags::end_of_input, {}}
-    };
-    std::reverse(qf.input.begin(), qf.input.end());
-
-    // Correct result
-    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-    auto var_def = std::make_unique<ast::VariableDefinition>("x", std::move(value));
-    std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
-    corr_defs.push_back(std::move(var_def));
-    ast::Program correct(std::move(corr_defs));
-    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
-
-    // Parse
-    ast::Program result = parser::parse(qf.get_f, qf.peek_f);
-
-    // Compare
-    BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
-}
-
-//TODO case for program with no definitions
+    //TODO case for program with no definitions
 
 BOOST_AUTO_TEST_SUITE_END()
