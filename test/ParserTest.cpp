@@ -251,6 +251,50 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(double_lit_expression)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare double lit expression and identifier expression
+                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::expressions::IdentifierExpression>("x");
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Double literal expression equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare double lit expression
+                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Double literal expression equality isn't reflexive.");
+            }
+
+            // Check matching values
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare double lit expressions
+                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Matching double literal expressions not equal.");
+            }
+
+            // Check different values
+            BOOST_AUTO_TEST_CASE( different_value ) {
+                // Prepare double lit expressions
+                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Double literal expressions with different values are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
+
     BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE(parsing)
