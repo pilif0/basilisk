@@ -1195,6 +1195,61 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(variable_statement)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare variable statement and double lit expression
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::VariableStatement>(std::move(def_a));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Variable statement equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare variable statement
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::VariableStatement>(std::move(def_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Variable statement equality isn't reflexive.");
+            }
+
+            // Check matching
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare variable statements
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::VariableStatement>(std::move(def_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+                auto b = std::make_unique<ast::VariableStatement>(std::move(def_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Identical variable statements not equal.");
+            }
+
+            // Check different expression
+            BOOST_AUTO_TEST_CASE( different_expessions ) {
+                // Prepare variable statements
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::VariableStatement>(std::move(def_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto def_b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+                auto b = std::make_unique<ast::VariableStatement>(std::move(def_b));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Variable statements with different contents are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
     BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE(parsing)
