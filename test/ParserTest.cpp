@@ -175,12 +175,15 @@ BOOST_AUTO_TEST_SUITE(Parser)
             std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
             corr_defs.push_back(std::move(var_def));
             ast::Program correct(std::move(corr_defs));
-            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
 
             // Parse
             ast::Program result = parser::parse(qf.get_f, qf.peek_f);
 
             // Compare
+            if (!result.equals(&correct)) {
+                // When wrong, display correct tree
+                boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+            }
             BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
         }
 
