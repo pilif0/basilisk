@@ -941,6 +941,55 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(standalone_statement)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare standalone statement and double lit expression
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Standalone statement equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare standalone statement
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Standalone statement equality isn't reflexive.");
+            }
+
+            // Check matching
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare standalone statements
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::StandaloneStatement>(std::move(exp_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Identical standalone statements not equal.");
+            }
+
+            // Check different expression
+            BOOST_AUTO_TEST_CASE( different_expessions ) {
+                // Prepare standalone statements
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto b = std::make_unique<ast::StandaloneStatement>(std::move(exp_b));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Standalone statements with different contents are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
     BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE(parsing)
