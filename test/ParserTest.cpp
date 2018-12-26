@@ -294,6 +294,51 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(identifier_expression)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare identifier expression and double lit expression
+                auto a = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Identifier expression equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare identifier expression
+                auto a = std::make_unique<ast::expressions::IdentifierExpression>("x");
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Identifier expression equality isn't reflexive.");
+            }
+
+            // Check matching content
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare identifier expressions
+                auto a = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                auto b = std::make_unique<ast::expressions::IdentifierExpression>("x");
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Matching identifier expressions not equal.");
+            }
+
+            // Check different content
+            BOOST_AUTO_TEST_CASE( different_value ) {
+                // Prepare identifier expressions
+                auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Identifier expressions with different contents are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
+
+
 
     BOOST_AUTO_TEST_SUITE_END()
 
