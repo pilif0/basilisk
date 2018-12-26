@@ -76,6 +76,32 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE(program)
 
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare program and variable definition
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_a)));
+                ast::Program a(std::move(defs_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a.equals(b.get()), "Program equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexive ) {
+                // Prepare program
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_a)));
+                ast::Program a(std::move(defs_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a.equals(&a), "Program equality isn't reflexive.");
+            }
+
             // Check that two empty programs are equal
             BOOST_AUTO_TEST_CASE( empty ) {
                 // Prepare two empty programs
@@ -85,7 +111,79 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 ast::Program b(std::move(defs_b));
 
                 // Check equals
-                BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal");
+                BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal.");
+            }
+
+            // Check programs with matching definitions
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare programs
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_a)));
+                ast::Program a(std::move(defs_a));
+                std::vector<std::unique_ptr<ast::Definition>> defs_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_b)));
+                ast::Program b(std::move(defs_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(a.equals(&b), "Identical programs not equal.");
+            }
+
+            // Check programs with different definitions
+            BOOST_AUTO_TEST_CASE( different_definitions ) {
+                // Prepare programs
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("a", std::move(exp_a)));
+                ast::Program a(std::move(defs_a));
+                std::vector<std::unique_ptr<ast::Definition>> defs_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("b", std::move(exp_b)));
+                ast::Program b(std::move(defs_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(!a.equals(&b), "Programs with different definitions are equal.");
+            }
+
+            // Check programs with matching definitions in order
+            BOOST_AUTO_TEST_CASE( matching_order ) {
+                // Prepare programs
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_a1)));
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("y", std::move(exp_a2)));
+                ast::Program a(std::move(defs_a));
+                std::vector<std::unique_ptr<ast::Definition>> defs_b;
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_b1)));
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("y", std::move(exp_b2)));
+                ast::Program b(std::move(defs_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(a.equals(&b), "Programs with matching definitions in order are equal.");
+            }
+
+            // Check programs with matching definitions but out of order
+            BOOST_AUTO_TEST_CASE( different_order ) {
+                // Prepare programs
+                std::vector<std::unique_ptr<ast::Definition>> defs_a;
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_a1)));
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                defs_a.push_back(std::make_unique<ast::VariableDefinition>("y", std::move(exp_a2)));
+                ast::Program a(std::move(defs_a));
+                std::vector<std::unique_ptr<ast::Definition>> defs_b;
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("y", std::move(exp_b1)));
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                defs_b.push_back(std::make_unique<ast::VariableDefinition>("x", std::move(exp_b2)));
+                ast::Program b(std::move(defs_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(!a.equals(&b), "Programs with matching definitions out of order are equal.");
             }
 
         BOOST_AUTO_TEST_SUITE_END()
