@@ -450,6 +450,55 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(par_expression)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare par expression and double lit expression
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Parenthesised expression equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare par expression
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Parenthesised expression equality isn't reflexive.");
+            }
+
+            // Check matching
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare par expressions
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::expressions::ParExpression>(std::move(exp_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Identical parenthesised expressions not equal.");
+            }
+
+            // Check different expression
+            BOOST_AUTO_TEST_CASE( different_expessions ) {
+                // Prepare par expressions
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto b = std::make_unique<ast::expressions::ParExpression>(std::move(exp_b));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Parenthesised expressions with different contents are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
     BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE(parsing)
