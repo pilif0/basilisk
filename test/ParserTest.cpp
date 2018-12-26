@@ -990,6 +990,211 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(function_definition)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare function definition and double literal expression
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definition equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Function definition isn't reflexive.");
+            }
+
+            // Check matching
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(a.get()), "Identical function definitions not equal.");
+            }
+
+            // Check different identifier
+            BOOST_AUTO_TEST_CASE( different_identifier ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("g", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different identifiers are equal.");
+            }
+
+            // Check different arguments
+            BOOST_AUTO_TEST_CASE( different_argument ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"y"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different arguments are equal.");
+            }
+
+            // Check matching arguments in order
+            BOOST_AUTO_TEST_CASE( matching_argument_order ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x", "y"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x", "y"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Function definitions with identical arguments not equal.");
+            }
+
+            // Check matching arguments out of order
+            BOOST_AUTO_TEST_CASE( different_argument_order ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x", "y"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"y", "x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with arguments out of order are equal.");
+            }
+
+            // Check different body
+            BOOST_AUTO_TEST_CASE( different_body ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                body_a.push_back(std::move(sta_a));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                body_b.push_back(std::move(sta_b));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different body are equal.");
+            }
+
+            // Check matching body in order
+            BOOST_AUTO_TEST_CASE( matching_body_order ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto sta_a1 = std::make_unique<ast::ReturnStatement>(std::move(exp_a1));
+                auto sta_a2 = std::make_unique<ast::ReturnStatement>(std::move(exp_a2));
+                body_a.push_back(std::move(sta_a1));
+                body_a.push_back(std::move(sta_a2));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto sta_b1 = std::make_unique<ast::ReturnStatement>(std::move(exp_b1));
+                auto sta_b2 = std::make_unique<ast::ReturnStatement>(std::move(exp_b2));
+                body_b.push_back(std::move(sta_b1));
+                body_b.push_back(std::move(sta_b2));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Function definitions with identical body not equal.");
+            }
+
+            // Check matching body out of order
+            BOOST_AUTO_TEST_CASE( different_body_order ) {
+                // Prepare function definition
+                std::vector<ast::Identifier> arg_a{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_a;
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto sta_a1 = std::make_unique<ast::ReturnStatement>(std::move(exp_a1));
+                auto sta_a2 = std::make_unique<ast::ReturnStatement>(std::move(exp_a2));
+                body_a.push_back(std::move(sta_a1));
+                body_a.push_back(std::move(sta_a2));
+                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                std::vector<ast::Identifier> arg_b{"x"};
+                std::vector<std::unique_ptr<ast::Statement>> body_b;
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto sta_b1 = std::make_unique<ast::ReturnStatement>(std::move(exp_b1));
+                auto sta_b2 = std::make_unique<ast::ReturnStatement>(std::move(exp_b2));
+                body_b.push_back(std::move(sta_b1));
+                body_b.push_back(std::move(sta_b2));
+                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with body out of order are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
     BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE(parsing)
