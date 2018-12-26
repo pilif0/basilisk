@@ -145,7 +145,7 @@ namespace basilisk::ast {
             }
 
             // Check arguments
-            return !std::equal(arguments.begin(), arguments.end(), rhs->arguments.begin(), rhs->arguments.end());
+            return util::vec_equals(arguments, rhs->arguments);
         }
     }
 
