@@ -74,9 +74,10 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
     BOOST_AUTO_TEST_SUITE(equals)
 
-        BOOST_AUTO_TEST_CASE( program ) {
+        BOOST_AUTO_TEST_SUITE(program)
+
             // Check that two empty programs are equal
-            {
+            BOOST_AUTO_TEST_CASE( empty ) {
                 // Prepare two empty programs
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
                 std::vector<std::unique_ptr<ast::Definition>> defs_b;
@@ -86,36 +87,104 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Check equals
                 BOOST_TEST_CHECK(a.equals(&b), "Empty programs not equal");
             }
-        }
+
+        BOOST_AUTO_TEST_SUITE_END()
+
+        BOOST_AUTO_TEST_SUITE(variable_definition)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare variable definition and a variable statement
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto def_b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+                auto b = std::make_unique<ast::VariableStatement>(std::move(def_b));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Variable definition equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexive ) {
+                // Prepare definition
+                auto exp = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::VariableDefinition>("x", std::move(exp));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Variable equality isn't reflexive.");
+            }
+
+            // Check matching definitions
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare definitions
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(a->equals(b.get()), "Identical variable definitions don't match.");
+            }
+
+            // Check different identifiers
+            BOOST_AUTO_TEST_CASE( different_identifier ) {
+                // Prepare definitions
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::VariableDefinition>("a", std::move(exp_a));
+                auto b = std::make_unique<ast::VariableDefinition>("b", std::move(exp_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Variable definitions with different identifiers are equal.");
+            }
+
+            // Check different identifiers
+            BOOST_AUTO_TEST_CASE( different_expression ) {
+                // Prepare definitions
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b = std::make_unique<ast::expressions::IdentifierExpression>("identifier");
+                auto a = std::make_unique<ast::VariableDefinition>("x", std::move(exp_a));
+                auto b = std::make_unique<ast::VariableDefinition>("x", std::move(exp_b));
+
+                // Check equals
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Variable definitions with different expressions are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE_END()
 
-    BOOST_AUTO_TEST_CASE( variable_definition ) {
-        // Construct fixture
-        QueuesFixture qf;
-        qf.input = {
-                {tags::identifier, "x"},
-                {tags::assign, {}},
-                {tags::double_literal, "1.0"},
-                {tags::semicolon, {}},
-                {tags::end_of_input, {}}
-        };
-        std::reverse(qf.input.begin(), qf.input.end());
+    BOOST_AUTO_TEST_SUITE(parsing)
 
-        // Correct result
-        auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-        auto var_def = std::make_unique<ast::VariableDefinition>("x", std::move(value));
-        std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
-        corr_defs.push_back(std::move(var_def));
-        ast::Program correct(std::move(corr_defs));
-        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+        BOOST_AUTO_TEST_CASE( variable_definition ) {
+            // Construct fixture
+            QueuesFixture qf;
+            qf.input = {
+                    {tags::identifier, "x"},
+                    {tags::assign, {}},
+                    {tags::double_literal, "1.0"},
+                    {tags::semicolon, {}},
+                    {tags::end_of_input, {}}
+            };
+            std::reverse(qf.input.begin(), qf.input.end());
 
-        // Parse
-        ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+            // Correct result
+            auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+            auto var_def = std::make_unique<ast::VariableDefinition>("x", std::move(value));
+            std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
+            corr_defs.push_back(std::move(var_def));
+            ast::Program correct(std::move(corr_defs));
+            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
 
-        // Compare
-        BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
-    }
+            // Parse
+            ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+
+            // Compare
+            BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
+        }
+
+    BOOST_AUTO_TEST_SUITE_END()
 
     //TODO case for program with no definitions
 
