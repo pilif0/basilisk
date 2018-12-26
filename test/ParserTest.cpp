@@ -685,6 +685,75 @@ BOOST_AUTO_TEST_SUITE(Parser)
             }
         
         BOOST_AUTO_TEST_SUITE_END()
+        
+        BOOST_AUTO_TEST_SUITE(sub_expression)
+
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare sub expression and double lit expression
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expression equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare sub expression
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Subtraction expression equality isn't reflexive.");
+            }
+
+            // Check matching
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare sub expressions
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Identical subtraction expressions not equal.");
+            }
+
+            // Check different left hand side
+            BOOST_AUTO_TEST_CASE( different_lhs ) {
+                // Prepare sub expressions
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expressions with different left hand sides are equal.");
+            }
+
+            // Check different right hand side
+            BOOST_AUTO_TEST_CASE( different_rhs ) {
+                // Prepare sub expressions
+                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
+                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expressions with different right hand sides are equal.");
+            }
+        
+        BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE_END()
 
