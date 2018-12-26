@@ -337,8 +337,118 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_SUITE_END()
 
+        BOOST_AUTO_TEST_SUITE(func_expression)
 
+            // Check different type
+            BOOST_AUTO_TEST_CASE( different_type ) {
+                // Prepare function call expression and double lit expression
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
 
+                // Check not equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expression equal to different type.");
+            }
+
+            // Check reflexivity
+            BOOST_AUTO_TEST_CASE( reflexivity ) {
+                // Prepare func expression
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+
+                // Check reflexive property
+                BOOST_TEST_CHECK(a->equals(a.get()), "Function call expression equality isn't reflexive.");
+            }
+
+            // Check matching function calls
+            BOOST_AUTO_TEST_CASE( matching ) {
+                // Prepare func expressions
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                arg_a.push_back(std::move(exp_a));
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                std::vector<std::unique_ptr<ast::Expression>> arg_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                arg_b.push_back(std::move(exp_b));
+                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Matching function call expressions not equal.");
+            }
+
+            // Check different identifiers
+            BOOST_AUTO_TEST_CASE( different_identifier ) {
+                // Prepare func expressions
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                arg_a.push_back(std::move(exp_a));
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                std::vector<std::unique_ptr<ast::Expression>> arg_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                arg_b.push_back(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::FuncExpression>("g", std::move(arg_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with different identifiers are equal.");
+            }
+
+            // Check different arguments
+            BOOST_AUTO_TEST_CASE( different_argument ) {
+                // Prepare func expressions
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto exp_a = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                arg_a.push_back(std::move(exp_a));
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                std::vector<std::unique_ptr<ast::Expression>> arg_b;
+                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                arg_b.push_back(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with different arguments are equal.");
+            }
+
+            // Check match arguments in order
+            BOOST_AUTO_TEST_CASE( matching_order ) {
+                // Prepare func expressions
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto exp_a1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                arg_a.push_back(std::move(exp_a1));
+                auto exp_a2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                arg_a.push_back(std::move(exp_a2));
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                std::vector<std::unique_ptr<ast::Expression>> arg_b;
+                auto exp_b1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                arg_b.push_back(std::move(exp_b1));
+                auto exp_b2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                arg_b.push_back(std::move(exp_b2));
+                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(a->equals(b.get()), "Function call expressions with matching arguments in order are not equal.");
+            }
+
+            // Check match arguments out of order
+            BOOST_AUTO_TEST_CASE( different_order ) {
+                // Prepare func expressions
+                std::vector<std::unique_ptr<ast::Expression>> arg_a;
+                auto exp_a1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                arg_a.push_back(std::move(exp_a1));
+                auto exp_a2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                arg_a.push_back(std::move(exp_a2));
+                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                std::vector<std::unique_ptr<ast::Expression>> arg_b;
+                auto exp_b1 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                arg_b.push_back(std::move(exp_b1));
+                auto exp_b2 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                arg_b.push_back(std::move(exp_b2));
+                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+
+                // Check equal
+                BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with matching arguments out of order are equal.");
+            }
+
+        BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_SUITE_END()
 
