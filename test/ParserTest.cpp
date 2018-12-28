@@ -1321,6 +1321,125 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
         }
 
+        BOOST_AUTO_TEST_CASE( example_program ) {
+            // Construct fixture
+            QueuesFixture qf("pi = 3.14;\n"
+                             "\n"
+                             "get_pi() {\n"
+                             "    return pi;\n"
+                             "}\n"
+                             "\n"
+                             "write(x) {\n"
+                             "    println(x);\n"
+                             "}\n"
+                             "\n"
+                             "main() {\n"
+                             "    write(get_pi());\n"
+                             "    pi = 3.0;\n"
+                             "    write(pi);\n"
+                             "    write(1.0 + (3.0 * 4.0) % 5.0);\n"
+                             "    return 0.0;\n"
+                             "}");
+
+            // Correct result
+            std::vector<std::unique_ptr<ast::Definition>> corr_defs;
+            {
+                // pi = 3.14;
+                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3.14);
+                auto def = std::make_unique<ast::VariableDefinition>("pi", std::move(value));
+                corr_defs.push_back(std::move(def));
+            }
+            {
+                // get_pi() { return pi; }
+                auto value = std::make_unique<ast::expressions::IdentifierExpression>("pi");
+                auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                std::vector<std::unique_ptr<ast::Statement>> body;
+                body.push_back(std::move(ret));
+                std::vector<ast::Identifier> args;
+                auto def = std::make_unique<ast::FunctionDefinition>("get_pi", std::move(args), std::move(body));
+                corr_defs.push_back(std::move(def));
+            }
+            {
+                // write(x) { println(x); }
+                auto param = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                std::vector<std::unique_ptr<ast::Expression>> in_args;
+                in_args.push_back(std::move(param));
+                auto value = std::make_unique<ast::expressions::FuncExpression>("println", std::move(in_args));
+                auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                std::vector<std::unique_ptr<ast::Statement>> body;
+                body.push_back(std::move(stmt));
+                std::vector<ast::Identifier> args{"x"};
+                auto def = std::make_unique<ast::FunctionDefinition>("write", std::move(args), std::move(body));
+                corr_defs.push_back(std::move(def));
+            }
+            {
+                // main() { write(get_pi()); pi = 3.0; write(pi); write(1.0 + (3.0 * 4.0) % 5.0); return 0.0; }
+                std::vector<std::unique_ptr<ast::Statement>> body;
+                {
+                    // write(get_pi());
+                    std::vector<std::unique_ptr<ast::Expression>> in_in_args;
+                    auto param = std::make_unique<ast::expressions::FuncExpression>("get_pi", std::move(in_in_args));
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    in_args.push_back(std::move(param));
+                    auto expr = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
+                    auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+                    body.push_back(std::move(stmt));
+                }
+                {
+                    // pi = 3.0;
+                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3);
+                    auto def = std::make_unique<ast::VariableDefinition>("pi", std::move(value));
+                    auto stmt = std::make_unique<ast::VariableStatement>(std::move(def));
+                    body.push_back(std::move(stmt));
+                }
+                {
+                    // write(pi);
+                    auto param = std::make_unique<ast::expressions::IdentifierExpression>("pi");
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    in_args.push_back(std::move(param));
+                    auto value = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
+                    auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                    body.push_back(std::move(stmt));
+                }
+                {
+                    // write(1.0 + (3.0 * 4.0) % 5.0);
+                    auto exp_1 = std::make_unique<ast::expressions::DoubleLitExpression>(1);
+                    auto exp_3 = std::make_unique<ast::expressions::DoubleLitExpression>(3);
+                    auto exp_4 = std::make_unique<ast::expressions::DoubleLitExpression>(4);
+                    auto exp_5 = std::make_unique<ast::expressions::DoubleLitExpression>(5);
+                    auto mul = std::make_unique<ast::expressions::MulExpression>(std::move(exp_3), std::move(exp_4));
+                    auto par = std::make_unique<ast::expressions::ParExpression>(std::move(mul));
+                    auto sum = std::make_unique<ast::expressions::SumExpression>(std::move(exp_1), std::move(par));
+                    auto mod = std::make_unique<ast::expressions::ModExpression>(std::move(sum), std::move(exp_5));
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    in_args.push_back(std::move(mod));
+                    auto value = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
+                    auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                    body.push_back(std::move(stmt));
+                }
+                {
+                    // return 0.0;
+                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(0);
+                    auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    body.push_back(std::move(ret));
+                }
+                std::vector<ast::Identifier> args;
+                auto def = std::make_unique<ast::FunctionDefinition>("main", std::move(args), std::move(body));
+                corr_defs.push_back(std::move(def));
+            }
+            ast::Program correct(std::move(corr_defs));
+
+            // Parse
+            ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+
+            // Compare
+            if (!result.equals(&correct)) {
+                // When wrong, display correct tree
+                boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+            }
+            BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
+        }
+
     BOOST_AUTO_TEST_SUITE_END()
 
     //TODO case for program with no definitions
