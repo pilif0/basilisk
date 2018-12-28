@@ -63,8 +63,11 @@ namespace basilisk::parser {
         // Parenthesised expression -> expecting LPAR Expression RPAR
 
         // Check starting LPAR
-        if (peek(0).tag != tokens::tags::lpar) {
-            // Unexpected token
+        if (peek(0).tag == tokens::tags::lpar) {
+            // Present -> consume
+            get();
+        } else {
+            // Absent -> unexpected token
             //TODO test
             std::ostringstream message;
             message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting LPAR.";
@@ -173,7 +176,22 @@ namespace basilisk::parser {
                 if (peek(0).tag != tokens::tags::rpar) {
                     // Not RPAR -> parse expression list
                     expression_list = parse_exp_list();
-                }   // RPAR -> expression list may remain empty
+
+                    // Consume closing parenthesis
+                    if (peek(0).tag == tokens::tags::rpar) {
+                        // Present -> consume
+                        get();
+                    } else {
+                        // Absent -> error
+                        //TODO test
+                        std::ostringstream message;
+                        message << "Unexpected token " << t << " when parsing Expression(4) and expecting RPAR.";
+                        throw ParserException(message.str());
+                    }
+                } else {
+                    // RPAR -> expression list may remain empty, consume token
+                    get();
+                }
 
                 // Return FuncExpression
                 return std::make_unique<exp::FuncExpression>(identifier, std::move(expression_list));
@@ -415,7 +433,7 @@ namespace basilisk::parser {
             auto expression = ExpressionParser(get, peek).parse_expression();
 
             // Check SEMICOLON
-            if (t.tag == tokens::tags::semicolon) {
+            if (peek(0).tag == tokens::tags::semicolon) {
                 // Present -> consume
                 get();
             } else {
@@ -445,6 +463,18 @@ namespace basilisk::parser {
 
                 // Parse expression
                 auto expression = ExpressionParser(get, peek).parse_expression();
+
+                // Check SEMICOLON
+                if (peek(0).tag == tokens::tags::semicolon) {
+                    // Present -> consume
+                    get();
+                } else {
+                    // Unexpected token
+                    //TODO test
+                    std::ostringstream message;
+                    message << "Unexpected token " << t << " when parsing Standalone Statement and expecting SEMICOLON.";
+                    throw ParserException(message.str());
+                }
 
                 // Return StandaloneStatement
                 return std::make_unique<ast::StandaloneStatement>(std::move(expression));
