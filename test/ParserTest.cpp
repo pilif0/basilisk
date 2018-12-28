@@ -34,6 +34,51 @@ struct QueuesFixture {
     const parser::peek_function_t peek_f = std::bind(&QueuesFixture::peek, this, std::placeholders::_1);
 
     /**
+     * \brief Construct fixture with empty input buffer
+     */
+    QueuesFixture() {}
+
+    /**
+     * \brief Construct fixture by lexing a string
+     *
+     * /param src Source string to lex
+     */
+    explicit QueuesFixture(const std::string &src) {
+        // Prepare iterator
+        auto iterator = src.begin();
+        auto end = src.end();
+
+        // Prepare functions
+        basilisk::lexer::get_function_t lexer_get = [&iterator, &end](){
+            // Return null character when no more input
+            if (iterator >= end) {
+                return '\0';
+            }
+
+            // Pop and return character
+            auto buffer = *iterator;
+            iterator++;
+            return buffer;
+        };
+        basilisk::lexer::peek_function_t lexer_peek = [&iterator, &end](){
+            // Return null character when no more input
+            if (iterator >= end) {
+                return '\0';
+            }
+
+            // Return character
+            return *iterator;
+        };
+        basilisk::lexer::append_function_t lexer_append = [this](tokens::Token t){ this->input.push_back(t); };
+
+        // Lex
+        basilisk::lexer::lex(lexer_get, lexer_peek, lexer_append);
+
+        // Reverse order to move top of the queue to the back of the vecter
+        std::reverse(input.begin(), input.end());
+    }
+
+    /**
      * \brief Pop a token from the front of the input queue and return it
      *
      * \return Popped token, or an error token when empty
@@ -1256,15 +1301,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         BOOST_AUTO_TEST_CASE( variable_definition ) {
             // Construct fixture
-            QueuesFixture qf;
-            qf.input = {
-                    {tags::identifier, "x"},
-                    {tags::assign, {}},
-                    {tags::double_literal, "1.0"},
-                    {tags::semicolon, {}},
-                    {tags::end_of_input, {}}
-            };
-            std::reverse(qf.input.begin(), qf.input.end());
+            QueuesFixture qf("x = 1.0;");
 
             // Correct result
             auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
