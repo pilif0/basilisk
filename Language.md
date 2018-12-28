@@ -62,10 +62,10 @@ write(x) {
 
 main() {
     write(get_pi());
-    pi = 3;
+    pi = 3.0;
     write(pi);
-    write(1 + (3 * 4) % 5);
-    return 0;
+    write(1.0 + (3.0 * 4.0) % 5.0);
+    return 0.0;
 }
 ```
 
