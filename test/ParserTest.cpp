@@ -1,5 +1,5 @@
-/** \file LexerTest.cpp
- * Lexer test module
+/** \file ParserTest.cpp
+ * Parser test module
  *
  * \author Filip Smola
  */
@@ -9,11 +9,11 @@
 #include <basilisk/Tokens.h>
 #include <basilisk/AST.h>
 #include <basilisk/AST_util.h>
+#include <basilisk/Lexer.h>
 
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
-#include <basilisk/Lexer.h>
 
 namespace tokens = basilisk::tokens;
 namespace tags = basilisk::tokens::tags;
