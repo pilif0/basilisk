@@ -85,7 +85,7 @@ namespace basilisk::parser {
     std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek);
-    ast::Program parse(const get_function_t &get, const peek_function_t &peek);
+    ast::Program parse_program(const get_function_t &get, const peek_function_t &peek);
 
     /** \class ParserException
      * \brief Exception during parsing (for example an unexpected token)

@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
         ast::Program correct(std::move(corr_defs));
 
         // Parse
-        ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+        ast::Program result = parser::parse_program(qf.get_f, qf.peek_f);
 
         // Compare
         if (!result.equals(&correct)) {
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
         ast::Program correct(std::move(corr_defs));
 
         // Parse
-        ast::Program result = parser::parse(qf.get_f, qf.peek_f);
+        ast::Program result = parser::parse_program(qf.get_f, qf.peek_f);
 
         // Compare
         if (!result.equals(&correct)) {
