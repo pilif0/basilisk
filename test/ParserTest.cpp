@@ -135,8 +135,9 @@ BOOST_AUTO_TEST_SUITE(Parser)
         if (!result.equals(&correct)) {
             // When wrong, display correct tree
             boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
         }
-        BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
+        BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
     }
 
     BOOST_AUTO_TEST_CASE( example_program ) {
@@ -254,8 +255,9 @@ BOOST_AUTO_TEST_SUITE(Parser)
         if (!result.equals(&correct)) {
             // When wrong, display correct tree
             boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
         }
-        BOOST_TEST_CHECK(result.equals(&correct), "Resulting tree:\n" << ast::util::print_ast(&result));
+        BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
     }
 
     //TODO case for program with no definitions
