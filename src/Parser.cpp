@@ -20,39 +20,6 @@ namespace exp = basilisk::ast::expressions;
 //TODO expose more functions in interface to enable partial parsing and testing?
 namespace basilisk::parser {
 
-    /** \class ExpressionParser
-     * \brief Parser dedicated to expressions
-     *
-     * Dedicated parser for expressions.
-     * This class is required due to the cyclic dependencies arising from nested expressions.
-     * Additionally it groups expression-specific parsing together.
-     */
-    class ExpressionParser {
-        private:
-            //! Function to get the next input token
-            const get_function_t &get;
-            //! Function to peek at the next input token
-            const peek_function_t &peek;
-
-            std::unique_ptr<exp::ParExpression> parse_exp_par();
-            std::vector<std::unique_ptr<ast::Expression>> parse_exp_list();
-            std::unique_ptr<exp::Expression4> parse_exp4();
-            std::unique_ptr<exp::Expression3> parse_exp3();
-            std::unique_ptr<exp::Expression2> parse_exp2();
-            std::unique_ptr<exp::Expression1> parse_exp1();
-        public:
-            /**
-             * \brief Construct an ExpressionParser on an input token buffer
-             *
-             * \param get Function to get the next input token
-             * \param peek Function to peek at the next input token
-             */
-            ExpressionParser(const get_function_t &get, const peek_function_t &peek)
-                : get(get), peek(peek) {}
-
-            std::unique_ptr<ast::Expression> parse_expression();
-    };
-
     //--- Start ExpressionParser implementation
     /**
      * \brief Parse ParExpression from an input token buffer

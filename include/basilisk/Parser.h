@@ -9,12 +9,25 @@
 #include <vector>
 #include <functional>
 #include <exception>
+#include <memory>
 
 // Forward declarations
 namespace basilisk::tokens {
     struct Token;
 }
 namespace basilisk::ast {
+    class Expression;
+    namespace expressions {
+        class Expression1;
+        class Expression2;
+        class Expression3;
+        class Expression4;
+        class ParExpression;
+    }
+    class Statement;
+    class Definition;
+    class FunctionDefinition;
+    class VariableDefinition;
     class Program;
 }
 
@@ -36,6 +49,42 @@ namespace basilisk::parser {
     //! Input peek function type - one input (offset to peek at with next being `0`) and return a single character
     typedef std::function<tokens::Token (unsigned)> peek_function_t;
 
+    /** \class ExpressionParser
+     * \brief Parser dedicated to expressions
+     *
+     * Dedicated parser for expressions.
+     * This class is required due to the cyclic dependencies arising from nested expressions.
+     * Additionally it groups expression-specific parsing together.
+     */
+    class ExpressionParser {
+        private:
+            //! Function to get the next input token
+            const get_function_t &get;
+            //! Function to peek at the next input token
+            const peek_function_t &peek;
+        public:
+            /**
+             * \brief Construct an ExpressionParser on an input token buffer
+             *
+             * \param get Function to get the next input token
+             * \param peek Function to peek at the next input token
+             */
+            ExpressionParser(const get_function_t &get, const peek_function_t &peek)
+                    : get(get), peek(peek) {}
+
+            std::unique_ptr<ast::expressions::ParExpression> parse_exp_par();
+            std::vector<std::unique_ptr<ast::Expression>> parse_exp_list();
+            std::unique_ptr<ast::expressions::Expression4> parse_exp4();
+            std::unique_ptr<ast::expressions::Expression3> parse_exp3();
+            std::unique_ptr<ast::expressions::Expression2> parse_exp2();
+            std::unique_ptr<ast::expressions::Expression1> parse_exp1();
+            std::unique_ptr<ast::Expression> parse_expression();
+    };
+
+    std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek);
     ast::Program parse(const get_function_t &get, const peek_function_t &peek);
 
     /** \class ParserException
