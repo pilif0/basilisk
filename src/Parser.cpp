@@ -379,6 +379,99 @@ namespace basilisk::parser {
     }
 
     /**
+     * \brief Parse Return Statement from an input token buffer
+     *
+     * \param get Function to get the next input token
+     * \param peek Function to peek at the next input token
+     * \return Pointer to resulting Return Statement node
+     */
+    std::unique_ptr<ast::ReturnStatement> parse_statement_return(const get_function_t &get, const peek_function_t &peek) {
+        // Return Statement -> expecting RETURN Expression SEMICOLON
+
+        // RETURN
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::kw_return) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Return Statement and expecting RETURN.";
+                throw ParserException(message.str());
+            }
+        }
+
+        // Expression
+        auto expression = ExpressionParser(get, peek).parse_expression();
+
+        // SEMICOLON
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::semicolon) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Return Statement and expecting SEMICOLON.";
+                throw ParserException(message.str());
+            }
+        }
+
+        return std::make_unique<ast::ReturnStatement>(std::move(expression));
+    }
+
+    /**
+     * \brief Parse Standalone Statement from an input token buffer
+     *
+     * \param get Function to get the next input token
+     * \param peek Function to peek at the next input token
+     * \return Pointer to resulting Standalone Statement node
+     */
+    std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone(const get_function_t &get, const peek_function_t &peek) {
+        // Standalone Statement -> expecting Expression SEMICOLON
+
+        // Expression
+        auto expression = ExpressionParser(get, peek).parse_expression();
+
+        // SEMICOLON
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::semicolon) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Standalone Statement and expecting SEMICOLON.";
+                throw ParserException(message.str());
+            }
+        }
+
+        return std::make_unique<ast::StandaloneStatement>(std::move(expression));
+    }
+
+    /**
+     * \brief Parse Variable Statement from an input token buffer
+     *
+     * \param get Function to get the next input token
+     * \param peek Function to peek at the next input token
+     * \return Pointer to resulting Variable Statement node
+     */
+    std::unique_ptr<ast::VariableStatement> parse_statement_variable(const get_function_t &get, const peek_function_t &peek) {
+        // Variable Statement -> expecting Variable Definition
+
+        // Variable Definition
+        auto def = parse_definition_var(get, peek);
+
+        return std::make_unique<ast::VariableStatement>(std::move(def));
+    }
+
+    /**
      * \brief Parse Statement from an input token buffer
      *
      * \param get Function to get the next input token
@@ -392,68 +485,21 @@ namespace basilisk::parser {
         tokens::Token t = peek(0);
         if (t.tag == tokens::tags::kw_return) {
             // RETURN -> ReturnStatement
-
-            // Consume tag
-            get();
-
-            // Parse Expression
-            auto expression = ExpressionParser(get, peek).parse_expression();
-
-            // Check SEMICOLON
-            if (peek(0).tag == tokens::tags::semicolon) {
-                // Present -> consume
-                get();
-            } else {
-                // Unexpected token
-                //TODO test
-                std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Return Statement and expecting SEMICOLON.";
-                throw ParserException(message.str());
-            }
-
-            // Return result
-            return std::make_unique<ast::ReturnStatement>(std::move(expression));
+            return parse_statement_return(get, peek);
         } else if (t.tag == tokens::tags::identifier) {
             // IDENTIFIER -> VariableDefinition or StandaloneStatement
 
             // Check second token
             if (peek(1).tag == tokens::tags::assign) {
                 // ASSIGN -> VariableDefinition (Expression cannot contain ASSIGN)
-
-                // Parse the definition
-                auto def = parse_definition_var(get, peek);
-
-                // Return variable statement
-                return std::make_unique<ast::VariableStatement>(std::move(def));
+                return parse_statement_variable(get, peek);
             } else {
                 // Otherwise -> StandaloneStatement (VariableDefinition requires ASSIGN)
-
-                // Parse expression
-                auto expression = ExpressionParser(get, peek).parse_expression();
-
-                // Check SEMICOLON
-                if (peek(0).tag == tokens::tags::semicolon) {
-                    // Present -> consume
-                    get();
-                } else {
-                    // Unexpected token
-                    //TODO test
-                    std::ostringstream message;
-                    message << "Unexpected token " << t << " when parsing Standalone Statement and expecting SEMICOLON.";
-                    throw ParserException(message.str());
-                }
-
-                // Return StandaloneStatement
-                return std::make_unique<ast::StandaloneStatement>(std::move(expression));
+                return parse_statement_standalone(get, peek);
             }
         } else {
             // Otherwise -> StandaloneStatement
-
-            // Parse expression
-            auto expression = ExpressionParser(get, peek).parse_expression();
-
-            // Return StandaloneStatement
-            return std::make_unique<ast::StandaloneStatement>(std::move(expression));
+            return parse_statement_standalone(get, peek);
         }
     }
 

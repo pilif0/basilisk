@@ -25,6 +25,9 @@ namespace basilisk::ast {
         class ParExpression;
     }
     class Statement;
+    class ReturnStatement;
+    class StandaloneStatement;
+    class VariableStatement;
     class Definition;
     class FunctionDefinition;
     class VariableDefinition;
@@ -82,6 +85,9 @@ namespace basilisk::parser {
     };
 
     std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::ReturnStatement> parse_statement_return(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone(const get_function_t &get, const peek_function_t &peek);
+    std::unique_ptr<ast::VariableStatement> parse_statement_variable(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek);
