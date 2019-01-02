@@ -23,6 +23,9 @@ namespace basilisk::ast {
         class Expression3;
         class Expression4;
         class ParExpression;
+        class DoubleLitExpression;
+        class FuncExpression;
+        class IdentifierExpression;
     }
     class Statement;
     class ReturnStatement;
@@ -77,6 +80,9 @@ namespace basilisk::parser {
 
             std::unique_ptr<ast::expressions::ParExpression> parse_exp_par();
             std::vector<std::unique_ptr<ast::Expression>> parse_exp_list();
+            std::unique_ptr<ast::expressions::DoubleLitExpression> parse_double_lit();
+            std::unique_ptr<ast::expressions::FuncExpression> parse_func();
+            std::unique_ptr<ast::expressions::IdentifierExpression> parse_identifier();
             std::unique_ptr<ast::expressions::Expression4> parse_exp4();
             std::unique_ptr<ast::expressions::Expression3> parse_exp3();
             std::unique_ptr<ast::expressions::Expression2> parse_exp2();

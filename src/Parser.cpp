@@ -17,7 +17,6 @@ namespace exp = basilisk::ast::expressions;
 
 //TODO improve function docs
 //TODO improve reporting of unexpected tokens (might require a substantial redesign to have sufficient information)
-//TODO expose more functions in interface to enable partial parsing and testing?
 namespace basilisk::parser {
 
     //--- Start ExpressionParser implementation
@@ -87,20 +86,17 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression4 from an input token buffer
+     * \brief Parse Double Literal Expression from an input token buffer
      *
-     * \return Pointer to resulting Expression4 node
+     * \return Pointers to the resulting Double Literal Expression node
      */
-    std::unique_ptr<exp::Expression4> ExpressionParser::parse_exp4() {
-        // Expression4 -> DOUBLE_LITERAL, LPAR Expression RPAR, IDENTIFIER, IDENTIFIER LPAR (optional expression list) RPAR
+    std::unique_ptr<ast::expressions::DoubleLitExpression> ExpressionParser::parse_double_lit() {
+        // Double Literal Expression -> expecting DOUBLE_LITERAL
 
-        // Check next token
-        tokens::Token t = peek(0);
+        // DOUBLE_LITERAL
+        tokens::Token t = get();
         if (t.tag == tokens::tags::double_literal) {
-            // Double literal -> return contents as literal expression
-
-            // Consume token
-            get();
+            // DOUBLE_LITERAL -> parse contents and return
 
             // Parse value
             double value;
@@ -122,49 +118,138 @@ namespace basilisk::parser {
 
             // Return DoubleLitExpression
             return std::make_unique<exp::DoubleLitExpression>(value);
+        } else {
+            // Unexpected token
+            //TODO test
+            std::ostringstream message;
+            message << "Unexpected token " << peek(0) << " when parsing DoubleLitExpression and expecting DOUBLE_LITERAL.";
+            throw ParserException(message.str());
+        }
+    }
+
+    /**
+     * \brief Parse Function Call Expression from an input token buffer
+     *
+     * \return Pointers to the resulting Function Call Expression node
+     */
+    std::unique_ptr<ast::expressions::FuncExpression> ExpressionParser::parse_func() {
+        // Function Call Expression -> expecting IDENTIFIER LPAR (optional expression list) RPAR
+
+        // Identifier
+        std::string id;
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::identifier) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Function Call Expression and expecting IDENTIFIER.";
+                throw ParserException(message.str());
+            }
+
+            // Extract content
+            id = t.content;
+        }
+
+        // Left parenthesis
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::lpar) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Function Call Expression and expecting LPAR.";
+                throw ParserException(message.str());
+            }
+        }
+
+        // Arguments
+        std::vector<std::unique_ptr<ast::Expression>> arguments;
+        if (peek(0).tag != tokens::tags::rpar) {
+            // Not RPAR -> parse expression list
+            arguments = parse_exp_list();
+        }
+
+        // Right parenthesis
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::rpar) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Function Call Expression and expecting RPAR.";
+                throw ParserException(message.str());
+            }
+        }
+
+        return std::make_unique<exp::FuncExpression>(id, std::move(arguments));
+    }
+
+    /**
+     * \brief Parse Identifier Expression from an input token buffer
+     *
+     * \return Pointers to the resulting Identifier Expression node
+     */
+    std::unique_ptr<ast::expressions::IdentifierExpression> ExpressionParser::parse_identifier() {
+        // Identifier Expression -> expecting IDENTIFIER
+
+        // Identifier
+        std::string id;
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::identifier) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Identifier Expression and expecting IDENTIFIER.";
+                throw ParserException(message.str());
+            }
+
+            // Extract content
+            id = t.content;
+        }
+
+        return std::make_unique<exp::IdentifierExpression>(id);
+    }
+
+    /**
+     * \brief Parse Expression4 from an input token buffer
+     *
+     * \return Pointer to resulting Expression4 node
+     */
+    std::unique_ptr<exp::Expression4> ExpressionParser::parse_exp4() {
+        // Expression4 -> DOUBLE_LITERAL, LPAR Expression RPAR, IDENTIFIER, IDENTIFIER LPAR (optional expression list) RPAR
+
+        // Check next token
+        tokens::Token t = peek(0);
+        if (t.tag == tokens::tags::double_literal) {
+            // Double literal
+            return parse_double_lit();
         } else if (t.tag == tokens::tags::lpar) {
             // LPAR -> parse and return the ParExpression
             return parse_exp_par();
         } else if (t.tag == tokens::tags::identifier) {
             // IDENTIFIER -> either IDENTIFIER or function call
 
-            // Unpack and consume identifier
-            ast::Identifier identifier = get().content;
-
             // Peek at the next token
-            if (peek(0).tag == tokens::tags::lpar) {
-                // LPAR -> either RPAR or expression list RPAR
-
-                // Consume token
-                get();
-
-                // Peek at the next token
-                std::vector<std::unique_ptr<ast::Expression>> expression_list;
-                if (peek(0).tag != tokens::tags::rpar) {
-                    // Not RPAR -> parse expression list
-                    expression_list = parse_exp_list();
-
-                    // Consume closing parenthesis
-                    if (peek(0).tag == tokens::tags::rpar) {
-                        // Present -> consume
-                        get();
-                    } else {
-                        // Absent -> error
-                        //TODO test
-                        std::ostringstream message;
-                        message << "Unexpected token " << t << " when parsing Expression(4) and expecting RPAR.";
-                        throw ParserException(message.str());
-                    }
-                } else {
-                    // RPAR -> expression list may remain empty, consume token
-                    get();
-                }
-
-                // Return FuncExpression
-                return std::make_unique<exp::FuncExpression>(identifier, std::move(expression_list));
+            if (peek(1).tag == tokens::tags::lpar) {
+                // LPAR -> Function Call Expression
+                return parse_func();
             } else {
-                // Was just identifier
-                return std::make_unique<exp::IdentifierExpression>(identifier);
+                // Otherwise -> Identifier Expression
+                return parse_identifier();
             }
         } else {
             // Otherwise -> unexpected token
