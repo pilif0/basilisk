@@ -17,6 +17,7 @@ namespace exp = basilisk::ast::expressions;
 
 //TODO improve function docs
 //TODO improve reporting of unexpected tokens (might require a substantial redesign to have sufficient information)
+//TODO add recognition for error tokens (currently usually picked up as unexpected tokens)
 namespace basilisk::parser {
 
     //--- Start ExpressionParser implementation
@@ -768,7 +769,7 @@ namespace basilisk::parser {
      * \return Resulting Program node
      */
     ast::Program ProgramParser::program() {
-        // Root -> in Program node -> expecting set of variable and function definitions
+        // Program -> expecting non-empty set of variable and function definitions
         std::vector<std::unique_ptr<ast::Definition>> definitions{};
 
         // Try to gather definitions until END
@@ -779,13 +780,11 @@ namespace basilisk::parser {
                 definitions.push_back(DefinitionParser(get, peek).definition());
             } else if (t.tag == tokens::tags::error) {
                 // Lexer error
-                //TODO test
                 std::ostringstream message;
                 message << "Lexer error: " << t.content;
                 throw ParserException(message.str());
             } else {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Program and expecting IDENTIFIER as start of Definition.";
                 throw ParserException(message.str());
@@ -795,7 +794,6 @@ namespace basilisk::parser {
 
         // There has to be at least one definition
         if (definitions.empty()) {
-            //TODO test
             throw ParserException("Program has to have at least one definition.");
         }
 

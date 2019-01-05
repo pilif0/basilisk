@@ -39,7 +39,7 @@ struct QueuesFixture {
     QueuesFixture() {}
 
     /**
-     * \brief Construct fixture by lexing a string
+     * \brief Construct fixture by lexing a string (ignoring any exceptions raised)
      *
      * /param src Source string to lex
      */
@@ -72,7 +72,9 @@ struct QueuesFixture {
         basilisk::lexer::append_function_t lexer_append = [this](tokens::Token t){ this->input.push_back(t); };
 
         // Lex
-        basilisk::lexer::lex(lexer_get, lexer_peek, lexer_append);
+        try {
+            basilisk::lexer::lex(lexer_get, lexer_peek, lexer_append);
+        } catch (std::exception &/*e*/) {}
 
         // Reverse order to move top of the queue to the back of the vecter
         std::reverse(input.begin(), input.end());
@@ -194,6 +196,74 @@ BOOST_AUTO_TEST_SUITE(Parser)
         BOOST_AUTO_TEST_SUITE_END()
 
         BOOST_AUTO_TEST_SUITE(program)
+            // Check correct
+            BOOST_AUTO_TEST_CASE( correct ) {
+                // Construct fixture
+                QueuesFixture qf("x = 1.0;\n"
+                                 "\n"
+                                 "f() {\n"
+                                 "    return x;\n"
+                                 "}");
+
+                // Correct result
+                std::vector<std::unique_ptr<ast::Definition>> corr_defs;
+                {
+                    // x = 1.0;
+                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                    auto stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
+                    auto def = std::make_unique<ast::VariableDefinition>(std::move(stmt));
+                    corr_defs.push_back(std::move(def));
+                }
+                {
+                    // f() { return x; }
+                    auto value = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    std::vector<std::unique_ptr<ast::Statement>> body;
+                    body.push_back(std::move(ret));
+                    std::vector<ast::Identifier> args;
+                    auto def = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                    corr_defs.push_back(std::move(def));
+                }
+                ast::Program correct(std::move(corr_defs));
+
+                // Parse
+                auto result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
+
+                // Compare
+                if (!result.equals(&correct)) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
+                }
+                BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check exception on lexer error token
+            BOOST_AUTO_TEST_CASE( lexer_error ) {
+                // Construct fixture
+                QueuesFixture qf("1");
+
+                // Check exception on parse
+                BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
+            }
+
+            // Check exception on unexpected token
+            BOOST_AUTO_TEST_CASE( unexpected_token ) {
+                // Construct fixture
+                QueuesFixture qf("1.0");
+
+                // Check exception on parse
+                BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
+            }
+
+            // Check exception on no definitions
+            BOOST_AUTO_TEST_CASE( no_definitions ) {
+                // Construct fixture
+                QueuesFixture qf("");
+
+                // Check exception on parse
+                BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
+            }
         BOOST_AUTO_TEST_SUITE_END()
     BOOST_AUTO_TEST_SUITE_END()
 
@@ -317,7 +387,6 @@ BOOST_AUTO_TEST_SUITE(Parser)
         BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
     }
 
-    //TODO case for program with no definitions
     //TODO cases for consuming all closing tokens (RPAR, RBRAC, SEMICOLON, ...)
 
 BOOST_AUTO_TEST_SUITE_END()
