@@ -611,7 +611,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::identifier) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Definition and expecting IDENTIFIER.";
                 throw ParserException(message.str());
@@ -629,7 +628,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::lpar) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Definition and expecting LPAR.";
                 throw ParserException(message.str());
@@ -645,7 +643,6 @@ namespace basilisk::parser {
                 // Check the token is identifier
                 if (t.tag != tokens::tags::identifier) {
                     // Unexpected token
-                    //TODO test
                     std::ostringstream message;
                     message << "Unexpected token " << t << " when parsing Function Definition and expecting IDENTIFIER.";
                     throw ParserException(message.str());
@@ -661,7 +658,6 @@ namespace basilisk::parser {
                     get();
                 } else if (t.tag != tokens::tags::rpar) {
                     // Not RPAR -> unexpected token
-                    //TODO test
                     std::ostringstream message;
                     message << "Unexpected token " << t << " when parsing Function Definition and expecting COMMA or RPAR.";
                     throw ParserException(message.str());
@@ -677,7 +673,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::rpar) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Definition and expecting RPAR.";
                 throw ParserException(message.str());
@@ -692,7 +687,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::lbrac) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Definition and expecting LBRAC.";
                 throw ParserException(message.str());
@@ -720,7 +714,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::rbrac) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Definition and expecting RBRAC.";
                 throw ParserException(message.str());
