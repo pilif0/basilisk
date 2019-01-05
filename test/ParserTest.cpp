@@ -29,9 +29,9 @@ struct QueuesFixture {
     //! Parser input queue in reverse order (back of this is front of queue)
     token_queue_t input;
     //! Parser compatible get function reference
-    const parser::get_function_t get_f = std::bind(&QueuesFixture::get, this);
+    const parser::get_f_t get_f = std::bind(&QueuesFixture::get, this);
     //! Parser compatible peek function reference
-    const parser::peek_function_t peek_f = std::bind(&QueuesFixture::peek, this, std::placeholders::_1);
+    const parser::peek_f_t peek_f = std::bind(&QueuesFixture::peek, this, std::placeholders::_1);
 
     /**
      * \brief Construct fixture with empty input buffer
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
         ast::Program correct(std::move(corr_defs));
 
         // Parse
-        ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).parse_program();
+        ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
 
         // Compare
         if (!result.equals(&correct)) {
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
         ast::Program correct(std::move(corr_defs));
 
         // Parse
-        ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).parse_program();
+        ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
 
         // Compare
         if (!result.equals(&correct)) {

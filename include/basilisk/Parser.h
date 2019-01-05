@@ -51,9 +51,9 @@ namespace basilisk::parser {
      */
 
     //! Input get function type - no arguments and return a single character
-    typedef std::function<tokens::Token ()> get_function_t;
+    typedef std::function<tokens::Token ()> get_f_t;
     //! Input peek function type - one input (offset to peek at with next being `0`) and return a single character
-    typedef std::function<tokens::Token (unsigned)> peek_function_t;
+    typedef std::function<tokens::Token (unsigned)> peek_f_t;
 
     /** \class ExpressionParser
      * \brief Parser dedicated to expressions
@@ -64,9 +64,9 @@ namespace basilisk::parser {
     class ExpressionParser {
         private:
             //! Function to get the next input token
-            const get_function_t &get;
+            const get_f_t &get;
             //! Function to peek at the next input token
-            const peek_function_t &peek;
+            const peek_f_t &peek;
         public:
             /**
              * \brief Construct an Expression Parser on an input token buffer
@@ -74,19 +74,19 @@ namespace basilisk::parser {
              * \param get Function to get the next input token
              * \param peek Function to peek at the next input token
              */
-            ExpressionParser(const get_function_t &get, const peek_function_t &peek)
+            ExpressionParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::expressions::ParExpression> parse_exp_par();
-            std::vector<std::unique_ptr<ast::Expression>> parse_exp_list();
-            std::unique_ptr<ast::expressions::DoubleLitExpression> parse_double_lit();
-            std::unique_ptr<ast::expressions::FuncExpression> parse_func();
-            std::unique_ptr<ast::expressions::IdentifierExpression> parse_identifier();
-            std::unique_ptr<ast::expressions::Expression4> parse_exp4();
-            std::unique_ptr<ast::expressions::Expression3> parse_exp3();
-            std::unique_ptr<ast::expressions::Expression2> parse_exp2();
-            std::unique_ptr<ast::expressions::Expression1> parse_exp1();
-            std::unique_ptr<ast::Expression> parse_expression();
+            std::unique_ptr<ast::expressions::ParExpression> parenthesised();
+            std::vector<std::unique_ptr<ast::Expression>> list();
+            std::unique_ptr<ast::expressions::DoubleLitExpression> literal_double();
+            std::unique_ptr<ast::expressions::FuncExpression> function_call();
+            std::unique_ptr<ast::expressions::IdentifierExpression> identifier();
+            std::unique_ptr<ast::expressions::Expression4> expression_4();
+            std::unique_ptr<ast::expressions::Expression3> expression_3();
+            std::unique_ptr<ast::expressions::Expression2> expression_2();
+            std::unique_ptr<ast::expressions::Expression1> expression_1();
+            std::unique_ptr<ast::Expression> expression();
     };
 
     /** \class StatementParser
@@ -98,9 +98,9 @@ namespace basilisk::parser {
     class StatementParser {
         private:
             //! Function to get the next input token
-            const get_function_t &get;
+            const get_f_t &get;
             //! Function to peek at the next input token
-            const peek_function_t &peek;
+            const peek_f_t &peek;
         public:
             /**
              * \brief Construct a Statement Parser on an input token buffer
@@ -108,13 +108,13 @@ namespace basilisk::parser {
              * \param get Function to get the next input token
              * \param peek Function to peek at the next input token
              */
-            StatementParser(const get_function_t &get, const peek_function_t &peek)
+            StatementParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::ReturnStatement> parse_statement_return();
-            std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone();
-            std::unique_ptr<ast::VariableStatement> parse_statement_variable();
-            std::unique_ptr<ast::Statement> parse_statement();
+            std::unique_ptr<ast::ReturnStatement> return_kw();
+            std::unique_ptr<ast::StandaloneStatement> standalone();
+            std::unique_ptr<ast::VariableStatement> variable();
+            std::unique_ptr<ast::Statement> statement();
     };
 
     /** \class DefinitionParser
@@ -126,9 +126,9 @@ namespace basilisk::parser {
     class DefinitionParser {
         private:
             //! Function to get the next input token
-            const get_function_t &get;
+            const get_f_t &get;
             //! Function to peek at the next input token
-            const peek_function_t &peek;
+            const peek_f_t &peek;
         public:
             /**
              * \brief Construct a Definition Parser on an input token buffer
@@ -136,12 +136,12 @@ namespace basilisk::parser {
              * \param get Function to get the next input token
              * \param peek Function to peek at the next input token
              */
-            DefinitionParser(const get_function_t &get, const peek_function_t &peek)
+            DefinitionParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::VariableDefinition> parse_definition_var();
-            std::unique_ptr<ast::FunctionDefinition> parse_definition_func();
-            std::unique_ptr<ast::Definition> parse_definition();
+            std::unique_ptr<ast::VariableDefinition> variable();
+            std::unique_ptr<ast::FunctionDefinition> function();
+            std::unique_ptr<ast::Definition> definition();
     };
 
     /** \class ProgramParser
@@ -153,9 +153,9 @@ namespace basilisk::parser {
     class ProgramParser {
         private:
             //! Function to get the next input token
-            const get_function_t &get;
+            const get_f_t &get;
             //! Function to peek at the next input token
-            const peek_function_t &peek;
+            const peek_f_t &peek;
         public:
             /**
              * \brief Construct a Program Parser on an input token buffer
@@ -163,10 +163,10 @@ namespace basilisk::parser {
              * \param get Function to get the next input token
              * \param peek Function to peek at the next input token
              */
-            ProgramParser(const get_function_t &get, const peek_function_t &peek)
+            ProgramParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            ast::Program parse_program();
+            ast::Program program();
     };
 
     /** \class ParserException
