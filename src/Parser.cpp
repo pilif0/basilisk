@@ -750,7 +750,6 @@ namespace basilisk::parser {
             return variable();
         } else {
             // Unexpected token
-            //TODO test
             std::ostringstream message;
             message << "Unexpected token " << t << " when parsing Definition and expecting LPAR or ASSIGN.";
             throw ParserException(message.str());

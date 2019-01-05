@@ -20,6 +20,8 @@ namespace tags = basilisk::tokens::tags;
 namespace parser = basilisk::parser;
 namespace ast = basilisk::ast;
 
+//TODO make all check messages properly descriptive
+
 //! Fixture that sets up two queues for use as lexer input and output
 struct QueuesFixture {
     //! Token queue type
@@ -166,6 +168,59 @@ BOOST_AUTO_TEST_SUITE(Parser)
         BOOST_AUTO_TEST_SUITE_END()
 
         BOOST_AUTO_TEST_SUITE(definition)
+            // Check correctly recognising function definition
+            BOOST_AUTO_TEST_CASE( pick_function ) {
+                // Construct fixture
+                QueuesFixture qf("f() {}");
+
+                // Correct result
+                std::vector<std::unique_ptr<ast::Statement>> body;
+                std::vector<ast::Identifier> args;
+                auto correct = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+
+                // Parse
+                auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check correctly recognising variable definition
+            BOOST_AUTO_TEST_CASE( pick_variable ) {
+                // Construct fixture
+                QueuesFixture qf("x = 1.0;");
+
+                // Correct result
+                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
+                auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
+
+                // Parse
+                auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check exception on unexpected token
+            BOOST_AUTO_TEST_CASE( unexpected_token ) {
+                // Construct fixture
+                QueuesFixture qf("1.0");
+
+                // Check exception on parse
+                BOOST_CHECK_THROW(parser::DefinitionParser(qf.get_f, qf.peek_f).definition(), parser::ParserException);
+            }
+
             BOOST_AUTO_TEST_SUITE(function_definition)
             BOOST_AUTO_TEST_SUITE_END()
 
