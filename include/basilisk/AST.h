@@ -343,38 +343,37 @@ namespace basilisk::ast {
             std::vector<Node *> children() override;
     };
 
-    /** \class VariableDefinition
-     * \brief Variable Definition node
+    /** \class VariableStatement
+     * \brief Variable Definition Statement node
      *
-     * Variable Definition contains the variable identifier and the value expression.
+     * Variable Definition Statement node contains the variable identifier and the value expression.
      */
-    class VariableDefinition : public Definition {
+    class VariableStatement : public Statement {
         public:
             //! Variable identifier
             Identifier identifier;
             //! Value expression
             std::unique_ptr<Expression> value;
 
-            VariableDefinition(Identifier id, std::unique_ptr<Expression> val)
-                : identifier(std::move(id)), value(std::move(val)) {}
+            VariableStatement(Identifier id, std::unique_ptr<Expression> val)
+                    : identifier(std::move(id)), value(std::move(val)) {}
 
             bool equals(Node *other) override;
             std::string describe() override;
             std::vector<Node *> children() override;
     };
 
-    /** \class VariableStatement
-     * \brief Variable Definition Statement node
+    /** \class VariableDefinition
+     * \brief Variable Definition node
      *
-     * Variable Definition Statement node contains a variable definition.
+     * Variable Definition contains the variable statement.
      */
-    // Note: this is to prevent multiple inheritance problem with VariableDefinition being both Statement and Definition
-    class VariableStatement : public Statement {
+    class VariableDefinition : public Definition {
         public:
-            std::unique_ptr<VariableDefinition> definition;
+            std::unique_ptr<VariableStatement> statement;
 
-            explicit VariableStatement(std::unique_ptr<VariableDefinition> definition)
-            : definition(std::move(definition)) {}
+            explicit VariableDefinition(std::unique_ptr<VariableStatement> statement)
+            : statement(std::move(statement)) {}
 
             bool equals(Node *other) override;
             std::string describe() override;

@@ -123,7 +123,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
         // Correct result
         auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-        auto var_def = std::make_unique<ast::VariableDefinition>("x", std::move(value));
+        auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
+        auto var_def = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
         std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
         corr_defs.push_back(std::move(var_def));
         ast::Program correct(std::move(corr_defs));
@@ -165,7 +166,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
         {
             // pi = 3.14;
             auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3.14);
-            auto def = std::make_unique<ast::VariableDefinition>("pi", std::move(value));
+            auto stmt = std::make_unique<ast::VariableStatement>("pi", std::move(value));
+            auto def = std::make_unique<ast::VariableDefinition>(std::move(stmt));
             corr_defs.push_back(std::move(def));
         }
         {
@@ -207,8 +209,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
             {
                 // pi = 3.0;
                 auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3);
-                auto def = std::make_unique<ast::VariableDefinition>("pi", std::move(value));
-                auto stmt = std::make_unique<ast::VariableStatement>(std::move(def));
+                auto stmt = std::make_unique<ast::VariableStatement>("pi", std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
@@ -261,5 +262,6 @@ BOOST_AUTO_TEST_SUITE(Parser)
     }
 
     //TODO case for program with no definitions
+    //TODO cases for consuming all closing tokens (RPAR, RBRAC, SEMICOLON, ...)
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -406,61 +406,12 @@ namespace basilisk::parser {
      * \return Pointer to resulting Variable Definition node
      */
     std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek) {
-        // Variable definition -> expecting IDENTIFIER, ASSIGN, value STATEMENT and SEMICOLON
+        // Variable Definition -> expecting Variable Statement
 
-        // Identifier
-        std::string id;
-        {
-            // Get the token
-            tokens::Token t = get();
+        // Variable statement
+        auto stmt = parse_statement_variable(get, peek);
 
-            // Check the tag
-            if (t.tag != tokens::tags::identifier) {
-                // Unexpected token
-                //TODO test
-                std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Definition and expecting IDENTIFIER.";
-                throw ParserException(message.str());
-            }
-
-            // Extract content
-            id = t.content;
-        }
-
-        // Assign
-        {
-            // Get the token
-            tokens::Token t = get();
-
-            // Check the tag
-            if (t.tag != tokens::tags::assign) {
-                // Unexpected token
-                //TODO test
-                std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Definition and expecting ASSIGN.";
-                throw ParserException(message.str());
-            }
-        }
-
-        // Value expression
-        auto val = ExpressionParser(get, peek).parse_expression();
-
-        // Semicolon
-        {
-            // Get the token
-            tokens::Token t = get();
-
-            // Check the tag
-            if (t.tag != tokens::tags::semicolon) {
-                // Unexpected token
-                //TODO test
-                std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Definition and expecting SEMICOLON.";
-                throw ParserException(message.str());
-            }
-        }
-
-        return std::make_unique<ast::VariableDefinition>(id, std::move(val));
+        return std::make_unique<ast::VariableDefinition>(std::move(stmt));
     }
 
     /**
@@ -548,12 +499,61 @@ namespace basilisk::parser {
      * \return Pointer to resulting Variable Statement node
      */
     std::unique_ptr<ast::VariableStatement> parse_statement_variable(const get_function_t &get, const peek_function_t &peek) {
-        // Variable Statement -> expecting Variable Definition
+        // Variable statement -> expecting IDENTIFIER, ASSIGN, value expression and SEMICOLON
 
-        // Variable Definition
-        auto def = parse_definition_var(get, peek);
+        // Identifier
+        std::string id;
+        {
+            // Get the token
+            tokens::Token t = get();
 
-        return std::make_unique<ast::VariableStatement>(std::move(def));
+            // Check the tag
+            if (t.tag != tokens::tags::identifier) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Variable Statement and expecting IDENTIFIER.";
+                throw ParserException(message.str());
+            }
+
+            // Extract content
+            id = t.content;
+        }
+
+        // Assign
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::assign) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Variable Statement and expecting ASSIGN.";
+                throw ParserException(message.str());
+            }
+        }
+
+        // Value expression
+        auto val = ExpressionParser(get, peek).parse_expression();
+
+        // Semicolon
+        {
+            // Get the token
+            tokens::Token t = get();
+
+            // Check the tag
+            if (t.tag != tokens::tags::semicolon) {
+                // Unexpected token
+                //TODO test
+                std::ostringstream message;
+                message << "Unexpected token " << t << " when parsing Variable Statement and expecting SEMICOLON.";
+                throw ParserException(message.str());
+            }
+        }
+
+        return std::make_unique<ast::VariableStatement>(id, std::move(val));
     }
 
     /**

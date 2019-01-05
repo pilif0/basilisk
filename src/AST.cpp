@@ -198,11 +198,11 @@ namespace basilisk::ast {
         return util::vec_equals(body, rhs->body);
     }
 
-    bool VariableDefinition::equals(Node *other) {
-        // Two variable definitions are equal if their identifier and value expression are equal
+    bool VariableStatement::equals(Node *other) {
+        // Two variable statements are equal if their identifier and value expression are equal
 
         // Check type
-        auto rhs = dynamic_cast<VariableDefinition*>(other);
+        auto rhs = dynamic_cast<VariableStatement*>(other);
         if (!rhs) {
             return false;
         }
@@ -216,17 +216,17 @@ namespace basilisk::ast {
         return util::ptr_equals(value.get(), rhs->value.get());
     }
 
-    bool VariableStatement::equals(Node *other) {
-        // Two variable statements are equal if their definition is equal
+    bool VariableDefinition::equals(Node *other) {
+        // Two variable definitions are equal if their statements is equal
 
         // Check type
-        auto rhs = dynamic_cast<VariableStatement*>(other);
+        auto rhs = dynamic_cast<VariableDefinition*>(other);
         if (!rhs) {
             return false;
         }
 
         // Check value expressions
-        return util::ptr_equals(definition.get(), rhs->definition.get());
+        return util::ptr_equals(statement.get(), rhs->statement.get());
     }
 
     //TODO adjust when determined whether definition order matters
@@ -299,13 +299,13 @@ namespace basilisk::ast {
         return result.str();
     }
 
-    std::string VariableDefinition::describe() {
+    std::string VariableStatement::describe() {
         std::ostringstream result;
-        result << "Variable Definition: " << identifier << " = (1) ;";
+        result << "Variable Statement: " << identifier << " = (1) ;";
         return result.str();
     }
 
-    std::string VariableStatement::describe() { return "Variable Definition Statement: (1) ;"; }
+    std::string VariableDefinition::describe() { return "Variable Definition: (1) ;"; }
 
     std::string Program::describe() { return "Program:"; }
     //--- End node descriptions
@@ -349,9 +349,9 @@ namespace basilisk::ast {
         return result;
     }
 
-    std::vector<Node *> VariableDefinition::children() { return {value.get()}; }
+    std::vector<Node *> VariableStatement::children() { return {value.get()}; }
 
-    std::vector<Node *> VariableStatement::children() { return {definition.get()}; }
+    std::vector<Node *> VariableDefinition::children() { return {statement.get()}; }
 
     std::vector<Node *> Program::children() {
         std::vector<Node *> result;
