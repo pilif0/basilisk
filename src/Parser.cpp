@@ -398,22 +398,6 @@ namespace basilisk::parser {
     }
     //--- End ExpressionParser implementation
 
-    /**
-     * \brief Parse Variable Definition from an input token buffer
-     *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
-     * \return Pointer to resulting Variable Definition node
-     */
-    std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek) {
-        // Variable Definition -> expecting Variable Statement
-
-        // Variable statement
-        auto stmt = StatementParser(get, peek).parse_statement_variable();
-
-        return std::make_unique<ast::VariableDefinition>(std::move(stmt));
-    }
-
     //--- Start StatementParser implementation
     /**
      * \brief Parse Return Statement from an input token buffer
@@ -590,6 +574,23 @@ namespace basilisk::parser {
     }
     //--- End StatementParser implementation
 
+    //--- Start DefinitionParser implementation
+    /**
+     * \brief Parse Variable Definition from an input token buffer
+     *
+     * \param get Function to get the next input token
+     * \param peek Function to peek at the next input token
+     * \return Pointer to resulting Variable Definition node
+     */
+    std::unique_ptr<ast::VariableDefinition> DefinitionParser::parse_definition_var() {
+        // Variable Definition -> expecting Variable Statement
+
+        // Variable statement
+        auto stmt = StatementParser(get, peek).parse_statement_variable();
+
+        return std::make_unique<ast::VariableDefinition>(std::move(stmt));
+    }
+
     /**
      * \brief Parse Function Definition from an input token buffer
      *
@@ -597,7 +598,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Function Definition node
      */
-    std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::FunctionDefinition> DefinitionParser::parse_definition_func() {
         // Function definition -> expecting IDENTIFIER, LPAR, optional identifier list, RPAR, LBRAC, statement block and RBRAC
 
         // Identifier
@@ -735,17 +736,17 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Definition node
      */
-    std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::Definition> DefinitionParser::parse_definition() {
         // Definition -> expecting IDENTIFIER followed by LPAR for function definition, ASSIGN for variable definition
 
         // Decide by second token
         tokens::Token t = peek(1);
         if (t.tag == tokens::tags::lpar) {
             // Function definition
-            return parse_definition_func(get, peek);
+            return parse_definition_func();
         } else if (t.tag == tokens::tags::assign) {
             // Variable definition
-            return parse_definition_var(get, peek);
+            return parse_definition_var();
         } else {
             // Unexpected token
             //TODO test
@@ -754,6 +755,7 @@ namespace basilisk::parser {
             throw ParserException(message.str());
         }
     }
+    //--- End DefinitionParser implementation
 
     /**
      * \brief Parse Program from an input token buffer
@@ -773,7 +775,7 @@ namespace basilisk::parser {
             // All definitions start with an identifier
             if (t.tag == tokens::tags::identifier) {
                 // Consume definition
-                definitions.push_back(parse_definition(get, peek));
+                definitions.push_back(DefinitionParser(get, peek).parse_definition());
             } else if (t.tag == tokens::tags::error) {
                 // Lexer error
                 //TODO test

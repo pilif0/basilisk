@@ -117,9 +117,33 @@ namespace basilisk::parser {
             std::unique_ptr<ast::Statement> parse_statement();
     };
 
-    std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek);
+    /** \class DefinitionParser
+     * \brief Parser dedicated to definitions
+     *
+     * Dedicated parser for definitions.
+     * This class groups definition-specific parsing together.
+     */
+    class DefinitionParser {
+        private:
+            //! Function to get the next input token
+            const get_function_t &get;
+            //! Function to peek at the next input token
+            const peek_function_t &peek;
+        public:
+            /**
+             * \brief Construct a Definition Parser on an input token buffer
+             *
+             * \param get Function to get the next input token
+             * \param peek Function to peek at the next input token
+             */
+            DefinitionParser(const get_function_t &get, const peek_function_t &peek)
+                    : get(get), peek(peek) {}
+
+            std::unique_ptr<ast::VariableDefinition> parse_definition_var();
+            std::unique_ptr<ast::FunctionDefinition> parse_definition_func();
+            std::unique_ptr<ast::Definition> parse_definition();
+    };
+
     ast::Program parse_program(const get_function_t &get, const peek_function_t &peek);
 
     /** \class ParserException
