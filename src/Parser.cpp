@@ -654,8 +654,9 @@ namespace basilisk::parser {
                 // Check next is COMMA or RPAR
                 t = peek(0);
                 if (t.tag == tokens::tags::comma) {
-                    // COMMA -> consume
+                    // COMMA -> consume and repeek
                     get();
+                    t = peek(0);
                 } else if (t.tag != tokens::tags::rpar) {
                     // Not RPAR -> unexpected token
                     std::ostringstream message;
