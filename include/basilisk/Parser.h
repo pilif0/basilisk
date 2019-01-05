@@ -144,7 +144,30 @@ namespace basilisk::parser {
             std::unique_ptr<ast::Definition> parse_definition();
     };
 
-    ast::Program parse_program(const get_function_t &get, const peek_function_t &peek);
+    /** \class ProgramParser
+     * \brief Parser dedicated to programs
+     *
+     * Dedicated parser for programs.
+     * This class groups program-specific parsing together.
+     */
+    class ProgramParser {
+        private:
+            //! Function to get the next input token
+            const get_function_t &get;
+            //! Function to peek at the next input token
+            const peek_function_t &peek;
+        public:
+            /**
+             * \brief Construct a Program Parser on an input token buffer
+             *
+             * \param get Function to get the next input token
+             * \param peek Function to peek at the next input token
+             */
+            ProgramParser(const get_function_t &get, const peek_function_t &peek)
+                    : get(get), peek(peek) {}
+
+            ast::Program parse_program();
+    };
 
     /** \class ParserException
      * \brief Exception during parsing (for example an unexpected token)

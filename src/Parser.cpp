@@ -757,6 +757,7 @@ namespace basilisk::parser {
     }
     //--- End DefinitionParser implementation
 
+    //--- Start ProgramParser implementation
     /**
      * \brief Parse Program from an input token buffer
      *
@@ -766,7 +767,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Resulting Program node
      */
-    ast::Program parse_program(const get_function_t &get, const peek_function_t &peek) {
+    ast::Program ProgramParser::parse_program() {
         // Root -> in Program node -> expecting set of variable and function definitions
         std::vector<std::unique_ptr<ast::Definition>> definitions{};
 
@@ -801,4 +802,5 @@ namespace basilisk::parser {
         // Return the program with the gathered definitions
         return ast::Program(std::move(definitions));
     }
+    //--- End ProgramParser implementation
 }
