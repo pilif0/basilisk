@@ -465,7 +465,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::semicolon) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Standalone Statement and expecting SEMICOLON.";
                 throw ParserException(message.str());
