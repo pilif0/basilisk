@@ -157,6 +157,91 @@ BOOST_AUTO_TEST_SUITE(Parser)
         BOOST_AUTO_TEST_SUITE_END()
 
         BOOST_AUTO_TEST_SUITE(statement)
+            // Check correctly recognising return statement
+            BOOST_AUTO_TEST_CASE( pick_return ) {
+                // Construct fixture
+                QueuesFixture qf("return x;");
+
+                // Correct result
+                auto value = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                auto correct = std::make_unique<ast::ReturnStatement>(std::move(value));
+
+                // Parse
+                auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check correctly recognising variable statement
+            BOOST_AUTO_TEST_CASE( pick_variable ) {
+                // Construct fixture
+                QueuesFixture qf("x = 1.0;");
+
+                // Correct result
+                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto correct = std::make_unique<ast::VariableStatement>("x", std::move(value));
+
+                // Parse
+                auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check correctly recognising standalone statement starting with identifier
+            BOOST_AUTO_TEST_CASE( pick_standalone_identifier ) {
+                // Construct fixture
+                QueuesFixture qf("f();");
+
+                // Correct result
+                std::vector<std::unique_ptr<ast::Expression>> in_args;
+                auto expr = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+                auto correct = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+
+                // Parse
+                auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
+            // Check correctly recognising standalone statement not starting with identifier
+            BOOST_AUTO_TEST_CASE( pick_standalone ) {
+                // Construct fixture
+                QueuesFixture qf("1.0;");
+
+                // Correct result
+                auto expr = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto correct = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+
+                // Parse
+                auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
+
+                // Compare
+                if (!result->equals(correct.get())) {
+                    // When wrong, display correct tree
+                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                }
+                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+            }
+
             BOOST_AUTO_TEST_SUITE(return_kw)
             BOOST_AUTO_TEST_SUITE_END()
 
