@@ -493,7 +493,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::identifier) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Variable Statement and expecting IDENTIFIER.";
                 throw ParserException(message.str());
@@ -511,7 +510,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::assign) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Variable Statement and expecting ASSIGN.";
                 throw ParserException(message.str());
@@ -529,7 +527,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::semicolon) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Variable Statement and expecting SEMICOLON.";
                 throw ParserException(message.str());

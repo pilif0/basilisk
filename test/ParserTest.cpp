@@ -316,6 +316,53 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(variable)
+                // Check correct
+                BOOST_AUTO_TEST_CASE( correct ) {
+                    // Construct fixture
+                    QueuesFixture qf("x = 1.0;");
+
+                    // Correct result
+                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                    auto correct = std::make_unique<ast::VariableStatement>("x", std::move(value));
+
+                    // Parse
+                    auto result = parser::StatementParser(qf.get_f, qf.peek_f).variable();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check exception on unexpected token instead of identifier
+                BOOST_AUTO_TEST_CASE( unexpected_token_identifier ) {
+                    // Construct fixture
+                    QueuesFixture qf("1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                }
+
+                // Check exception on unexpected token instead of ASSIGN
+                BOOST_AUTO_TEST_CASE( unexpected_token_assign ) {
+                    // Construct fixture
+                    QueuesFixture qf("x 1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                }
+
+                // Check exception on unexpected token instead of SEMICOLON
+                BOOST_AUTO_TEST_CASE( unexpected_token_semicolon ) {
+                    // Construct fixture
+                    QueuesFixture qf("x = 1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                }
             BOOST_AUTO_TEST_SUITE_END()
         BOOST_AUTO_TEST_SUITE_END()
 
