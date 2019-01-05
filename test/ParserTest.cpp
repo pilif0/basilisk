@@ -116,27 +116,86 @@ struct QueuesFixture {
 };
 
 BOOST_AUTO_TEST_SUITE(Parser)
+    BOOST_AUTO_TEST_SUITE(individual)
+        BOOST_AUTO_TEST_SUITE(expression)
+            BOOST_AUTO_TEST_SUITE(mod)
+            BOOST_AUTO_TEST_SUITE_END()
 
-    BOOST_AUTO_TEST_CASE( variable_definition ) {
-        // Construct fixture
-        QueuesFixture qf("x = 1.0;");
+            BOOST_AUTO_TEST_SUITE(sum)
+            BOOST_AUTO_TEST_SUITE_END()
 
-        // Correct result
-        auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-        auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
-        auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
+            BOOST_AUTO_TEST_SUITE(sub)
+            BOOST_AUTO_TEST_SUITE_END()
 
-        // Parse
-        auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).variable();
+            BOOST_AUTO_TEST_SUITE(mul)
+            BOOST_AUTO_TEST_SUITE_END()
 
-        // Compare
-        if (!result->equals(correct.get())) {
-            // When wrong, display correct tree
-            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-        }
-        BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
-    }
+            BOOST_AUTO_TEST_SUITE(div)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(neg)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(literal_double)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(parenthesised)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(identifier)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(function_call)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(definition)
+            BOOST_AUTO_TEST_SUITE_END()
+        BOOST_AUTO_TEST_SUITE_END()
+
+        BOOST_AUTO_TEST_SUITE(statement)
+            BOOST_AUTO_TEST_SUITE(return_kw)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(standalone)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(variable)
+            BOOST_AUTO_TEST_SUITE_END()
+        BOOST_AUTO_TEST_SUITE_END()
+
+        BOOST_AUTO_TEST_SUITE(definition)
+            BOOST_AUTO_TEST_SUITE(function_definition)
+            BOOST_AUTO_TEST_SUITE_END()
+
+            BOOST_AUTO_TEST_SUITE(variable_definition)
+                // Check correct
+                BOOST_AUTO_TEST_CASE( correct ) {
+                    // Construct fixture
+                    QueuesFixture qf("x = 1.0;");
+
+                    // Correct result
+                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                    auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
+                    auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
+
+                    // Parse
+                    auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).variable();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+            BOOST_AUTO_TEST_SUITE_END()
+        BOOST_AUTO_TEST_SUITE_END()
+
+        BOOST_AUTO_TEST_SUITE(program)
+        BOOST_AUTO_TEST_SUITE_END()
+    BOOST_AUTO_TEST_SUITE_END()
 
     BOOST_AUTO_TEST_CASE( example_program ) {
         // Construct fixture
