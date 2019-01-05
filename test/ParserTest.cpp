@@ -124,21 +124,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
         // Correct result
         auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
         auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
-        auto var_def = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
-        std::vector<std::unique_ptr<ast::Definition>> corr_defs{};
-        corr_defs.push_back(std::move(var_def));
-        ast::Program correct(std::move(corr_defs));
+        auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
 
         // Parse
-        ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
+        auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).variable();
 
         // Compare
-        if (!result.equals(&correct)) {
+        if (!result->equals(correct.get())) {
             // When wrong, display correct tree
-            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
-            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
+            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
         }
-        BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
+        BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
     }
 
     BOOST_AUTO_TEST_CASE( example_program ) {
