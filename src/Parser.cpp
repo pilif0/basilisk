@@ -418,7 +418,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::kw_return) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Return Statement and expecting RETURN.";
                 throw ParserException(message.str());
@@ -436,7 +435,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::semicolon) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Return Statement and expecting SEMICOLON.";
                 throw ParserException(message.str());
@@ -550,7 +548,7 @@ namespace basilisk::parser {
      * \return Pointer to resulting Statement node
      */
     std::unique_ptr<ast::Statement> StatementParser::statement() {
-        // Statement -> expecting RETURN Expression SEMICOLON, VariableDefinition, or Expression SEMICOLON
+        // Statement -> expecting RETURN Expression SEMICOLON, VariableStatement, or Expression SEMICOLON
 
         // Check first token
         tokens::Token t = peek(0);
@@ -558,14 +556,14 @@ namespace basilisk::parser {
             // RETURN -> ReturnStatement
             return return_kw();
         } else if (t.tag == tokens::tags::identifier) {
-            // IDENTIFIER -> VariableDefinition or StandaloneStatement
+            // IDENTIFIER -> VariableStatement or StandaloneStatement
 
             // Check second token
             if (peek(1).tag == tokens::tags::assign) {
-                // ASSIGN -> VariableDefinition (Expression cannot contain ASSIGN)
+                // ASSIGN -> VariableStatement (Expression cannot contain ASSIGN)
                 return variable();
             } else {
-                // Otherwise -> StandaloneStatement (VariableDefinition requires ASSIGN)
+                // Otherwise -> StandaloneStatement (VariableStatement requires ASSIGN)
                 return standalone();
             }
         } else {
