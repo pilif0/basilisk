@@ -409,11 +409,12 @@ namespace basilisk::parser {
         // Variable Definition -> expecting Variable Statement
 
         // Variable statement
-        auto stmt = parse_statement_variable(get, peek);
+        auto stmt = StatementParser(get, peek).parse_statement_variable();
 
         return std::make_unique<ast::VariableDefinition>(std::move(stmt));
     }
 
+    //--- Start StatementParser implementation
     /**
      * \brief Parse Return Statement from an input token buffer
      *
@@ -421,7 +422,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Return Statement node
      */
-    std::unique_ptr<ast::ReturnStatement> parse_statement_return(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::ReturnStatement> StatementParser::parse_statement_return() {
         // Return Statement -> expecting RETURN Expression SEMICOLON
 
         // RETURN
@@ -467,7 +468,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Standalone Statement node
      */
-    std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::StandaloneStatement> StatementParser::parse_statement_standalone() {
         // Standalone Statement -> expecting Expression SEMICOLON
 
         // Expression
@@ -498,7 +499,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Variable Statement node
      */
-    std::unique_ptr<ast::VariableStatement> parse_statement_variable(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::VariableStatement> StatementParser::parse_statement_variable() {
         // Variable statement -> expecting IDENTIFIER, ASSIGN, value expression and SEMICOLON
 
         // Identifier
@@ -563,30 +564,31 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Statement node
      */
-    std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek) {
+    std::unique_ptr<ast::Statement> StatementParser::parse_statement() {
         // Statement -> expecting RETURN Expression SEMICOLON, VariableDefinition, or Expression SEMICOLON
 
         // Check first token
         tokens::Token t = peek(0);
         if (t.tag == tokens::tags::kw_return) {
             // RETURN -> ReturnStatement
-            return parse_statement_return(get, peek);
+            return parse_statement_return();
         } else if (t.tag == tokens::tags::identifier) {
             // IDENTIFIER -> VariableDefinition or StandaloneStatement
 
             // Check second token
             if (peek(1).tag == tokens::tags::assign) {
                 // ASSIGN -> VariableDefinition (Expression cannot contain ASSIGN)
-                return parse_statement_variable(get, peek);
+                return parse_statement_variable();
             } else {
                 // Otherwise -> StandaloneStatement (VariableDefinition requires ASSIGN)
-                return parse_statement_standalone(get, peek);
+                return parse_statement_standalone();
             }
         } else {
             // Otherwise -> StandaloneStatement
-            return parse_statement_standalone(get, peek);
+            return parse_statement_standalone();
         }
     }
+    //--- End StatementParser implementation
 
     /**
      * \brief Parse Function Definition from an input token buffer
@@ -701,7 +703,7 @@ namespace basilisk::parser {
             // Gather statements until right bracket
             for (tokens::Token t = peek(0); t.tag != tokens::tags::rbrac; t = peek(0)) {
                 // Parse statement
-                auto statement = parse_statement(get, peek);
+                auto statement = StatementParser(get, peek).parse_statement();
 
                 // Add to body
                 body.push_back(std::move(statement));

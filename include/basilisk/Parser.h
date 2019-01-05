@@ -59,8 +59,7 @@ namespace basilisk::parser {
      * \brief Parser dedicated to expressions
      *
      * Dedicated parser for expressions.
-     * This class is required due to the cyclic dependencies arising from nested expressions.
-     * Additionally it groups expression-specific parsing together.
+     * This class groups expression-specific parsing together.
      */
     class ExpressionParser {
         private:
@@ -70,7 +69,7 @@ namespace basilisk::parser {
             const peek_function_t &peek;
         public:
             /**
-             * \brief Construct an ExpressionParser on an input token buffer
+             * \brief Construct an Expression Parser on an input token buffer
              *
              * \param get Function to get the next input token
              * \param peek Function to peek at the next input token
@@ -90,11 +89,35 @@ namespace basilisk::parser {
             std::unique_ptr<ast::Expression> parse_expression();
     };
 
+    /** \class StatementParser
+     * \brief Parser dedicated to statements
+     *
+     * Dedicated parser for statements.
+     * This class groups statement-specific parsing together.
+     */
+    class StatementParser {
+        private:
+            //! Function to get the next input token
+            const get_function_t &get;
+            //! Function to peek at the next input token
+            const peek_function_t &peek;
+        public:
+            /**
+             * \brief Construct a Statement Parser on an input token buffer
+             *
+             * \param get Function to get the next input token
+             * \param peek Function to peek at the next input token
+             */
+            StatementParser(const get_function_t &get, const peek_function_t &peek)
+                    : get(get), peek(peek) {}
+
+            std::unique_ptr<ast::ReturnStatement> parse_statement_return();
+            std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone();
+            std::unique_ptr<ast::VariableStatement> parse_statement_variable();
+            std::unique_ptr<ast::Statement> parse_statement();
+    };
+
     std::unique_ptr<ast::VariableDefinition> parse_definition_var(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::ReturnStatement> parse_statement_return(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::StandaloneStatement> parse_statement_standalone(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::VariableStatement> parse_statement_variable(const get_function_t &get, const peek_function_t &peek);
-    std::unique_ptr<ast::Statement> parse_statement(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::FunctionDefinition> parse_definition_func(const get_function_t &get, const peek_function_t &peek);
     std::unique_ptr<ast::Definition> parse_definition(const get_function_t &get, const peek_function_t &peek);
     ast::Program parse_program(const get_function_t &get, const peek_function_t &peek);
