@@ -125,6 +125,58 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE(mod)
             BOOST_AUTO_TEST_SUITE_END()
 
+            BOOST_AUTO_TEST_SUITE(expression_1)
+                // Note: correct sum and sub recognition is taken care of by respecitve suites
+
+                // Check mixed expression sum of sub
+                BOOST_AUTO_TEST_CASE( mixed_sum_sub ) {
+                    // Construct fixture
+                    QueuesFixture qf("a + b - c");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
+                    auto rhs = std::make_unique<ast::expressions::SubExpression>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(rhs));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check mixed expression sub of sum
+                BOOST_AUTO_TEST_CASE( mixed_sub_sum ) {
+                    // Construct fixture
+                    QueuesFixture qf("a - b + c");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
+                    auto rhs = std::make_unique<ast::expressions::SumExpression>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::SubExpression>(std::move(a), std::move(rhs));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+            BOOST_AUTO_TEST_SUITE_END()
+
             BOOST_AUTO_TEST_SUITE(sum)
                 // Check correct
                 BOOST_AUTO_TEST_CASE( correct ) {
