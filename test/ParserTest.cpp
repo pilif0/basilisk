@@ -150,10 +150,104 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(function_call)
+                // Check correct with no arguments
+                BOOST_AUTO_TEST_CASE( correct_no_args ) {
+                    // Construct fixture
+                    QueuesFixture qf("f()");
+
+                    // Correct result
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check correct with one argument
+                BOOST_AUTO_TEST_CASE( correct_one_arg ) {
+                    // Construct fixture
+                    QueuesFixture qf("f(x)");
+
+                    // Correct result
+                    auto arg = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    in_args.push_back(std::move(arg));
+                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check correct with multiple arguments
+                BOOST_AUTO_TEST_CASE( correct_multiple_args ) {
+                    // Construct fixture
+                    QueuesFixture qf("f(x, y)");
+
+                    // Correct result
+                    auto arg1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    auto arg2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    in_args.push_back(std::move(arg1));
+                    in_args.push_back(std::move(arg2));
+                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check exception on unexpected token instead of identifier
+                BOOST_AUTO_TEST_CASE( unexpected_token_identifier ) {
+                    // Construct fixture
+                    QueuesFixture qf("1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).function_call(), parser::ParserException);
+                }
+
+                // Check exception on unexpected token instead of LPAR
+                BOOST_AUTO_TEST_CASE( unexpected_token_lpar ) {
+                    // Construct fixture
+                    QueuesFixture qf("f 1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).function_call(), parser::ParserException);
+                }
+
+                // Check exception on unexpected token instead of RPAR
+                BOOST_AUTO_TEST_CASE( unexpected_token_rpar ) {
+                    // Construct fixture
+                    QueuesFixture qf("f ( x 1.0");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).function_call(), parser::ParserException);
+                }
             BOOST_AUTO_TEST_SUITE_END()
 
-            BOOST_AUTO_TEST_SUITE(definition)
-            BOOST_AUTO_TEST_SUITE_END()
+            //TODO expression list parsing?
         BOOST_AUTO_TEST_SUITE_END()
 
         BOOST_AUTO_TEST_SUITE(statement)

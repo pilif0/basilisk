@@ -145,7 +145,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::identifier) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Call Expression and expecting IDENTIFIER.";
                 throw ParserException(message.str());
@@ -163,7 +162,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::lpar) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Call Expression and expecting LPAR.";
                 throw ParserException(message.str());
@@ -185,7 +183,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::rpar) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Function Call Expression and expecting RPAR.";
                 throw ParserException(message.str());
