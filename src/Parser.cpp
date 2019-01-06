@@ -35,7 +35,6 @@ namespace basilisk::parser {
             get();
         } else {
             // Absent -> unexpected token
-            //TODO test
             std::ostringstream message;
             message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting LPAR.";
             throw ParserException(message.str());
@@ -50,7 +49,6 @@ namespace basilisk::parser {
             get();
         } else {
             // Unexpected token
-            //TODO test
             std::ostringstream message;
             message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting RPAR.";
             throw ParserException(message.str());
