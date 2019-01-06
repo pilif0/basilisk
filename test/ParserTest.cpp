@@ -141,6 +141,56 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(literal_double)
+                // Check correct
+                BOOST_AUTO_TEST_CASE( correct ) {
+                    // Construct fixture
+                    QueuesFixture qf("1.0");
+
+                    // Correct result
+                    auto correct = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check exception on not parsable
+                BOOST_AUTO_TEST_CASE( not_parsable ) {
+                    // Construct fixture
+                    QueuesFixture qf;
+                    qf.input.push_back({tags::end_of_input, ""});
+                    qf.input.push_back({tags::double_literal, "x"});
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double(), parser::ParserException);
+                }
+
+                // Check exception on out of range
+                BOOST_AUTO_TEST_CASE( out_of_range ) {
+                    // Construct fixture
+                    std::ostringstream source;
+                    source << 1 << std::to_string(std::numeric_limits<double>::max());
+                    QueuesFixture qf(source.str());
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double(), parser::ParserException);
+                }
+
+                // Check exception on unexpected token
+                BOOST_AUTO_TEST_CASE( unexpected_token ) {
+                    // Construct fixture
+                    QueuesFixture qf("x");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double(), parser::ParserException);
+                }
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(parenthesised)

@@ -103,13 +103,11 @@ namespace basilisk::parser {
                 value = std::stod(t.content);
             } catch (const std::invalid_argument &/*e*/) {
                 // Value cannot be parsed
-                //TODO test
                 std::ostringstream message;
                 message << "Double literal \'" << t.content << "\' cannot be parsed into a double value.";
                 throw ParserException(message.str());
             } catch (const std::out_of_range &/*e*/) {
                 // Value out of range
-                //TODO test
                 std::ostringstream message;
                 message << "Double literal \'" << t.content << "\' is out of the range of double.";
                 throw ParserException(message.str());
@@ -119,7 +117,6 @@ namespace basilisk::parser {
             return std::make_unique<exp::DoubleLitExpression>(value);
         } else {
             // Unexpected token
-            //TODO test
             std::ostringstream message;
             message << "Unexpected token " << peek(0) << " when parsing DoubleLitExpression and expecting DOUBLE_LITERAL.";
             throw ParserException(message.str());
