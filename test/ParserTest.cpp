@@ -119,6 +119,22 @@ struct QueuesFixture {
     }
 };
 
+/**
+ * \brief Compare a parsed AST to a hard-coded correct AST and print the trees if different
+ * 
+ * \param result Pointer to parsed AST 
+ * \param correct Pointer to correct AST
+ */
+void compare_ast(ast::Node *result, ast::Node *correct) {
+    // Compare
+    if (!result->equals(correct)) {
+        // When wrong, display correct tree
+        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct);
+        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result);
+    }
+    BOOST_TEST_CHECK(result->equals(correct), "Parsed tree must match hard-coded correct tree.");
+}
+
 BOOST_AUTO_TEST_SUITE(Parser)
     BOOST_AUTO_TEST_SUITE(individual)
         BOOST_AUTO_TEST_SUITE(expression)
@@ -136,13 +152,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check right associativity
@@ -160,13 +170,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -188,13 +192,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check mixed expression sub of sum
@@ -212,13 +210,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -236,13 +228,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check right associativity
@@ -260,13 +246,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -284,13 +264,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check right associativity
@@ -308,13 +282,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -336,13 +304,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check mixed expression div of mul
@@ -360,13 +322,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -384,13 +340,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check right associativity
@@ -408,13 +358,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -432,13 +376,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check right associativity
@@ -456,13 +394,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -479,13 +411,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check double negation
@@ -501,13 +427,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -523,13 +443,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on not parsable
@@ -577,13 +491,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).parenthesised();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on empty contents
@@ -638,13 +546,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).identifier();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of identifier
@@ -670,13 +572,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check correct with one argument
@@ -693,13 +589,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check correct with multiple arguments
@@ -718,13 +608,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of identifier
@@ -841,13 +725,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check expression1 to expression2
@@ -863,13 +741,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check expression2 to expression3
@@ -884,13 +756,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check expression3 to expression4
@@ -904,13 +770,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
             BOOST_AUTO_TEST_SUITE_END()
         BOOST_AUTO_TEST_SUITE_END()
@@ -928,13 +788,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             // Check correctly recognising variable statement
@@ -949,13 +803,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             // Check correctly recognising standalone statement starting with identifier
@@ -971,13 +819,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             // Check correctly recognising standalone statement not starting with identifier
@@ -992,13 +834,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             BOOST_AUTO_TEST_SUITE(return_kw)
@@ -1014,13 +850,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).return_kw();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of RETURN
@@ -1067,13 +897,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).standalone();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of SEMICOLON
@@ -1111,13 +935,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).variable();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of identifier
@@ -1175,13 +993,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             // Check correctly recognising variable definition
@@ -1197,13 +1009,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
 
-                // Compare
-                if (!result->equals(correct.get())) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                }
-                BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(result.get(), correct.get());
             }
 
             // Check exception on unexpected token
@@ -1232,13 +1038,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check correct with no arguments and no body
@@ -1254,13 +1054,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check multiple arguments
@@ -1279,13 +1073,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
                 // Check exception on unexpected token instead of identifier
@@ -1378,13 +1166,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).variable();
 
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                    compare_ast(result.get(), correct.get());
                 }
 
             BOOST_AUTO_TEST_SUITE_END()
@@ -1424,13 +1206,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Parse
                 auto result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
 
-                // Compare
-                if (!result.equals(&correct)) {
-                    // When wrong, display correct tree
-                    boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
-                    boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
-                }
-                BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
+                compare_ast(&result, &correct);
             }
 
             // Check exception on lexer error token
@@ -1573,12 +1349,6 @@ BOOST_AUTO_TEST_SUITE(Parser)
         // Parse
         ast::Program result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
 
-        // Compare
-        if (!result.equals(&correct)) {
-            // When wrong, display correct tree
-            boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(&correct);
-            boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(&result);
-        }
-        BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
+        compare_ast(&result, &correct);
     }
 BOOST_AUTO_TEST_SUITE_END()
