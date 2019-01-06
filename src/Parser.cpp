@@ -209,7 +209,6 @@ namespace basilisk::parser {
             // Check the tag
             if (t.tag != tokens::tags::identifier) {
                 // Unexpected token
-                //TODO test
                 std::ostringstream message;
                 message << "Unexpected token " << t << " when parsing Identifier Expression and expecting IDENTIFIER.";
                 throw ParserException(message.str());
