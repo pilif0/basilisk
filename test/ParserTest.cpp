@@ -131,6 +131,58 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE(sub)
             BOOST_AUTO_TEST_SUITE_END()
 
+            BOOST_AUTO_TEST_SUITE(expression_2)
+                // Note: correct mul and div recognition is taken care of by respecitve suites
+
+                // Check mixed expression mul of div
+                BOOST_AUTO_TEST_CASE( mixed_mul_div ) {
+                    // Construct fixture
+                    QueuesFixture qf("a * b / c");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
+                    auto rhs = std::make_unique<ast::expressions::DivExpression>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(rhs));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check mixed expression div of mul
+                BOOST_AUTO_TEST_CASE( mixed_div_mul ) {
+                    // Construct fixture
+                    QueuesFixture qf("a / b * c");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
+                    auto rhs = std::make_unique<ast::expressions::MulExpression>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::DivExpression>(std::move(a), std::move(rhs));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+            BOOST_AUTO_TEST_SUITE_END()
+
             BOOST_AUTO_TEST_SUITE(mul)
                 // Check correct
                 BOOST_AUTO_TEST_CASE( correct ) {
