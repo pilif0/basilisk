@@ -612,6 +612,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).parenthesised(), parser::ParserException);
                 }
+
+                // Check closing parenthesis gets consumed
+                BOOST_AUTO_TEST_CASE( closing_par_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("( x )");
+
+                    // Parse out parenthesised expression
+                    parser::ExpressionParser(qf.get_f, qf.peek_f).parenthesised();
+
+                    // Check the top of the input is not a RPAR
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::rpar, "Closing parenthesis must be consumed.");
+                }
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(identifier)
@@ -740,6 +752,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).function_call(), parser::ParserException);
+                }
+
+                // Check closing parenthesis gets consumed
+                BOOST_AUTO_TEST_CASE( closing_par_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("f ( x )");
+
+                    // Parse out parenthesised expression
+                    parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
+
+                    // Check the top of the input is not a RPAR
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::rpar, "Closing parenthesis must be consumed.");
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -1016,6 +1040,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).return_kw(), parser::ParserException);
                 }
+
+                // Check semicolon gets consumed
+                BOOST_AUTO_TEST_CASE( semicolon_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("return 1.0;");
+
+                    // Parse out parenthesised expression
+                    parser::StatementParser(qf.get_f, qf.peek_f).return_kw();
+
+                    // Check the top of the input is not a SEMICOLON
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::semicolon, "Semicolon must be consumed.");
+                }
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(standalone)
@@ -1047,6 +1083,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).standalone(), parser::ParserException);
+                }
+
+                // Check semicolon gets consumed
+                BOOST_AUTO_TEST_CASE( semicolon_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("1.0;");
+
+                    // Parse out parenthesised expression
+                    parser::StatementParser(qf.get_f, qf.peek_f).standalone();
+
+                    // Check the top of the input is not a SEMICOLON
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::semicolon, "Semicolon must be consumed.");
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -1097,6 +1145,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                }
+
+                // Check semicolon gets consumed
+                BOOST_AUTO_TEST_CASE( semicolon_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("x = 1.0;");
+
+                    // Parse out parenthesised expression
+                    parser::StatementParser(qf.get_f, qf.peek_f).variable();
+
+                    // Check the top of the input is not a SEMICOLON
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::semicolon, "Semicolon must be consumed.");
                 }
             BOOST_AUTO_TEST_SUITE_END()
         BOOST_AUTO_TEST_SUITE_END()
@@ -1289,6 +1349,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Check exception on parse
                     BOOST_CHECK_THROW(parser::DefinitionParser(qf.get_f, qf.peek_f).definition(), parser::ParserException);
+                }
+
+                // Check closing bracket gets consumed
+                BOOST_AUTO_TEST_CASE( closing_brac_consumed ){
+                    // Construct fixture
+                    QueuesFixture qf("f () {}");
+
+                    // Parse out parenthesised expression
+                    parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
+
+                    // Check the top of the input is not a RPAR
+                    BOOST_TEST_CHECK(qf.peek(0).tag != tags::rbrac, "Closing bracket must be consumed.");
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
@@ -1509,7 +1581,4 @@ BOOST_AUTO_TEST_SUITE(Parser)
         }
         BOOST_TEST_CHECK(result.equals(&correct), "Parsed tree must match hard-coded correct tree.");
     }
-
-    //TODO cases for consuming all closing tokens (RPAR, RBRAC, SEMICOLON, ...)
-
 BOOST_AUTO_TEST_SUITE_END()
