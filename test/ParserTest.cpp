@@ -509,26 +509,6 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     }
                     BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
                 }
-
-                // Check no negation
-                BOOST_AUTO_TEST_CASE( no_negation ) {
-                    // Construct fixture
-                    QueuesFixture qf("x");
-
-                    // Correct result
-                    auto correct = std::make_unique<ast::expressions::IdentifierExpression>("x");
-
-                    // Parse
-                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
-
-                    // Compare
-                    if (!result->equals(correct.get())) {
-                        // When wrong, display correct tree
-                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
-                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
-                    }
-                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
-                }
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(literal_double)
@@ -764,6 +744,93 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE_END()
 
             //TODO expression list parsing?
+
+            BOOST_AUTO_TEST_SUITE(fallthrough)
+                // Check expression to expression1
+                BOOST_AUTO_TEST_CASE( expression_to_1 ) {
+                    // Construct fixture
+                    QueuesFixture qf("a + b");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(b));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check expression1 to expression2
+                BOOST_AUTO_TEST_CASE( expression1_to_2 ) {
+                    // Construct fixture
+                    QueuesFixture qf("a * b");
+
+                    // Correct result
+                    auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
+                    auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
+                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(b));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check expression2 to expression3
+                BOOST_AUTO_TEST_CASE( expression2_to_3 ) {
+                    // Construct fixture
+                    QueuesFixture qf("-x");
+
+                    // Correct result
+                    auto x = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    auto correct = std::make_unique<ast::expressions::NegExpression>(std::move(x));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+
+                // Check expression3 to expression4
+                BOOST_AUTO_TEST_CASE( expression3_to_4 ) {
+                    // Construct fixture
+                    QueuesFixture qf("x");
+
+                    // Correct result
+                    auto correct = std::make_unique<ast::expressions::IdentifierExpression>("x");
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
+
+                    // Compare
+                    if (!result->equals(correct.get())) {
+                        // When wrong, display correct tree
+                        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct.get());
+                        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result.get());
+                    }
+                    BOOST_TEST_CHECK(result->equals(correct.get()), "Parsed tree must match hard-coded correct tree.");
+                }
+            BOOST_AUTO_TEST_SUITE_END()
         BOOST_AUTO_TEST_SUITE_END()
 
         BOOST_AUTO_TEST_SUITE(statement)
