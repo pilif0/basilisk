@@ -743,7 +743,65 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
-            //TODO expression list parsing?
+            BOOST_AUTO_TEST_SUITE(list)
+                // Check singleton
+                BOOST_AUTO_TEST_CASE( correct_singleton ) {
+                    // Construct fixture
+                    QueuesFixture qf("x");
+
+                    // Correct result
+                    auto x = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    std::vector<std::unique_ptr<ast::Expression>> correct;
+                    correct.push_back(std::move(x));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).list();
+
+                    // Compare
+                    if (!ast::util::vec_equals(result, correct)) {
+                        // When wrong, display correct list
+                        boost::unit_test::unit_test_log << "Correct list:\n";
+                        for (auto &e : correct) {
+                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                        }
+                        boost::unit_test::unit_test_log << "Resulting list:\n";
+                        for (auto &e : result) {
+                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                        }
+                    }
+                    BOOST_TEST_CHECK(ast::util::vec_equals(result, correct), "Parsed list must match hard-coded correct list.");
+                }
+
+                // Check multiple
+                BOOST_AUTO_TEST_CASE( correct_multiple_args ) {
+                    // Construct fixture
+                    QueuesFixture qf("x, y");
+
+                    // Correct result
+                    auto arg1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    auto arg2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
+                    std::vector<std::unique_ptr<ast::Expression>> correct;
+                    correct.push_back(std::move(arg1));
+                    correct.push_back(std::move(arg2));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).list();
+
+                    // Compare
+                    if (!ast::util::vec_equals(result, correct)) {
+                        // When wrong, display correct list
+                        boost::unit_test::unit_test_log << "Correct list:\n";
+                        for (auto &e : correct) {
+                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                        }
+                        boost::unit_test::unit_test_log << "Resulting list:\n";
+                        for (auto &e : result) {
+                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                        }
+                    }
+                    BOOST_TEST_CHECK(ast::util::vec_equals(result, correct), "Parsed list must match hard-coded correct list.");
+                }
+            BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(fallthrough)
                 // Check expression to expression1
