@@ -6,6 +6,7 @@
 #include <basilisk/AST_util.h>
 
 #include <sstream>
+#include <algorithm>
 #include <utility>
 
 namespace basilisk::ast::util {
@@ -36,11 +37,11 @@ namespace basilisk::ast::util {
         std::ostringstream result;
 
         // Print this node and children (Depth-first search)
-        std::vector<node_ind> queue{{root, 0}};
-        while (!queue.empty()) {
-            // Pop off of the queue
-            auto [node, ind] = queue.back();
-            queue.pop_back();
+        std::vector<node_ind> stack{{root, 0}};
+        while (!stack.empty()) {
+            // Pop off of the stack
+            auto [node, ind] = stack.back();
+            stack.pop_back();
 
             // Indent the line
             result << std::string(ind, '\t');
@@ -48,10 +49,11 @@ namespace basilisk::ast::util {
             // Print description
             result << "- " << node->describe() << "\n";
 
-            // Push all children
-            //TODO watch out for order
-            for (auto e : node->children()) {
-                queue.emplace_back(e, ind + 1);
+            // Push all children (in reverse order because pushing onto a stack)
+            auto children = node->children();
+            std::reverse(children.begin(), children.end());
+            for (auto e : children) {
+                stack.emplace_back(e, ind + 1);
             }
         }
 
