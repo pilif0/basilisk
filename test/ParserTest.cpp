@@ -1304,6 +1304,18 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Check exception on parse
                 BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
             }
+
+            // Check end of input token gets consumed
+            BOOST_AUTO_TEST_CASE( eoi_consumed ){
+                // Construct fixture
+                QueuesFixture qf("f () {}");
+
+                // Parse out parenthesised expression
+                parser::ProgramParser(qf.get_f, qf.peek_f).program();
+
+                // Check the top of the input is not a RPAR
+                BOOST_TEST_CHECK(qf.peek(0).tag != tags::end_of_input, "End of input token must be consumed.");
+            }
         BOOST_AUTO_TEST_SUITE_END()
     BOOST_AUTO_TEST_SUITE_END()
 

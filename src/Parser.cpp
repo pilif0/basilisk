@@ -768,6 +768,9 @@ namespace basilisk::parser {
             }
         }
 
+        // Consume END
+        // Note: top token is now END by termination condition of the loop
+        get();
 
         // There has to be at least one definition
         if (definitions.empty()) {
