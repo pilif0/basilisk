@@ -105,15 +105,15 @@ struct QueuesFixture {
      * \return Token \c offset elements from the front of the input queue, or the error token when not present
      */
     tokens::Token peek(unsigned offset) {
-        // Compute index
-        auto index = static_cast<unsigned int>(input.size() - 1 - offset);
-
         // Return error token if not valid
-        if (index < 0) {
+        if (offset >= input.size()) {
             std::ostringstream message;
             message << "No token " << offset << " elements from the front of the input queue.";
             return tokens::Token{tags::error, message.str()};
         }
+
+        // Compute index
+        auto index = static_cast<unsigned int>(input.size() - 1 - offset);
 
         return input[index];
     }
