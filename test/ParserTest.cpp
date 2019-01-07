@@ -431,6 +431,75 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
+            BOOST_AUTO_TEST_SUITE(expression_4)
+                // Check recognition of double literal
+                BOOST_AUTO_TEST_CASE( pick_double_literal ) {
+                    // Construct fixture
+                    QueuesFixture qf("1.0");
+
+                    // Correct result
+                    auto correct = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
+
+                    compare_ast(result.get(), correct.get());
+                }
+
+                // Check recognition of parenthesised expression
+                BOOST_AUTO_TEST_CASE( pick_parenthesised ) {
+                    // Construct fixture
+                    QueuesFixture qf("(x)");
+
+                    // Correct result
+                    auto expr = std::make_unique<ast::expressions::IdentifierExpression>("x");
+                    auto correct = std::make_unique<ast::expressions::ParExpression>(std::move(expr));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
+
+                    compare_ast(result.get(), correct.get());
+                }
+
+                // Check recognition of function call
+                BOOST_AUTO_TEST_CASE( pick_function_call ) {
+                    // Construct fixture
+                    QueuesFixture qf("f()");
+
+                    // Correct result
+                    std::vector<std::unique_ptr<ast::Expression>> in_args;
+                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
+
+                    compare_ast(result.get(), correct.get());
+                }
+
+                // Check recognition of identifier expression
+                BOOST_AUTO_TEST_CASE( pick_identifier ) {
+                    // Construct fixture
+                    QueuesFixture qf("x");
+
+                    // Correct result
+                    auto correct = std::make_unique<ast::expressions::IdentifierExpression>("x");
+
+                    // Parse
+                    auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
+
+                    compare_ast(result.get(), correct.get());
+                }
+
+                // Check exception on unexpected token
+                BOOST_AUTO_TEST_CASE( unexpected_token ) {
+                    // Construct fixture
+                    QueuesFixture qf("{");
+
+                    // Check exception on parse
+                    BOOST_CHECK_THROW(parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4(), parser::ParserException);
+                }
+            BOOST_AUTO_TEST_SUITE_END()
+
             BOOST_AUTO_TEST_SUITE(literal_double)
                 // Check correct
                 BOOST_AUTO_TEST_CASE( correct ) {

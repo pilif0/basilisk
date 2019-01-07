@@ -245,7 +245,6 @@ namespace basilisk::parser {
             }
         } else {
             // Otherwise -> unexpected token
-            //TODO test
             std::ostringstream message;
             message << "Unexpected token " << t << " when parsing Expression(4) and expecting DOUBLE_LITERAL, LPAR or IDENTIFIER.";
             throw ParserException(message.str());
