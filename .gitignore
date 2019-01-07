@@ -12,3 +12,6 @@ include/basilisk/config.h
 
 # clang-tidy log
 clang-tidy.log
+
+# Basilisk parsed files
+*.stone
