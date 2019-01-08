@@ -31,7 +31,7 @@ The grammar as written here is supposed to be a description, not necessary an ex
 Non-terminals are in lower-case, terminals are in upper-case.
 
 ```
-program := definition END
+program := END
          | definition program
 
 definition := definition-func

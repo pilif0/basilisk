@@ -1296,13 +1296,19 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
             }
 
-            // Check exception on no definitions
+            // Check correct no definitions
             BOOST_AUTO_TEST_CASE( no_definitions ) {
                 // Construct fixture
                 QueuesFixture qf("");
 
-                // Check exception on parse
-                BOOST_CHECK_THROW(parser::ProgramParser(qf.get_f, qf.peek_f).program(), parser::ParserException);
+                // Correct result
+                std::vector<std::unique_ptr<ast::Definition>> corr_defs;
+                ast::Program correct(std::move(corr_defs));
+
+                // Parse
+                auto result = parser::ProgramParser(qf.get_f, qf.peek_f).program();
+
+                compare_ast(&result, &correct);
             }
 
             // Check end of input token gets consumed

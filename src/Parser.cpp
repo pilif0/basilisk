@@ -746,8 +746,8 @@ namespace basilisk::parser {
      * \return Resulting Program node
      */
     ast::Program ProgramParser::program() {
-        // Program -> expecting non-empty set of variable and function definitions
-        std::vector<std::unique_ptr<ast::Definition>> definitions{};
+        // Program -> expecting set of variable and function definitions
+        std::vector<std::unique_ptr<ast::Definition>> definitions;
 
         // Try to gather definitions until END
         for (tokens::Token t = peek(0); t.tag != tokens::tags::end_of_input; t = peek(0)) {
@@ -771,11 +771,6 @@ namespace basilisk::parser {
         // Consume END
         // Note: top token is now END by termination condition of the loop
         get();
-
-        // There has to be at least one definition
-        if (definitions.empty()) {
-            throw ParserException("Program has to have at least one definition.");
-        }
 
         // Return the program with the gathered definitions
         return ast::Program(std::move(definitions));

@@ -10,9 +10,7 @@
 #include <string>
 #include <memory>
 
-//TODO review usage of std::move once stable
 //TODO add docs to constructors
-//TODO should invariants (e.g. at least one definition in program) be checked here or in parser?
 //TODO determine whether definition order in program should matter
 //! Abstract Syntax Tree definitions
 namespace basilisk::ast {
@@ -383,15 +381,14 @@ namespace basilisk::ast {
     /** \class Program
      * \brief Program node
      *
-     * Program node contains a set of one or more definitions.
+     * Program node contains a set of definitions.
      * Root node of the AST.
      */
-    class Program : public Node{
+    class Program : public Node {
         public:
             //! Pointers to definitions in this program in order of definition
             std::vector<std::unique_ptr<Definition>> definitions;
 
-            //TODO make variadic?
             explicit Program(std::vector<std::unique_ptr<Definition>> defs)
                 : definitions(std::move(defs)) {}
 
