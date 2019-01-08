@@ -330,7 +330,7 @@ namespace basilisk::ast {
             Identifier identifier;
             //! Arguments of the function in order of declaration
             std::vector<Identifier> arguments;
-            //! Non-empty block of statements acting as the function body
+            //! Statements acting as the function body
             std::vector<std::unique_ptr<Statement>> body;
 
             FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)

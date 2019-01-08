@@ -29,6 +29,7 @@ The grammar as written here is supposed to be a description, not necessary an ex
 
 ## Grammar
 Non-terminals are in lower-case, terminals are in upper-case.
+The terminal `EPSILON` refers to no token.
 
 ```
 program := END
@@ -43,7 +44,8 @@ definition-func := IDENTIFIER LPAR RPAR LBRAC statement-block RBRAC
 identifier-list := IDENTIFIER
                  | IDENTIFIER COMMA identifier-list
 
-statement-block := statement
+statement-block := EPSILON
+                 | statement
                  | statement statement-block
 
 statement := definition-var
