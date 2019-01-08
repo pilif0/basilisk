@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::ModExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Modulo>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::ModExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::ModExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Modulo>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Modulo>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
@@ -186,8 +186,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::SubExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Subtraction>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Summation>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -204,8 +204,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::SumExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::SubExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Summation>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Subtraction>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Summation>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::SumExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Summation>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Summation>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::SubExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Subtraction>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -276,8 +276,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::SubExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::SubExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Subtraction>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Subtraction>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -298,8 +298,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::DivExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Division>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Multiplication>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -316,8 +316,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::MulExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::DivExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Multiplication>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Division>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Multiplication>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -352,8 +352,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::MulExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Multiplication>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Multiplication>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::DivExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Division>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -388,8 +388,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
                     auto c = std::make_unique<ast::expressions::IdentifierExpression>("c");
-                    auto rhs = std::make_unique<ast::expressions::DivExpression>(std::move(b), std::move(c));
-                    auto correct = std::make_unique<ast::expressions::DivExpression>(std::move(a), std::move(rhs));
+                    auto rhs = std::make_unique<ast::expressions::Division>(std::move(b), std::move(c));
+                    auto correct = std::make_unique<ast::expressions::Division>(std::move(a), std::move(rhs));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto expr = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto correct = std::make_unique<ast::expressions::NegExpression>(std::move(expr));
+                    auto correct = std::make_unique<ast::expressions::NumericNegation>(std::move(expr));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
@@ -421,8 +421,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto expr = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto neg = std::make_unique<ast::expressions::NegExpression>(std::move(expr));
-                    auto correct = std::make_unique<ast::expressions::NegExpression>(std::move(neg));
+                    auto neg = std::make_unique<ast::expressions::NumericNegation>(std::move(expr));
+                    auto correct = std::make_unique<ast::expressions::NumericNegation>(std::move(neg));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_3();
@@ -438,7 +438,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0");
 
                     // Correct result
-                    auto correct = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                    auto correct = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
@@ -453,7 +453,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto expr = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto correct = std::make_unique<ast::expressions::ParExpression>(std::move(expr));
+                    auto correct = std::make_unique<ast::expressions::Parenthesised>(std::move(expr));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     std::vector<std::unique_ptr<ast::Expression>> in_args;
-                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+                    auto correct = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_4();
@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0");
 
                     // Correct result
-                    auto correct = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                    auto correct = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).literal_double();
@@ -555,7 +555,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto expr = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto correct = std::make_unique<ast::expressions::ParExpression>(std::move(expr));
+                    auto correct = std::make_unique<ast::expressions::Parenthesised>(std::move(expr));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).parenthesised();
@@ -636,7 +636,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     std::vector<std::unique_ptr<ast::Expression>> in_args;
-                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+                    auto correct = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     auto arg = std::make_unique<ast::expressions::IdentifierExpression>("x");
                     std::vector<std::unique_ptr<ast::Expression>> in_args;
                     in_args.push_back(std::move(arg));
-                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+                    auto correct = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
@@ -672,7 +672,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     std::vector<std::unique_ptr<ast::Expression>> in_args;
                     in_args.push_back(std::move(arg1));
                     in_args.push_back(std::move(arg2));
-                    auto correct = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
+                    auto correct = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).function_call();
@@ -789,7 +789,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::SumExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Summation>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression();
@@ -805,7 +805,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     auto a = std::make_unique<ast::expressions::IdentifierExpression>("a");
                     auto b = std::make_unique<ast::expressions::IdentifierExpression>("b");
-                    auto correct = std::make_unique<ast::expressions::MulExpression>(std::move(a), std::move(b));
+                    auto correct = std::make_unique<ast::expressions::Multiplication>(std::move(a), std::move(b));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_1();
@@ -820,7 +820,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto x = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto correct = std::make_unique<ast::expressions::NegExpression>(std::move(x));
+                    auto correct = std::make_unique<ast::expressions::NumericNegation>(std::move(x));
 
                     // Parse
                     auto result = parser::ExpressionParser(qf.get_f, qf.peek_f).expression_2();
@@ -852,7 +852,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                 // Correct result
                 auto value = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                auto correct = std::make_unique<ast::ReturnStatement>(std::move(value));
+                auto correct = std::make_unique<ast::statements::Return>(std::move(value));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -866,8 +866,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 QueuesFixture qf("x = 1.0;");
 
                 // Correct result
-                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto correct = std::make_unique<ast::VariableStatement>("x", std::move(value));
+                auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto correct = std::make_unique<ast::statements::Variable>("x", std::move(value));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -882,8 +882,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                 // Correct result
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
-                auto expr = std::make_unique<ast::expressions::FuncExpression>("f", std::move(in_args));
-                auto correct = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+                auto expr = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
+                auto correct = std::make_unique<ast::statements::Standalone>(std::move(expr));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -897,8 +897,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 QueuesFixture qf("1.0;");
 
                 // Correct result
-                auto expr = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto correct = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+                auto expr = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto correct = std::make_unique<ast::statements::Standalone>(std::move(expr));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -913,8 +913,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("return 1.0;");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto correct = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto correct = std::make_unique<ast::statements::Return>(std::move(value));
 
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).return_kw();
@@ -960,8 +960,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0;");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto correct = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto correct = std::make_unique<ast::statements::Standalone>(std::move(value));
 
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).standalone();
@@ -998,8 +998,8 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("x = 1.0;");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto correct = std::make_unique<ast::VariableStatement>("x", std::move(value));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto correct = std::make_unique<ast::statements::Variable>("x", std::move(value));
 
                     // Parse
                     auto result = parser::StatementParser(qf.get_f, qf.peek_f).variable();
@@ -1057,7 +1057,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 // Correct result
                 std::vector<std::unique_ptr<ast::Statement>> body;
                 std::vector<ast::Identifier> args;
-                auto correct = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                auto correct = std::make_unique<ast::definitions::Function>("f", std::move(args), std::move(body));
 
                 // Parse
                 auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
@@ -1071,9 +1071,9 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 QueuesFixture qf("x = 1.0;");
 
                 // Correct result
-                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
-                auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
+                auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto var_stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                auto correct = std::make_unique<ast::definitions::Variable>(std::move(var_stmt));
 
                 // Parse
                 auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).definition();
@@ -1097,12 +1097,12 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("f(x) { return 1.0; }");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto ret = std::make_unique<ast::statements::Return>(std::move(value));
                     std::vector<std::unique_ptr<ast::Statement>> body;
                     body.push_back(std::move(ret));
                     std::vector<ast::Identifier> args{"x"};
-                    auto correct = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                    auto correct = std::make_unique<ast::definitions::Function>("f", std::move(args), std::move(body));
 
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
@@ -1118,7 +1118,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     // Correct result
                     std::vector<std::unique_ptr<ast::Statement>> body;
                     std::vector<ast::Identifier> args;
-                    auto correct = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                    auto correct = std::make_unique<ast::definitions::Function>("f", std::move(args), std::move(body));
 
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
@@ -1132,12 +1132,12 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("f(x, y) { return 1.0; }");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto ret = std::make_unique<ast::statements::Return>(std::move(value));
                     std::vector<std::unique_ptr<ast::Statement>> body;
                     body.push_back(std::move(ret));
                     std::vector<ast::Identifier> args{"x", "y"};
-                    auto correct = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                    auto correct = std::make_unique<ast::definitions::Function>("f", std::move(args), std::move(body));
 
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).function();
@@ -1228,9 +1228,9 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("x = 1.0;");
 
                     // Correct result
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto var_stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
-                    auto correct = std::make_unique<ast::VariableDefinition>(std::move(var_stmt));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto var_stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                    auto correct = std::make_unique<ast::definitions::Variable>(std::move(var_stmt));
 
                     // Parse
                     auto result = parser::DefinitionParser(qf.get_f, qf.peek_f).variable();
@@ -1255,19 +1255,19 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 std::vector<std::unique_ptr<ast::Definition>> corr_defs;
                 {
                     // x = 1.0;
-                    auto value = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                    auto stmt = std::make_unique<ast::VariableStatement>("x", std::move(value));
-                    auto def = std::make_unique<ast::VariableDefinition>(std::move(stmt));
+                    auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                    auto stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                    auto def = std::make_unique<ast::definitions::Variable>(std::move(stmt));
                     corr_defs.push_back(std::move(def));
                 }
                 {
                     // f() { return x; }
                     auto value = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                    auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                    auto ret = std::make_unique<ast::statements::Return>(std::move(value));
                     std::vector<std::unique_ptr<ast::Statement>> body;
                     body.push_back(std::move(ret));
                     std::vector<ast::Identifier> args;
-                    auto def = std::make_unique<ast::FunctionDefinition>("f", std::move(args), std::move(body));
+                    auto def = std::make_unique<ast::definitions::Function>("f", std::move(args), std::move(body));
                     corr_defs.push_back(std::move(def));
                 }
                 ast::Program correct(std::move(corr_defs));
@@ -1349,19 +1349,19 @@ BOOST_AUTO_TEST_SUITE(Parser)
         std::vector<std::unique_ptr<ast::Definition>> corr_defs;
         {
             // pi = 3.14;
-            auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3.14);
-            auto stmt = std::make_unique<ast::VariableStatement>("pi", std::move(value));
-            auto def = std::make_unique<ast::VariableDefinition>(std::move(stmt));
+            auto value = std::make_unique<ast::expressions::LiteralDouble>(3.14);
+            auto stmt = std::make_unique<ast::statements::Variable>("pi", std::move(value));
+            auto def = std::make_unique<ast::definitions::Variable>(std::move(stmt));
             corr_defs.push_back(std::move(def));
         }
         {
             // get_pi() { return pi; }
             auto value = std::make_unique<ast::expressions::IdentifierExpression>("pi");
-            auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+            auto ret = std::make_unique<ast::statements::Return>(std::move(value));
             std::vector<std::unique_ptr<ast::Statement>> body;
             body.push_back(std::move(ret));
             std::vector<ast::Identifier> args;
-            auto def = std::make_unique<ast::FunctionDefinition>("get_pi", std::move(args), std::move(body));
+            auto def = std::make_unique<ast::definitions::Function>("get_pi", std::move(args), std::move(body));
             corr_defs.push_back(std::move(def));
         }
         {
@@ -1369,12 +1369,12 @@ BOOST_AUTO_TEST_SUITE(Parser)
             auto param = std::make_unique<ast::expressions::IdentifierExpression>("x");
             std::vector<std::unique_ptr<ast::Expression>> in_args;
             in_args.push_back(std::move(param));
-            auto value = std::make_unique<ast::expressions::FuncExpression>("println", std::move(in_args));
-            auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+            auto value = std::make_unique<ast::expressions::FunctionCall>("println", std::move(in_args));
+            auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
             std::vector<std::unique_ptr<ast::Statement>> body;
             body.push_back(std::move(stmt));
             std::vector<ast::Identifier> args{"x"};
-            auto def = std::make_unique<ast::FunctionDefinition>("write", std::move(args), std::move(body));
+            auto def = std::make_unique<ast::definitions::Function>("write", std::move(args), std::move(body));
             corr_defs.push_back(std::move(def));
         }
         {
@@ -1383,17 +1383,17 @@ BOOST_AUTO_TEST_SUITE(Parser)
             {
                 // write(get_pi());
                 std::vector<std::unique_ptr<ast::Expression>> in_in_args;
-                auto param = std::make_unique<ast::expressions::FuncExpression>("get_pi", std::move(in_in_args));
+                auto param = std::make_unique<ast::expressions::FunctionCall>("get_pi", std::move(in_in_args));
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(param));
-                auto expr = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(expr));
+                auto expr = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
+                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(expr));
                 body.push_back(std::move(stmt));
             }
             {
                 // pi = 3.0;
-                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(3);
-                auto stmt = std::make_unique<ast::VariableStatement>("pi", std::move(value));
+                auto value = std::make_unique<ast::expressions::LiteralDouble>(3);
+                auto stmt = std::make_unique<ast::statements::Variable>("pi", std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
@@ -1401,34 +1401,34 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 auto param = std::make_unique<ast::expressions::IdentifierExpression>("pi");
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(param));
-                auto value = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                auto value = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
+                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
                 // write(1.0 + (3.0 * 4.0) % 5.0);
-                auto exp_1 = std::make_unique<ast::expressions::DoubleLitExpression>(1);
-                auto exp_3 = std::make_unique<ast::expressions::DoubleLitExpression>(3);
-                auto exp_4 = std::make_unique<ast::expressions::DoubleLitExpression>(4);
-                auto exp_5 = std::make_unique<ast::expressions::DoubleLitExpression>(5);
-                auto mul = std::make_unique<ast::expressions::MulExpression>(std::move(exp_3), std::move(exp_4));
-                auto par = std::make_unique<ast::expressions::ParExpression>(std::move(mul));
-                auto sum = std::make_unique<ast::expressions::SumExpression>(std::move(exp_1), std::move(par));
-                auto mod = std::make_unique<ast::expressions::ModExpression>(std::move(sum), std::move(exp_5));
+                auto exp_1 = std::make_unique<ast::expressions::LiteralDouble>(1);
+                auto exp_3 = std::make_unique<ast::expressions::LiteralDouble>(3);
+                auto exp_4 = std::make_unique<ast::expressions::LiteralDouble>(4);
+                auto exp_5 = std::make_unique<ast::expressions::LiteralDouble>(5);
+                auto mul = std::make_unique<ast::expressions::Multiplication>(std::move(exp_3), std::move(exp_4));
+                auto par = std::make_unique<ast::expressions::Parenthesised>(std::move(mul));
+                auto sum = std::make_unique<ast::expressions::Summation>(std::move(exp_1), std::move(par));
+                auto mod = std::make_unique<ast::expressions::Modulo>(std::move(sum), std::move(exp_5));
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(mod));
-                auto value = std::make_unique<ast::expressions::FuncExpression>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::StandaloneStatement>(std::move(value));
+                auto value = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
+                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
                 // return 0.0;
-                auto value = std::make_unique<ast::expressions::DoubleLitExpression>(0);
-                auto ret = std::make_unique<ast::ReturnStatement>(std::move(value));
+                auto value = std::make_unique<ast::expressions::LiteralDouble>(0);
+                auto ret = std::make_unique<ast::statements::Return>(std::move(value));
                 body.push_back(std::move(ret));
             }
             std::vector<ast::Identifier> args;
-            auto def = std::make_unique<ast::FunctionDefinition>("main", std::move(args), std::move(body));
+            auto def = std::make_unique<ast::definitions::Function>("main", std::move(args), std::move(body));
             corr_defs.push_back(std::move(def));
         }
         ast::Program correct(std::move(corr_defs));

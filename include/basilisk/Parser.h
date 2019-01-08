@@ -22,18 +22,22 @@ namespace basilisk::ast {
         class Expression2;
         class Expression3;
         class Expression4;
-        class ParExpression;
-        class DoubleLitExpression;
-        class FuncExpression;
+        class Parenthesised;
+        class LiteralDouble;
+        class FunctionCall;
         class IdentifierExpression;
     }
     class Statement;
-    class ReturnStatement;
-    class StandaloneStatement;
-    class VariableStatement;
+    namespace statements {
+        class Return;
+        class Standalone;
+        class Variable;
+    }
     class Definition;
-    class FunctionDefinition;
-    class VariableDefinition;
+    namespace definitions {
+        class Function;
+        class Variable;
+    }
     class Program;
 }
 
@@ -77,10 +81,10 @@ namespace basilisk::parser {
             ExpressionParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::expressions::ParExpression> parenthesised();
+            std::unique_ptr<ast::expressions::Parenthesised> parenthesised();
             std::vector<std::unique_ptr<ast::Expression>> list();
-            std::unique_ptr<ast::expressions::DoubleLitExpression> literal_double();
-            std::unique_ptr<ast::expressions::FuncExpression> function_call();
+            std::unique_ptr<ast::expressions::LiteralDouble> literal_double();
+            std::unique_ptr<ast::expressions::FunctionCall> function_call();
             std::unique_ptr<ast::expressions::IdentifierExpression> identifier();
             std::unique_ptr<ast::expressions::Expression4> expression_4();
             std::unique_ptr<ast::expressions::Expression3> expression_3();
@@ -111,9 +115,9 @@ namespace basilisk::parser {
             StatementParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::ReturnStatement> return_kw();
-            std::unique_ptr<ast::StandaloneStatement> standalone();
-            std::unique_ptr<ast::VariableStatement> variable();
+            std::unique_ptr<ast::statements::Return> return_kw();
+            std::unique_ptr<ast::statements::Standalone> standalone();
+            std::unique_ptr<ast::statements::Variable> variable();
             std::unique_ptr<ast::Statement> statement();
     };
 
@@ -139,8 +143,8 @@ namespace basilisk::parser {
             DefinitionParser(const get_f_t &get, const peek_f_t &peek)
                     : get(get), peek(peek) {}
 
-            std::unique_ptr<ast::VariableDefinition> variable();
-            std::unique_ptr<ast::FunctionDefinition> function();
+            std::unique_ptr<ast::definitions::Variable> variable();
+            std::unique_ptr<ast::definitions::Function> function();
             std::unique_ptr<ast::Definition> definition();
     };
 

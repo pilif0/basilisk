@@ -28,13 +28,13 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare program and variable definition
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a)));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a)));
                 ast::Program a(std::move(defs_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
-                auto b = std::make_unique<ast::VariableDefinition>(std::move(stmt_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
+                auto b = std::make_unique<ast::definitions::Variable>(std::move(stmt_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a.equals(b.get()), "Program equal to different type.");
@@ -44,9 +44,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( reflexive ) {
                 // Prepare program
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a)));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a)));
                 ast::Program a(std::move(defs_a));
 
                 // Check reflexive property
@@ -69,14 +69,14 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare programs
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a)));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a)));
                 ast::Program a(std::move(defs_a));
                 std::vector<std::unique_ptr<ast::Definition>> defs_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b)));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b)));
                 ast::Program b(std::move(defs_b));
 
                 // Check equals
@@ -87,14 +87,14 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_definitions ) {
                 // Prepare programs
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a)));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a)));
                 ast::Program a(std::move(defs_a));
                 std::vector<std::unique_ptr<ast::Definition>> defs_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto stmt_b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b)));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto stmt_b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b)));
                 ast::Program b(std::move(defs_b));
 
                 // Check equals
@@ -105,20 +105,20 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( matching_order ) {
                 // Prepare programs
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a1 = std::make_unique<ast::VariableStatement>("x", std::move(exp_a1));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a1)));
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto stmt_a2 = std::make_unique<ast::VariableStatement>("y", std::move(exp_a2));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a2)));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a1 = std::make_unique<ast::statements::Variable>("x", std::move(exp_a1));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a1)));
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto stmt_a2 = std::make_unique<ast::statements::Variable>("y", std::move(exp_a2));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a2)));
                 ast::Program a(std::move(defs_a));
                 std::vector<std::unique_ptr<ast::Definition>> defs_b;
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b1 = std::make_unique<ast::VariableStatement>("x", std::move(exp_b1));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b1)));
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto stmt_b2 = std::make_unique<ast::VariableStatement>("y", std::move(exp_b2));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b2)));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b1 = std::make_unique<ast::statements::Variable>("x", std::move(exp_b1));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b1)));
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto stmt_b2 = std::make_unique<ast::statements::Variable>("y", std::move(exp_b2));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b2)));
                 ast::Program b(std::move(defs_b));
 
                 // Check equals
@@ -129,20 +129,20 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_order ) {
                 // Prepare programs
                 std::vector<std::unique_ptr<ast::Definition>> defs_a;
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a1 = std::make_unique<ast::VariableStatement>("x", std::move(exp_a1));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a1)));
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto stmt_a2 = std::make_unique<ast::VariableStatement>("y", std::move(exp_a2));
-                defs_a.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_a2)));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a1 = std::make_unique<ast::statements::Variable>("x", std::move(exp_a1));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a1)));
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto stmt_a2 = std::make_unique<ast::statements::Variable>("y", std::move(exp_a2));
+                defs_a.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_a2)));
                 ast::Program a(std::move(defs_a));
                 std::vector<std::unique_ptr<ast::Definition>> defs_b;
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto stmt_b1 = std::make_unique<ast::VariableStatement>("y", std::move(exp_b1));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b1)));
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b2 = std::make_unique<ast::VariableStatement>("x", std::move(exp_b2));
-                defs_b.push_back(std::make_unique<ast::VariableDefinition>(std::move(stmt_b2)));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto stmt_b1 = std::make_unique<ast::statements::Variable>("y", std::move(exp_b1));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b1)));
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b2 = std::make_unique<ast::statements::Variable>("x", std::move(exp_b2));
+                defs_b.push_back(std::make_unique<ast::definitions::Variable>(std::move(stmt_b2)));
                 ast::Program b(std::move(defs_b));
 
                 // Check equals
@@ -156,11 +156,11 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare variable definition and a variable statement
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                auto a = std::make_unique<ast::VariableDefinition>(std::move(stmt_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::definitions::Variable>(std::move(stmt_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Variable definition equal to different type.");
@@ -169,9 +169,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexive ) {
                 // Prepare definition
-                auto exp = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp));
-                auto a = std::make_unique<ast::VariableDefinition>(std::move(stmt_a));
+                auto exp = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp));
+                auto a = std::make_unique<ast::definitions::Variable>(std::move(stmt_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Variable equality isn't reflexive.");
@@ -180,12 +180,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching definitions
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare definitions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                auto a = std::make_unique<ast::VariableDefinition>(std::move(stmt_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
-                auto b = std::make_unique<ast::VariableDefinition>(std::move(stmt_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                auto a = std::make_unique<ast::definitions::Variable>(std::move(stmt_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
+                auto b = std::make_unique<ast::definitions::Variable>(std::move(stmt_b));
 
                 // Check equals
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical variable definitions don't match.");
@@ -194,12 +194,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different statements
             BOOST_AUTO_TEST_CASE( different_statement ) {
                 // Prepare definitions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_a = std::make_unique<ast::VariableStatement>("a", std::move(exp_a));
-                auto a = std::make_unique<ast::VariableDefinition>(std::move(stmt_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto stmt_b = std::make_unique<ast::VariableStatement>("b", std::move(exp_b));
-                auto b = std::make_unique<ast::VariableDefinition>(std::move(stmt_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_a = std::make_unique<ast::statements::Variable>("a", std::move(exp_a));
+                auto a = std::make_unique<ast::definitions::Variable>(std::move(stmt_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto stmt_b = std::make_unique<ast::statements::Variable>("b", std::move(exp_b));
+                auto b = std::make_unique<ast::definitions::Variable>(std::move(stmt_b));
 
                 // Check equals
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Variable definitions with different statements are equal.");
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare double lit expression and identifier expression
-                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
                 auto b = std::make_unique<ast::expressions::IdentifierExpression>("x");
 
                 // Check not equal
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare double lit expression
-                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Double literal expression equality isn't reflexive.");
@@ -230,8 +230,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching values
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare double lit expressions
-                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Matching double literal expressions not equal.");
@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different values
             BOOST_AUTO_TEST_CASE( different_value ) {
                 // Prepare double lit expressions
-                auto a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Double literal expressions with different values are equal.");
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare identifier expression and double lit expression
                 auto a = std::make_unique<ast::expressions::IdentifierExpression>("x");
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Identifier expression equal to different type.");
@@ -298,8 +298,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare function call expression and double lit expression
                 std::vector<std::unique_ptr<ast::Expression>> arg_a;
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expression equal to different type.");
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare func expression
                 std::vector<std::unique_ptr<ast::Expression>> arg_a;
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Function call expression equality isn't reflexive.");
@@ -319,13 +319,13 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare func expressions
                 std::vector<std::unique_ptr<ast::Expression>> arg_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(2.0);
                 arg_a.push_back(std::move(exp_a));
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
                 std::vector<std::unique_ptr<ast::Expression>> arg_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
                 arg_b.push_back(std::move(exp_b));
-                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+                auto b = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Matching function call expressions not equal.");
@@ -335,13 +335,13 @@ BOOST_AUTO_TEST_SUITE(AST)
             BOOST_AUTO_TEST_CASE( different_identifier ) {
                 // Prepare func expressions
                 std::vector<std::unique_ptr<ast::Expression>> arg_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(2.0);
                 arg_a.push_back(std::move(exp_a));
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
                 std::vector<std::unique_ptr<ast::Expression>> arg_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
                 arg_b.push_back(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::FuncExpression>("g", std::move(arg_b));
+                auto b = std::make_unique<ast::expressions::FunctionCall>("g", std::move(arg_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with different identifiers are equal.");
@@ -353,11 +353,11 @@ BOOST_AUTO_TEST_SUITE(AST)
                 std::vector<std::unique_ptr<ast::Expression>> arg_a;
                 auto exp_a = std::make_unique<ast::expressions::IdentifierExpression>("x");
                 arg_a.push_back(std::move(exp_a));
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
                 std::vector<std::unique_ptr<ast::Expression>> arg_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
                 arg_b.push_back(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+                auto b = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with different arguments are equal.");
@@ -371,13 +371,13 @@ BOOST_AUTO_TEST_SUITE(AST)
                 arg_a.push_back(std::move(exp_a1));
                 auto exp_a2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
                 arg_a.push_back(std::move(exp_a2));
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
                 std::vector<std::unique_ptr<ast::Expression>> arg_b;
                 auto exp_b1 = std::make_unique<ast::expressions::IdentifierExpression>("x");
                 arg_b.push_back(std::move(exp_b1));
                 auto exp_b2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
                 arg_b.push_back(std::move(exp_b2));
-                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+                auto b = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Function call expressions with matching arguments in order are not equal.");
@@ -391,13 +391,13 @@ BOOST_AUTO_TEST_SUITE(AST)
                 arg_a.push_back(std::move(exp_a1));
                 auto exp_a2 = std::make_unique<ast::expressions::IdentifierExpression>("y");
                 arg_a.push_back(std::move(exp_a2));
-                auto a = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_a));
+                auto a = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_a));
                 std::vector<std::unique_ptr<ast::Expression>> arg_b;
                 auto exp_b1 = std::make_unique<ast::expressions::IdentifierExpression>("y");
                 arg_b.push_back(std::move(exp_b1));
                 auto exp_b2 = std::make_unique<ast::expressions::IdentifierExpression>("x");
                 arg_b.push_back(std::move(exp_b2));
-                auto b = std::make_unique<ast::expressions::FuncExpression>("f", std::move(arg_b));
+                auto b = std::make_unique<ast::expressions::FunctionCall>("f", std::move(arg_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function call expressions with matching arguments out of order are equal.");
@@ -410,9 +410,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare par expression and double lit expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Parenthesised expression equal to different type.");
@@ -421,8 +421,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare par expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Parenthesised expression equality isn't reflexive.");
@@ -431,10 +431,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare par expressions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::expressions::ParExpression>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical parenthesised expressions not equal.");
@@ -443,10 +443,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different expression
             BOOST_AUTO_TEST_CASE( different_expessions ) {
                 // Prepare par expressions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::ParExpression>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::ParExpression>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Parenthesised>(std::move(exp_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Parenthesised expressions with different contents are equal.");
@@ -459,9 +459,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare neg expression and double lit expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::NegExpression>(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Negation expression equal to different type.");
@@ -470,8 +470,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare neg expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::NegExpression>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Negation expression equality isn't reflexive.");
@@ -480,10 +480,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare par expressions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::NegExpression>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::expressions::NegExpression>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical negation expressions not equal.");
@@ -492,10 +492,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different expression
             BOOST_AUTO_TEST_CASE( different_expessions ) {
                 // Prepare neg expressions
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::expressions::NegExpression>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::NegExpression>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::NumericNegation>(std::move(exp_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Negation expressions with different contents are equal.");
@@ -508,10 +508,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare div expression and double lit expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::DivExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Division>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Division expression equal to different type.");
@@ -520,9 +520,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare div expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::DivExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Division>(std::move(exp_a1), std::move(exp_a2));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Division expression equality isn't reflexive.");
@@ -531,12 +531,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare div expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::DivExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::DivExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Division>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Division>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical division expressions not equal.");
@@ -545,12 +545,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different left hand side
             BOOST_AUTO_TEST_CASE( different_lhs ) {
                 // Prepare div expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::DivExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::DivExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Division>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Division>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Division expressions with different left hand sides are equal.");
@@ -559,12 +559,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different right hand side
             BOOST_AUTO_TEST_CASE( different_rhs ) {
                 // Prepare div expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::DivExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto b = std::make_unique<ast::expressions::DivExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Division>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto b = std::make_unique<ast::expressions::Division>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Division expressions with different right hand sides are equal.");
@@ -577,10 +577,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare mul expression and double lit expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::MulExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Multiplication>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Multiplication expression equal to different type.");
@@ -589,9 +589,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare mul expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::MulExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Multiplication>(std::move(exp_a1), std::move(exp_a2));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Multiplication expression equality isn't reflexive.");
@@ -600,12 +600,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare mul expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::MulExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::MulExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Multiplication>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Multiplication>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical multiplication expressions not equal.");
@@ -614,12 +614,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different left hand side
             BOOST_AUTO_TEST_CASE( different_lhs ) {
                 // Prepare mul expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::MulExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::MulExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Multiplication>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Multiplication>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Multiplication expressions with different left hand sides are equal.");
@@ -628,12 +628,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different right hand side
             BOOST_AUTO_TEST_CASE( different_rhs ) {
                 // Prepare mul expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::MulExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto b = std::make_unique<ast::expressions::MulExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Multiplication>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto b = std::make_unique<ast::expressions::Multiplication>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Multiplication expressions with different right hand sides are equal.");
@@ -646,10 +646,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare sub expression and double lit expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Subtraction>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expression equal to different type.");
@@ -658,9 +658,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare sub expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Subtraction>(std::move(exp_a1), std::move(exp_a2));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Subtraction expression equality isn't reflexive.");
@@ -669,12 +669,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare sub expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Subtraction>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Subtraction>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical subtraction expressions not equal.");
@@ -683,12 +683,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different left hand side
             BOOST_AUTO_TEST_CASE( different_lhs ) {
                 // Prepare sub expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Subtraction>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Subtraction>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expressions with different left hand sides are equal.");
@@ -697,12 +697,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different right hand side
             BOOST_AUTO_TEST_CASE( different_rhs ) {
                 // Prepare sub expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SubExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto b = std::make_unique<ast::expressions::SubExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Subtraction>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto b = std::make_unique<ast::expressions::Subtraction>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Subtraction expressions with different right hand sides are equal.");
@@ -714,10 +714,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare sum expression and double lit expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SumExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Summation>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Sum expression equal to different type.");
@@ -726,9 +726,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare sum expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SumExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Summation>(std::move(exp_a1), std::move(exp_a2));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Sum expression equality isn't reflexive.");
@@ -737,12 +737,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare sum expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SumExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::SumExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Summation>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Summation>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical sum expressions not equal.");
@@ -751,12 +751,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different left hand side
             BOOST_AUTO_TEST_CASE( different_lhs ) {
                 // Prepare sum expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SumExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::SumExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Summation>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Summation>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Sum expressions with different left hand sides are equal.");
@@ -765,12 +765,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different right hand side
             BOOST_AUTO_TEST_CASE( different_rhs ) {
                 // Prepare sum expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::SumExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto b = std::make_unique<ast::expressions::SumExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Summation>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto b = std::make_unique<ast::expressions::Summation>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Sum expressions with different right hand sides are equal.");
@@ -783,10 +783,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare mod expression and double lit expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::ModExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Modulo>(std::move(exp_a1), std::move(exp_a2));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Modulo expression equal to different type.");
@@ -795,9 +795,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare mod expression
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::ModExpression>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Modulo>(std::move(exp_a1), std::move(exp_a2));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Modulo expression equality isn't reflexive.");
@@ -806,12 +806,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare mod expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::ModExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::ModExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Modulo>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Modulo>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical modulo expressions not equal.");
@@ -820,12 +820,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different argument
             BOOST_AUTO_TEST_CASE( different_x ) {
                 // Prepare mod expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::ModExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::expressions::ModExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Modulo>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::expressions::Modulo>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Modulo expressions with different arguments are equal.");
@@ -834,12 +834,12 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different parameter
             BOOST_AUTO_TEST_CASE( different_rhs ) {
                 // Prepare mod expressions
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto a = std::make_unique<ast::expressions::ModExpression>(std::move(exp_a1), std::move(exp_a2));
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(3.0);
-                auto b = std::make_unique<ast::expressions::ModExpression>(std::move(exp_b1), std::move(exp_b2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto a = std::make_unique<ast::expressions::Modulo>(std::move(exp_a1), std::move(exp_a2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(3.0);
+                auto b = std::make_unique<ast::expressions::Modulo>(std::move(exp_b1), std::move(exp_b2));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Modulo expressions with different parameters are equal.");
@@ -852,9 +852,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare return statement and double lit expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Return>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Return statement equal to different type.");
@@ -863,8 +863,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare return statement
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Return>(std::move(exp_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Return statement equality isn't reflexive.");
@@ -873,10 +873,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare return statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Return>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::statements::Return>(std::move(exp_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical return statements not equal.");
@@ -885,10 +885,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different expression
             BOOST_AUTO_TEST_CASE( different_expessions ) {
                 // Prepare return statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Return>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::statements::Return>(std::move(exp_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Return statements with different contents are equal.");
@@ -901,9 +901,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare standalone statement and double lit expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Standalone>(std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Standalone statement equal to different type.");
@@ -912,8 +912,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare standalone statement
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Standalone>(std::move(exp_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Standalone statement equality isn't reflexive.");
@@ -922,10 +922,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare standalone statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::StandaloneStatement>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Standalone>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::statements::Standalone>(std::move(exp_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical standalone statements not equal.");
@@ -934,10 +934,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different expression
             BOOST_AUTO_TEST_CASE( different_expessions ) {
                 // Prepare standalone statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::StandaloneStatement>(std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto b = std::make_unique<ast::StandaloneStatement>(std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Standalone>(std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto b = std::make_unique<ast::statements::Standalone>(std::move(exp_b));
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Standalone statements with different contents are equal.");
@@ -952,11 +952,11 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition and double literal expression
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definition equal to different type.");
@@ -967,10 +967,10 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Function definition isn't reflexive.");
@@ -981,16 +981,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(a.get()), "Identical function definitions not equal.");
@@ -1001,16 +1001,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("g", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("g", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different identifiers are equal.");
@@ -1021,16 +1021,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"y"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different arguments are equal.");
@@ -1041,16 +1041,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x", "y"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x", "y"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Function definitions with identical arguments not equal.");
@@ -1061,16 +1061,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x", "y"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"y", "x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with arguments out of order are equal.");
@@ -1081,16 +1081,16 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_a = std::make_unique<ast::ReturnStatement>(std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_a = std::make_unique<ast::statements::Return>(std::move(exp_a));
                 body_a.push_back(std::move(sta_a));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto sta_b = std::make_unique<ast::ReturnStatement>(std::move(exp_b));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto sta_b = std::make_unique<ast::statements::Return>(std::move(exp_b));
                 body_b.push_back(std::move(sta_b));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with different body are equal.");
@@ -1101,22 +1101,22 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto sta_a1 = std::make_unique<ast::ReturnStatement>(std::move(exp_a1));
-                auto sta_a2 = std::make_unique<ast::ReturnStatement>(std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto sta_a1 = std::make_unique<ast::statements::Return>(std::move(exp_a1));
+                auto sta_a2 = std::make_unique<ast::statements::Return>(std::move(exp_a2));
                 body_a.push_back(std::move(sta_a1));
                 body_a.push_back(std::move(sta_a2));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto sta_b1 = std::make_unique<ast::ReturnStatement>(std::move(exp_b1));
-                auto sta_b2 = std::make_unique<ast::ReturnStatement>(std::move(exp_b2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto sta_b1 = std::make_unique<ast::statements::Return>(std::move(exp_b1));
+                auto sta_b2 = std::make_unique<ast::statements::Return>(std::move(exp_b2));
                 body_b.push_back(std::move(sta_b1));
                 body_b.push_back(std::move(sta_b2));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Function definitions with identical body not equal.");
@@ -1127,22 +1127,22 @@ BOOST_AUTO_TEST_SUITE(AST)
                 // Prepare function definition
                 std::vector<ast::Identifier> arg_a{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_a;
-                auto exp_a1 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto exp_a2 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto sta_a1 = std::make_unique<ast::ReturnStatement>(std::move(exp_a1));
-                auto sta_a2 = std::make_unique<ast::ReturnStatement>(std::move(exp_a2));
+                auto exp_a1 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto exp_a2 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto sta_a1 = std::make_unique<ast::statements::Return>(std::move(exp_a1));
+                auto sta_a2 = std::make_unique<ast::statements::Return>(std::move(exp_a2));
                 body_a.push_back(std::move(sta_a1));
                 body_a.push_back(std::move(sta_a2));
-                auto a = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_a), std::move(body_a));
+                auto a = std::make_unique<ast::definitions::Function>("f", std::move(arg_a), std::move(body_a));
                 std::vector<ast::Identifier> arg_b{"x"};
                 std::vector<std::unique_ptr<ast::Statement>> body_b;
-                auto exp_b1 = std::make_unique<ast::expressions::DoubleLitExpression>(2.0);
-                auto exp_b2 = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto sta_b1 = std::make_unique<ast::ReturnStatement>(std::move(exp_b1));
-                auto sta_b2 = std::make_unique<ast::ReturnStatement>(std::move(exp_b2));
+                auto exp_b1 = std::make_unique<ast::expressions::LiteralDouble>(2.0);
+                auto exp_b2 = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto sta_b1 = std::make_unique<ast::statements::Return>(std::move(exp_b1));
+                auto sta_b2 = std::make_unique<ast::statements::Return>(std::move(exp_b2));
                 body_b.push_back(std::move(sta_b1));
                 body_b.push_back(std::move(sta_b2));
-                auto b = std::make_unique<ast::FunctionDefinition>("f", std::move(arg_b), std::move(body_b));
+                auto b = std::make_unique<ast::definitions::Function>("f", std::move(arg_b), std::move(body_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Function definitions with body out of order are equal.");
@@ -1155,9 +1155,9 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different type
             BOOST_AUTO_TEST_CASE( different_type ) {
                 // Prepare variable statement and double lit expression
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                auto b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                auto b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
 
                 // Check not equal
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Variable statement equal to different type.");
@@ -1166,8 +1166,8 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check reflexivity
             BOOST_AUTO_TEST_CASE( reflexivity ) {
                 // Prepare variable statement
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
 
                 // Check reflexive property
                 BOOST_TEST_CHECK(a->equals(a.get()), "Variable statement equality isn't reflexive.");
@@ -1176,10 +1176,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check matching
             BOOST_AUTO_TEST_CASE( matching ) {
                 // Prepare variable statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::VariableStatement>("x", std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::VariableStatement>("x", std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Variable>("x", std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::statements::Variable>("x", std::move(exp_b));
 
                 // Check equal
                 BOOST_TEST_CHECK(a->equals(b.get()), "Identical variable statements not equal.");
@@ -1188,10 +1188,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different expressions
             BOOST_AUTO_TEST_CASE( different_expression ) {
                 // Prepare variable statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::VariableStatement>("a", std::move(exp_a));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Variable>("a", std::move(exp_a));
                 auto exp_b = std::make_unique<ast::expressions::IdentifierExpression>("identifier");
-                auto b = std::make_unique<ast::VariableStatement>("b", std::move(exp_b));
+                auto b = std::make_unique<ast::statements::Variable>("b", std::move(exp_b));
 
                 // Check equals
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Variable statements with different expressions are equal.");
@@ -1200,10 +1200,10 @@ BOOST_AUTO_TEST_SUITE(AST)
             // Check different identifiers
             BOOST_AUTO_TEST_CASE( different_identifier ) {
                 // Prepare variable statements
-                auto exp_a = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto a = std::make_unique<ast::VariableStatement>("a", std::move(exp_a));
-                auto exp_b = std::make_unique<ast::expressions::DoubleLitExpression>(1.0);
-                auto b = std::make_unique<ast::VariableStatement>("b", std::move(exp_b));
+                auto exp_a = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto a = std::make_unique<ast::statements::Variable>("a", std::move(exp_a));
+                auto exp_b = std::make_unique<ast::expressions::LiteralDouble>(1.0);
+                auto b = std::make_unique<ast::statements::Variable>("b", std::move(exp_b));
 
                 // Check equals
                 BOOST_TEST_CHECK(!a->equals(b.get()), "Variable statements with different identifiers are equal.");

@@ -26,7 +26,7 @@ namespace basilisk::parser {
      *
      * \return Pointer to resulting ParExpression node
      */
-    std::unique_ptr<exp::ParExpression> ExpressionParser::parenthesised() {
+    std::unique_ptr<exp::Parenthesised> ExpressionParser::parenthesised() {
         // Parenthesised expression -> expecting LPAR Expression RPAR
 
         // Check starting LPAR
@@ -36,7 +36,7 @@ namespace basilisk::parser {
         } else {
             // Absent -> unexpected token
             std::ostringstream message;
-            message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting LPAR.";
+            message << "Unexpected token " << peek(0) << " when parsing Parenthesised and expecting LPAR.";
             throw ParserException(message.str());
         }
 
@@ -50,11 +50,11 @@ namespace basilisk::parser {
         } else {
             // Unexpected token
             std::ostringstream message;
-            message << "Unexpected token " << peek(0) << " when parsing ParExpression and expecting RPAR.";
+            message << "Unexpected token " << peek(0) << " when parsing Parenthesised and expecting RPAR.";
             throw ParserException(message.str());
         }
 
-        return std::make_unique<exp::ParExpression>(std::move(expr));
+        return std::make_unique<exp::Parenthesised>(std::move(expr));
     }
 
     /**
@@ -89,7 +89,7 @@ namespace basilisk::parser {
      *
      * \return Pointers to the resulting Double Literal Expression node
      */
-    std::unique_ptr<ast::expressions::DoubleLitExpression> ExpressionParser::literal_double() {
+    std::unique_ptr<ast::expressions::LiteralDouble> ExpressionParser::literal_double() {
         // Double Literal Expression -> expecting DOUBLE_LITERAL
 
         // DOUBLE_LITERAL
@@ -113,12 +113,12 @@ namespace basilisk::parser {
                 throw ParserException(message.str());
             }
 
-            // Return DoubleLitExpression
-            return std::make_unique<exp::DoubleLitExpression>(value);
+            // Return LiteralDouble
+            return std::make_unique<exp::LiteralDouble>(value);
         } else {
             // Unexpected token
             std::ostringstream message;
-            message << "Unexpected token " << peek(0) << " when parsing DoubleLitExpression and expecting DOUBLE_LITERAL.";
+            message << "Unexpected token " << peek(0) << " when parsing LiteralDouble and expecting DOUBLE_LITERAL.";
             throw ParserException(message.str());
         }
     }
@@ -128,7 +128,7 @@ namespace basilisk::parser {
      *
      * \return Pointers to the resulting Function Call Expression node
      */
-    std::unique_ptr<ast::expressions::FuncExpression> ExpressionParser::function_call() {
+    std::unique_ptr<ast::expressions::FunctionCall> ExpressionParser::function_call() {
         // Function Call Expression -> expecting IDENTIFIER LPAR (optional expression list) RPAR
 
         // Identifier
@@ -184,7 +184,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<exp::FuncExpression>(id, std::move(arguments));
+        return std::make_unique<exp::FunctionCall>(id, std::move(arguments));
     }
 
     /**
@@ -230,7 +230,7 @@ namespace basilisk::parser {
             // Double literal
             return literal_double();
         } else if (t.tag == tokens::tags::lpar) {
-            // LPAR -> parse and return the ParExpression
+            // LPAR -> parse and return the Parenthesised
             return parenthesised();
         } else if (t.tag == tokens::tags::identifier) {
             // IDENTIFIER -> either IDENTIFIER or function call
@@ -269,8 +269,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp3 = expression_3();
 
-            // Return MulExpression
-            return std::make_unique<exp::NegExpression>(std::move(exp3));
+            // Return Multiplication
+            return std::make_unique<exp::NumericNegation>(std::move(exp3));
         } else {
             // Absent -> parse ex Expression4
             return expression_4();
@@ -299,8 +299,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp2 = expression_2();
 
-            // Return MulExpression
-            return std::make_unique<exp::MulExpression>(std::move(exp3), std::move(exp2));
+            // Return Multiplication
+            return std::make_unique<exp::Multiplication>(std::move(exp3), std::move(exp2));
         } else if (t.tag == tokens::tags::slash) {
             // Minus -> combine with a rhs
 
@@ -310,8 +310,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp2 = expression_2();
 
-            // Return DivExpression
-            return std::make_unique<exp::DivExpression>(std::move(exp3), std::move(exp2));
+            // Return Division
+            return std::make_unique<exp::Division>(std::move(exp3), std::move(exp2));
         } else {
             // Absent -> return just the lhs
             return exp3;
@@ -340,8 +340,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp1 = expression_1();
 
-            // Return SumExpression
-            return std::make_unique<exp::SumExpression>(std::move(exp2), std::move(exp1));
+            // Return Summation
+            return std::make_unique<exp::Summation>(std::move(exp2), std::move(exp1));
         } else if (t.tag == tokens::tags::minus) {
             // Minus -> combine with a rhs
 
@@ -351,8 +351,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp1 = expression_1();
 
-            // Return SubExpression
-            return std::make_unique<exp::SubExpression>(std::move(exp2), std::move(exp1));
+            // Return Subtraction
+            return std::make_unique<exp::Subtraction>(std::move(exp2), std::move(exp1));
         } else {
             // Absent -> return just the lhs
             return exp2;
@@ -380,8 +380,8 @@ namespace basilisk::parser {
             // Parse rhs
             auto exp = expression();
 
-            // Return ModExpression
-            return std::make_unique<exp::ModExpression>(std::move(exp1), std::move(exp));
+            // Return Modulo
+            return std::make_unique<exp::Modulo>(std::move(exp1), std::move(exp));
         } else {
             // Absent -> return just the lhs
             return exp1;
@@ -397,7 +397,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Return Statement node
      */
-    std::unique_ptr<ast::ReturnStatement> StatementParser::return_kw() {
+    std::unique_ptr<ast::statements::Return> StatementParser::return_kw() {
         // Return Statement -> expecting RETURN Expression SEMICOLON
 
         // RETURN
@@ -431,7 +431,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::ReturnStatement>(std::move(expr));
+        return std::make_unique<ast::statements::Return>(std::move(expr));
     }
 
     /**
@@ -441,7 +441,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Standalone Statement node
      */
-    std::unique_ptr<ast::StandaloneStatement> StatementParser::standalone() {
+    std::unique_ptr<ast::statements::Standalone> StatementParser::standalone() {
         // Standalone Statement -> expecting Expression SEMICOLON
 
         // Expression
@@ -461,7 +461,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::StandaloneStatement>(std::move(expr));
+        return std::make_unique<ast::statements::Standalone>(std::move(expr));
     }
 
     /**
@@ -471,7 +471,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Variable Statement node
      */
-    std::unique_ptr<ast::VariableStatement> StatementParser::variable() {
+    std::unique_ptr<ast::statements::Variable> StatementParser::variable() {
         // Variable statement -> expecting IDENTIFIER, ASSIGN, value expression and SEMICOLON
 
         // Identifier
@@ -523,7 +523,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::VariableStatement>(id, std::move(val));
+        return std::make_unique<ast::statements::Variable>(id, std::move(val));
     }
 
     /**
@@ -534,26 +534,26 @@ namespace basilisk::parser {
      * \return Pointer to resulting Statement node
      */
     std::unique_ptr<ast::Statement> StatementParser::statement() {
-        // Statement -> expecting RETURN Expression SEMICOLON, VariableStatement, or Expression SEMICOLON
+        // Statement -> expecting RETURN Expression SEMICOLON, Variable Statement, or Expression SEMICOLON
 
         // Check first token
         tokens::Token t = peek(0);
         if (t.tag == tokens::tags::kw_return) {
-            // RETURN -> ReturnStatement
+            // RETURN -> Return Statement
             return return_kw();
         } else if (t.tag == tokens::tags::identifier) {
-            // IDENTIFIER -> VariableStatement or StandaloneStatement
+            // IDENTIFIER -> Variable Statement or Standalone Statement
 
             // Check second token
             if (peek(1).tag == tokens::tags::assign) {
-                // ASSIGN -> VariableStatement (Expression cannot contain ASSIGN)
+                // ASSIGN -> Variable Statement (Expression cannot contain ASSIGN)
                 return variable();
             } else {
-                // Otherwise -> StandaloneStatement (VariableStatement requires ASSIGN)
+                // Otherwise -> Standalone Statement (Variable Statement requires ASSIGN)
                 return standalone();
             }
         } else {
-            // Otherwise -> StandaloneStatement
+            // Otherwise -> Standalone Statement
             return standalone();
         }
     }
@@ -567,13 +567,13 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Variable Definition node
      */
-    std::unique_ptr<ast::VariableDefinition> DefinitionParser::variable() {
+    std::unique_ptr<ast::definitions::Variable> DefinitionParser::variable() {
         // Variable Definition -> expecting Variable Statement
 
         // Variable statement
         auto stmt = StatementParser(get, peek).variable();
 
-        return std::make_unique<ast::VariableDefinition>(std::move(stmt));
+        return std::make_unique<ast::definitions::Variable>(std::move(stmt));
     }
 
     /**
@@ -583,7 +583,7 @@ namespace basilisk::parser {
      * \param peek Function to peek at the next input token
      * \return Pointer to resulting Function Definition node
      */
-    std::unique_ptr<ast::FunctionDefinition> DefinitionParser::function() {
+    std::unique_ptr<ast::definitions::Function> DefinitionParser::function() {
         // Function definition -> expecting IDENTIFIER, LPAR, optional identifier list, RPAR, LBRAC, statement block and RBRAC
 
         // Identifier
@@ -705,7 +705,7 @@ namespace basilisk::parser {
             }
         }
 
-        return std::make_unique<ast::FunctionDefinition>(id, args, std::move(body));
+        return std::make_unique<ast::definitions::Function>(id, args, std::move(body));
     }
 
     /**

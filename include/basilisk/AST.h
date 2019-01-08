@@ -101,15 +101,15 @@ namespace basilisk::ast {
         };
 
         // Base level
-        /** \class ModExpression
-         * \brief Expression of modulo operation `x mod m`
+        /** \class Modulo
+         * \brief Expression of modulo (`x mod m`)
          */
-        class ModExpression : public Expression {
+        class Modulo : public Expression {
             public:
                 std::unique_ptr<Expression1> x;
                 std::unique_ptr<Expression> m;
 
-                ModExpression(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
+                Modulo(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
                     : x(std::move(x)), m(std::move(m)) {}
 
                 bool equals(Node *other) override;
@@ -118,15 +118,15 @@ namespace basilisk::ast {
         };
 
         // 1st level
-        /** \class SumExpression
-         * \brief Expression of sum operation `lhs + rhs`
+        /** \class Summation
+         * \brief Expression of summation (`lhs + rhs`)
          */
-        class SumExpression : public Expression1 {
+        class Summation : public Expression1 {
             public:
                 std::unique_ptr<Expression2> lhs;
                 std::unique_ptr<Expression1> rhs;
 
-                SumExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
+                Summation(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
@@ -134,15 +134,15 @@ namespace basilisk::ast {
                 std::vector<Node *> children() override;
         };
 
-        /** \class SubExpression
-         * \brief Expression of subtract operation `lhs - rhs`
+        /** \class Subtraction
+         * \brief Expression of subtraction (`lhs - rhs`)
          */
-        class SubExpression : public Expression1 {
+        class Subtraction : public Expression1 {
             public:
                 std::unique_ptr<Expression2> lhs;
                 std::unique_ptr<Expression1> rhs;
 
-                SubExpression(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
+                Subtraction(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
@@ -151,15 +151,15 @@ namespace basilisk::ast {
         };
 
         // 2nd level
-        /** \class MulExpression
-         * \brief Expression of multiply operation `lhs * rhs`
+        /** \class Multiplication
+         * \brief Expression of multiplication (`lhs * rhs`)
          */
-        class MulExpression : public Expression2 {
+        class Multiplication : public Expression2 {
             public:
                 std::unique_ptr<Expression3> lhs;
                 std::unique_ptr<Expression2> rhs;
 
-                MulExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
+                Multiplication(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
@@ -167,15 +167,15 @@ namespace basilisk::ast {
                 std::vector<Node *> children() override;
         };
 
-        /** \class DivExpression
-         * \brief Expression of divide operation `lhs / rhs`
+        /** \class Division
+         * \brief Expression of division (`lhs / rhs`)
          */
-        class DivExpression : public Expression2 {
+        class Division : public Expression2 {
             public:
                 std::unique_ptr<Expression3> lhs;
                 std::unique_ptr<Expression2> rhs;
 
-                DivExpression(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
+                Division(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
@@ -184,14 +184,14 @@ namespace basilisk::ast {
         };
 
         // 3rd level
-        /** \class NegExpression
-         * \brief Expression of negate operation `- x`
+        /** \class NumericNegation
+         * \brief Expression of numeric negation (`- x`)
          */
-        class NegExpression : public Expression3 {
+        class NumericNegation : public Expression3 {
             public:
                 std::unique_ptr<Expression3> x;
 
-                explicit NegExpression(std::unique_ptr<Expression3> x)
+                explicit NumericNegation(std::unique_ptr<Expression3> x)
                     : x(std::move(x)) {}
 
                 bool equals(Node *other) override;
@@ -200,15 +200,15 @@ namespace basilisk::ast {
         };
 
         // 4th level
-        /** \class DoubleLitExpression
+        /** \class LiteralDouble
          * \brief Expression of double literal (e.g. `3.14`)
          */
-        class DoubleLitExpression : public Expression4 {
+        class LiteralDouble : public Expression4 {
             public:
                 //! Value of the literal
                 double value;
 
-                explicit DoubleLitExpression(double value)
+                explicit LiteralDouble(double value)
                     : value(value) {}
 
                 bool equals(Node *other) override;
@@ -216,15 +216,15 @@ namespace basilisk::ast {
                 std::vector<Node *> children() override;
         };
 
-        /** \class ParExpression
-         * \brief Expression in parentheses
+        /** \class Parenthesised
+         * \brief Expression in parentheses (e.g. `(a + b)`)
          */
-        class ParExpression : public Expression4 {
+        class Parenthesised : public Expression4 {
             public:
                 //! Inner expression
                 std::unique_ptr<Expression> expression;
 
-                explicit ParExpression(std::unique_ptr<Expression> expression)
+                explicit Parenthesised(std::unique_ptr<Expression> expression)
                     : expression(std::move(expression)) {}
 
                 bool equals(Node *other) override;
@@ -233,7 +233,7 @@ namespace basilisk::ast {
         };
 
         /** \class IdentifierExpression
-         * \brief Expression of an identifier
+         * \brief Expression of an identifier (e.g. `x`)
          */
         class IdentifierExpression : public Expression4 {
             public:
@@ -248,17 +248,17 @@ namespace basilisk::ast {
                 std::vector<Node *> children() override;
         };
 
-        /** \class FuncExpression
-         * \brief Expression of a function call
+        /** \class FunctionCall
+         * \brief Expression of a function call (e.g. `f(...)`)
          */
-        class FuncExpression : public Expression4 {
+        class FunctionCall : public Expression4 {
             public:
                 //! Function identifier
                 Identifier identifier;
                 //! Supplied expressions for arguments
                 std::vector<std::unique_ptr<Expression>> arguments;
 
-                FuncExpression(Identifier identifier, std::vector<std::unique_ptr<Expression>> arguments)
+                FunctionCall(Identifier identifier, std::vector<std::unique_ptr<Expression>> arguments)
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
 
                 bool equals(Node *other) override;
@@ -275,41 +275,65 @@ namespace basilisk::ast {
             Statement() = default;
     };
 
-    /** \class ReturnStatement
-     * \brief Return Statement node
-     *
-     * Return Statement node contains an expression whose value is returned from a function.
-     */
-    class ReturnStatement : public Statement {
-        public:
-            //! Returned expression
-            std::unique_ptr<Expression> expression;
+    //! Various types of statements
+    namespace statements {
+        /** \class Return
+         * \brief Return Statement node
+         *
+         * Return Statement node contains an expression whose value is returned from a function.
+         */
+            class Return : public Statement {
+                public:
+                    //! Returned expression
+                    std::unique_ptr<Expression> expression;
 
-            explicit ReturnStatement(std::unique_ptr<Expression> expression)
-                : expression(std::move(expression)) {}
+                    explicit Return(std::unique_ptr<Expression> expression)
+                            : expression(std::move(expression)) {}
 
-            bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
-    };
+                    bool equals(Node *other) override;
+                    std::string describe() override;
+                    std::vector<Node *> children() override;
+            };
 
-    /** \class StandaloneStatement
-     * \brief Standalone Statement node
-     *
-     * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
-     */
-     //TODO better name? VoidStatement?
-    class StandaloneStatement : public Statement {
-        public:
-            std::unique_ptr<Expression> expression;
+            /** \class Standalone
+             * \brief Standalone Statement node
+             *
+             * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
+             */
+            //TODO better name? Void?
+            class Standalone : public Statement {
+                public:
+                    std::unique_ptr<Expression> expression;
 
-            explicit StandaloneStatement(std::unique_ptr<Expression> expression)
-                : expression(std::move(expression)) {}
+                    explicit Standalone(std::unique_ptr<Expression> expression)
+                            : expression(std::move(expression)) {}
 
-            bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
-    };
+                    bool equals(Node *other) override;
+                    std::string describe() override;
+                    std::vector<Node *> children() override;
+            };
+
+            /** \class Variable
+             * \brief Variable Statement node
+             *
+             * Variable Statement node contains the variable identifier and the value expression.
+             */
+             //TODO rename to assignment? might be more descriptive
+            class Variable : public Statement {
+                public:
+                    //! Variable identifier
+                    Identifier identifier;
+                    //! Value expression
+                    std::unique_ptr<Expression> value;
+
+                    Variable(Identifier id, std::unique_ptr<Expression> val)
+                            : identifier(std::move(id)), value(std::move(val)) {}
+
+                    bool equals(Node *other) override;
+                    std::string describe() override;
+                    std::vector<Node *> children() override;
+            };
+    }
 
     /** \class Definition
      * \brief Base class for both function and variable definitions
@@ -319,64 +343,48 @@ namespace basilisk::ast {
             Definition() = default;
     };
 
-    /** \class FunctionDefinition
-     * \brief Function Definition node
-     *
-     * Function Definition node contains the function identifier, a set of arguments and a statement-block body.
-     */
-    class FunctionDefinition : public Definition {
-        public:
-            //! Function identifier
-            Identifier identifier;
-            //! Arguments of the function in order of declaration
-            std::vector<Identifier> arguments;
-            //! Statements acting as the function body
-            std::vector<std::unique_ptr<Statement>> body;
+    //! Various types of definitions
+    namespace definitions {
+        /** \class Function
+         * \brief Function Definition node
+         *
+         * Function Definition node contains the function identifier, a set of arguments and a statement-block body.
+         */
+        class Function : public Definition {
+            public:
+                //! Function identifier
+                Identifier identifier;
+                //! Arguments of the function in order of declaration
+                std::vector<Identifier> arguments;
+                //! Statements acting as the function body
+                std::vector<std::unique_ptr<Statement>> body;
 
-            FunctionDefinition(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
-                : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
+                Function(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
+                        : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
 
-            bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
-    };
+                bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
+        };
 
-    /** \class VariableStatement
-     * \brief Variable Definition Statement node
-     *
-     * Variable Definition Statement node contains the variable identifier and the value expression.
-     */
-    class VariableStatement : public Statement {
-        public:
-            //! Variable identifier
-            Identifier identifier;
-            //! Value expression
-            std::unique_ptr<Expression> value;
+        /** \class Variable
+         * \brief Variable Definition node
+         *
+         * Variable Definition contains the variable statement.
+         */
+        class Variable : public Definition {
+            public:
+                std::unique_ptr<statements::Variable> statement;
 
-            VariableStatement(Identifier id, std::unique_ptr<Expression> val)
-                    : identifier(std::move(id)), value(std::move(val)) {}
+                explicit Variable(std::unique_ptr<statements::Variable> statement)
+                        : statement(std::move(statement)) {}
 
-            bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
-    };
+                bool equals(Node *other) override;
+                std::string describe() override;
+                std::vector<Node *> children() override;
+        };
+    }
 
-    /** \class VariableDefinition
-     * \brief Variable Definition node
-     *
-     * Variable Definition contains the variable statement.
-     */
-    class VariableDefinition : public Definition {
-        public:
-            std::unique_ptr<VariableStatement> statement;
-
-            explicit VariableDefinition(std::unique_ptr<VariableStatement> statement)
-            : statement(std::move(statement)) {}
-
-            bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
-    };
 
     /** \class Program
      * \brief Program node
