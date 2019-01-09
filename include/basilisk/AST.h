@@ -399,8 +399,8 @@ namespace basilisk::ast {
              *
              * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
              */
-            //TODO better name? Void?
-            class Standalone : public Statement {
+            //TODO Discard
+            class Discard : public Statement {
                 public:
                     std::unique_ptr<Expression> expression;
 
@@ -411,7 +411,7 @@ namespace basilisk::ast {
                      *
                      * \param expression Pointer to contained expression
                      */
-                    explicit Standalone(std::unique_ptr<Expression> expression)
+                    explicit Discard(std::unique_ptr<Expression> expression)
                             : expression(std::move(expression)) {}
 
                     bool equals(Node *other) override;
@@ -419,13 +419,12 @@ namespace basilisk::ast {
                     std::vector<Node *> children() override;
             };
 
-            /** \class Variable
-             * \brief Variable Statement node
+            /** \class Assignment
+             * \brief Assignment Statement node
              *
-             * Variable Statement node contains the variable identifier and the value expression.
+             * Assignment Statement node contains the variable identifier and the value expression.
              */
-             //TODO rename to assignment? might be more descriptive
-            class Variable : public Statement {
+            class Assignment : public Statement {
                 public:
                     //! Variable identifier
                     Identifier identifier;
@@ -433,14 +432,14 @@ namespace basilisk::ast {
                     std::unique_ptr<Expression> value;
 
                     /**
-                     * \brief Construct a Variable Statement node
+                     * \brief Construct an Assignment Statement node
                      *
-                     * Construct a Variable Statement node from the variable's identifier and value expression.
+                     * Construct an Assignment Statement node from the variable's identifier and value expression.
                      *
                      * \param id Identifier
                      * \param val Pointer to value expression
                      */
-                    Variable(Identifier id, std::unique_ptr<Expression> val)
+                    Assignment(Identifier id, std::unique_ptr<Expression> val)
                             : identifier(std::move(id)), value(std::move(val)) {}
 
                     bool equals(Node *other) override;
@@ -493,20 +492,20 @@ namespace basilisk::ast {
         /** \class Variable
          * \brief Variable Definition node
          *
-         * Variable Definition contains the variable statement.
+         * Variable Definition contains an assignment statement.
          */
         class Variable : public Definition {
             public:
-                std::unique_ptr<statements::Variable> statement;
+                std::unique_ptr<statements::Assignment> statement;
 
                 /**
                  * \brief Construct a Variable Definition node
                  *
-                 * Construct a Variable Definition node from a variable statement.
+                 * Construct a Variable Definition node from an assignment statement.
                  *
-                 * \param statement Pointer to the variable statement
+                 * \param statement Pointer to the assignment statement
                  */
-                explicit Variable(std::unique_ptr<statements::Variable> statement)
+                explicit Variable(std::unique_ptr<statements::Assignment> statement)
                         : statement(std::move(statement)) {}
 
                 bool equals(Node *other) override;

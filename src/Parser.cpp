@@ -436,8 +436,8 @@ namespace basilisk::parser {
      *
      * \return Pointer to resulting Standalone Statement node
      */
-    std::unique_ptr<ast::statements::Standalone> StatementParser::standalone() {
-        // Standalone Statement -> expecting Expression SEMICOLON
+    std::unique_ptr<ast::statements::Discard> StatementParser::discard() {
+        // Discard Statement -> expecting Expression SEMICOLON
 
         // Expression
         auto expr = ExpressionParser(get, peek).expression();
@@ -451,12 +451,12 @@ namespace basilisk::parser {
             if (t.tag != tokens::tags::semicolon) {
                 // Unexpected token
                 std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Standalone Statement and expecting SEMICOLON.";
+                message << "Unexpected token " << t << " when parsing Discard Statement and expecting SEMICOLON.";
                 throw ParserException(message.str());
             }
         }
 
-        return std::make_unique<ast::statements::Standalone>(std::move(expr));
+        return std::make_unique<ast::statements::Discard>(std::move(expr));
     }
 
     /**
@@ -464,8 +464,8 @@ namespace basilisk::parser {
      *
      * \return Pointer to resulting Variable Statement node
      */
-    std::unique_ptr<ast::statements::Variable> StatementParser::variable() {
-        // Variable statement -> expecting IDENTIFIER, ASSIGN, value expression and SEMICOLON
+    std::unique_ptr<ast::statements::Assignment> StatementParser::assignment() {
+        // Assignment statement -> expecting IDENTIFIER, ASSIGN, value expression and SEMICOLON
 
         // Identifier
         std::string id;
@@ -477,7 +477,7 @@ namespace basilisk::parser {
             if (t.tag != tokens::tags::identifier) {
                 // Unexpected token
                 std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Statement and expecting IDENTIFIER.";
+                message << "Unexpected token " << t << " when parsing Assignment Statement and expecting IDENTIFIER.";
                 throw ParserException(message.str());
             }
 
@@ -494,7 +494,7 @@ namespace basilisk::parser {
             if (t.tag != tokens::tags::assign) {
                 // Unexpected token
                 std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Statement and expecting ASSIGN.";
+                message << "Unexpected token " << t << " when parsing Assignment Statement and expecting ASSIGN.";
                 throw ParserException(message.str());
             }
         }
@@ -511,12 +511,12 @@ namespace basilisk::parser {
             if (t.tag != tokens::tags::semicolon) {
                 // Unexpected token
                 std::ostringstream message;
-                message << "Unexpected token " << t << " when parsing Variable Statement and expecting SEMICOLON.";
+                message << "Unexpected token " << t << " when parsing Assignment Statement and expecting SEMICOLON.";
                 throw ParserException(message.str());
             }
         }
 
-        return std::make_unique<ast::statements::Variable>(id, std::move(val));
+        return std::make_unique<ast::statements::Assignment>(id, std::move(val));
     }
 
     /**
@@ -525,7 +525,7 @@ namespace basilisk::parser {
      * \return Pointer to resulting Statement node
      */
     std::unique_ptr<ast::Statement> StatementParser::statement() {
-        // Statement -> expecting RETURN Expression SEMICOLON, Variable Statement, or Expression SEMICOLON
+        // Statement -> expecting RETURN Expression SEMICOLON, Assignment Statement, or Expression SEMICOLON
 
         // Check first token
         tokens::Token t = peek(0);
@@ -533,19 +533,19 @@ namespace basilisk::parser {
             // RETURN -> Return Statement
             return return_kw();
         } else if (t.tag == tokens::tags::identifier) {
-            // IDENTIFIER -> Variable Statement or Standalone Statement
+            // IDENTIFIER -> Assignment Statement or Discard Statement
 
             // Check second token
             if (peek(1).tag == tokens::tags::assign) {
-                // ASSIGN -> Variable Statement (Expression cannot contain ASSIGN)
-                return variable();
+                // ASSIGN -> Assignment Statement (Expression cannot contain ASSIGN)
+                return assignment();
             } else {
-                // Otherwise -> Standalone Statement (Variable Statement requires ASSIGN)
-                return standalone();
+                // Otherwise -> Discard Statement (Assignment Statement requires ASSIGN)
+                return discard();
             }
         } else {
-            // Otherwise -> Standalone Statement
-            return standalone();
+            // Otherwise -> Discard Statement
+            return discard();
         }
     }
     //--- End StatementParser implementation
@@ -557,10 +557,10 @@ namespace basilisk::parser {
      * \return Pointer to resulting Variable Definition node
      */
     std::unique_ptr<ast::definitions::Variable> DefinitionParser::variable() {
-        // Variable Definition -> expecting Variable Statement
+        // Variable Definition -> expecting Assignment Statement
 
-        // Variable statement
-        auto stmt = StatementParser(get, peek).variable();
+        // Assignment statement
+        auto stmt = StatementParser(get, peek).assignment();
 
         return std::make_unique<ast::definitions::Variable>(std::move(stmt));
     }

@@ -858,14 +858,14 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 compare_ast(result.get(), correct.get());
             }
 
-            // Check correctly recognising variable statement
-            BOOST_AUTO_TEST_CASE( pick_variable ) {
+            // Check correctly recognising assignment statement
+            BOOST_AUTO_TEST_CASE( pick_assignment ) {
                 // Construct fixture
                 QueuesFixture qf("x = 1.0;");
 
                 // Correct result
                 auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                auto correct = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                auto correct = std::make_unique<ast::statements::Assignment>("x", std::move(value));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -873,15 +873,15 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 compare_ast(result.get(), correct.get());
             }
 
-            // Check correctly recognising standalone statement starting with identifier
-            BOOST_AUTO_TEST_CASE( pick_standalone_identifier ) {
+            // Check correctly recognising discard statement starting with identifier
+            BOOST_AUTO_TEST_CASE( pick_discard_identifier ) {
                 // Construct fixture
                 QueuesFixture qf("f();");
 
                 // Correct result
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 auto expr = std::make_unique<ast::expressions::FunctionCall>("f", std::move(in_args));
-                auto correct = std::make_unique<ast::statements::Standalone>(std::move(expr));
+                auto correct = std::make_unique<ast::statements::Discard>(std::move(expr));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -889,14 +889,14 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 compare_ast(result.get(), correct.get());
             }
 
-            // Check correctly recognising standalone statement not starting with identifier
-            BOOST_AUTO_TEST_CASE( pick_standalone ) {
+            // Check correctly recognising discard statement not starting with identifier
+            BOOST_AUTO_TEST_CASE( pick_discard ) {
                 // Construct fixture
                 QueuesFixture qf("1.0;");
 
                 // Correct result
                 auto expr = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                auto correct = std::make_unique<ast::statements::Standalone>(std::move(expr));
+                auto correct = std::make_unique<ast::statements::Discard>(std::move(expr));
 
                 // Parse
                 auto result = parser::StatementParser(qf.get_f, qf.peek_f).statement();
@@ -951,7 +951,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
-            BOOST_AUTO_TEST_SUITE(standalone)
+            BOOST_AUTO_TEST_SUITE(discard)
                 // Check correct
                 BOOST_AUTO_TEST_CASE( correct ) {
                     // Construct fixture
@@ -959,10 +959,10 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                    auto correct = std::make_unique<ast::statements::Standalone>(std::move(value));
+                    auto correct = std::make_unique<ast::statements::Discard>(std::move(value));
 
                     // Parse
-                    auto result = parser::StatementParser(qf.get_f, qf.peek_f).standalone();
+                    auto result = parser::StatementParser(qf.get_f, qf.peek_f).discard();
 
                     compare_ast(result.get(), correct.get());
                 }
@@ -973,7 +973,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0");
 
                     // Check exception on parse
-                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).standalone(), parser::ParserException);
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).discard(), parser::ParserException);
                 }
 
                 // Check semicolon gets consumed
@@ -982,14 +982,14 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0;");
 
                     // Parse out parenthesised expression
-                    parser::StatementParser(qf.get_f, qf.peek_f).standalone();
+                    parser::StatementParser(qf.get_f, qf.peek_f).discard();
 
                     // Check the top of the input is not a SEMICOLON
                     BOOST_TEST_CHECK(qf.peek(0).tag != tags::semicolon, "Semicolon must be consumed.");
                 }
             BOOST_AUTO_TEST_SUITE_END()
 
-            BOOST_AUTO_TEST_SUITE(variable)
+            BOOST_AUTO_TEST_SUITE(assignment)
                 // Check correct
                 BOOST_AUTO_TEST_CASE( correct ) {
                     // Construct fixture
@@ -997,10 +997,10 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                    auto correct = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                    auto correct = std::make_unique<ast::statements::Assignment>("x", std::move(value));
 
                     // Parse
-                    auto result = parser::StatementParser(qf.get_f, qf.peek_f).variable();
+                    auto result = parser::StatementParser(qf.get_f, qf.peek_f).assignment();
 
                     compare_ast(result.get(), correct.get());
                 }
@@ -1011,7 +1011,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("1.0");
 
                     // Check exception on parse
-                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).assignment(), parser::ParserException);
                 }
 
                 // Check exception on unexpected token instead of ASSIGN
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("x 1.0");
 
                     // Check exception on parse
-                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).assignment(), parser::ParserException);
                 }
 
                 // Check exception on unexpected token instead of SEMICOLON
@@ -1029,7 +1029,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("x = 1.0");
 
                     // Check exception on parse
-                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).variable(), parser::ParserException);
+                    BOOST_CHECK_THROW(parser::StatementParser(qf.get_f, qf.peek_f).assignment(), parser::ParserException);
                 }
 
                 // Check semicolon gets consumed
@@ -1038,7 +1038,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                     QueuesFixture qf("x = 1.0;");
 
                     // Parse out parenthesised expression
-                    parser::StatementParser(qf.get_f, qf.peek_f).variable();
+                    parser::StatementParser(qf.get_f, qf.peek_f).assignment();
 
                     // Check the top of the input is not a SEMICOLON
                     BOOST_TEST_CHECK(qf.peek(0).tag != tags::semicolon, "Semicolon must be consumed.");
@@ -1070,7 +1070,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                 // Correct result
                 auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                auto var_stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                auto var_stmt = std::make_unique<ast::statements::Assignment>("x", std::move(value));
                 auto correct = std::make_unique<ast::definitions::Variable>(std::move(var_stmt));
 
                 // Parse
@@ -1227,7 +1227,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
 
                     // Correct result
                     auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                    auto var_stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                    auto var_stmt = std::make_unique<ast::statements::Assignment>("x", std::move(value));
                     auto correct = std::make_unique<ast::definitions::Variable>(std::move(var_stmt));
 
                     // Parse
@@ -1254,7 +1254,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 {
                     // x = 1.0;
                     auto value = std::make_unique<ast::expressions::LiteralDouble>(1.0);
-                    auto stmt = std::make_unique<ast::statements::Variable>("x", std::move(value));
+                    auto stmt = std::make_unique<ast::statements::Assignment>("x", std::move(value));
                     auto def = std::make_unique<ast::definitions::Variable>(std::move(stmt));
                     corr_defs.push_back(std::move(def));
                 }
@@ -1348,7 +1348,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
         {
             // pi = 3.14;
             auto value = std::make_unique<ast::expressions::LiteralDouble>(3.14);
-            auto stmt = std::make_unique<ast::statements::Variable>("pi", std::move(value));
+            auto stmt = std::make_unique<ast::statements::Assignment>("pi", std::move(value));
             auto def = std::make_unique<ast::definitions::Variable>(std::move(stmt));
             corr_defs.push_back(std::move(def));
         }
@@ -1368,7 +1368,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
             std::vector<std::unique_ptr<ast::Expression>> in_args;
             in_args.push_back(std::move(param));
             auto value = std::make_unique<ast::expressions::FunctionCall>("println", std::move(in_args));
-            auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
+            auto stmt = std::make_unique<ast::statements::Discard>(std::move(value));
             std::vector<std::unique_ptr<ast::Statement>> body;
             body.push_back(std::move(stmt));
             std::vector<ast::Identifier> args{"x"};
@@ -1385,13 +1385,13 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(param));
                 auto expr = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(expr));
+                auto stmt = std::make_unique<ast::statements::Discard>(std::move(expr));
                 body.push_back(std::move(stmt));
             }
             {
                 // pi = 3.0;
                 auto value = std::make_unique<ast::expressions::LiteralDouble>(3);
-                auto stmt = std::make_unique<ast::statements::Variable>("pi", std::move(value));
+                auto stmt = std::make_unique<ast::statements::Assignment>("pi", std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
@@ -1400,7 +1400,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(param));
                 auto value = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
+                auto stmt = std::make_unique<ast::statements::Discard>(std::move(value));
                 body.push_back(std::move(stmt));
             }
             {
@@ -1416,7 +1416,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
                 std::vector<std::unique_ptr<ast::Expression>> in_args;
                 in_args.push_back(std::move(mod));
                 auto value = std::make_unique<ast::expressions::FunctionCall>("write", std::move(in_args));
-                auto stmt = std::make_unique<ast::statements::Standalone>(std::move(value));
+                auto stmt = std::make_unique<ast::statements::Discard>(std::move(value));
                 body.push_back(std::move(stmt));
             }
             {

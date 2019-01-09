@@ -30,8 +30,8 @@ namespace basilisk::ast {
     class Statement;
     namespace statements {
         class Return;
-        class Standalone;
-        class Variable;
+        class Discard;
+        class Assignment;
     }
     class Definition;
     namespace definitions {
@@ -128,8 +128,8 @@ namespace basilisk::parser {
                     : get(get), peek(peek) {}
 
             std::unique_ptr<ast::statements::Return> return_kw();
-            std::unique_ptr<ast::statements::Standalone> standalone();
-            std::unique_ptr<ast::statements::Variable> variable();
+            std::unique_ptr<ast::statements::Discard> discard();
+            std::unique_ptr<ast::statements::Assignment> assignment();
             std::unique_ptr<ast::Statement> statement();
     };
 

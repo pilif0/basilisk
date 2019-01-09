@@ -163,11 +163,11 @@ namespace basilisk::ast {
             return util::ptr_equals(expression.get(), rhs->expression.get());
         }
 
-        bool Standalone::equals(Node *other) {
-            // Two standalone statements are equal if their expression is equal
+        bool Discard::equals(Node *other) {
+            // Two discard statements are equal if their expression is equal
 
             // Check type
-            auto rhs = dynamic_cast<Standalone*>(other);
+            auto rhs = dynamic_cast<Discard*>(other);
             if (!rhs) {
                 return false;
             }
@@ -176,11 +176,11 @@ namespace basilisk::ast {
             return util::ptr_equals(expression.get(), rhs->expression.get());
         }
 
-        bool Variable::equals(Node *other) {
-            // Two variable statements are equal if their identifier and value expression are equal
+        bool Assignment::equals(Node *other) {
+            // Two assignment statements are equal if their identifier and value expression are equal
 
             // Check type
-            auto rhs = dynamic_cast<Variable*>(other);
+            auto rhs = dynamic_cast<Assignment*>(other);
             if (!rhs) {
                 return false;
             }
@@ -282,7 +282,7 @@ namespace basilisk::ast {
 
     std::string statements::Return::describe() { return "Return Statement: return (1) ;"; }
 
-    std::string statements::Standalone::describe() { return "Standalone Statement: (1) ;"; }
+    std::string statements::Discard::describe() { return "Discard Statement: (1) ;"; }
 
     std::string definitions::Function::describe() {
         std::ostringstream result;
@@ -303,9 +303,9 @@ namespace basilisk::ast {
         return result.str();
     }
 
-    std::string statements::Variable::describe() {
+    std::string statements::Assignment::describe() {
         std::ostringstream result;
-        result << "Variable Statement: " << identifier << " = (1) ;";
+        result << "Assignment Statement: " << identifier << " = (1) ;";
         return result.str();
     }
 
@@ -343,7 +343,7 @@ namespace basilisk::ast {
 
     std::vector<Node *> statements::Return::children() { return {expression.get()}; }
 
-    std::vector<Node *> statements::Standalone::children() { return {expression.get()}; }
+    std::vector<Node *> statements::Discard::children() { return {expression.get()}; }
 
     std::vector<Node *> definitions::Function::children() {
         std::vector<Node *> result;
@@ -353,7 +353,7 @@ namespace basilisk::ast {
         return result;
     }
 
-    std::vector<Node *> statements::Variable::children() { return {value.get()}; }
+    std::vector<Node *> statements::Assignment::children() { return {value.get()}; }
 
     std::vector<Node *> definitions::Variable::children() { return {statement.get()}; }
 
