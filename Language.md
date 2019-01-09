@@ -17,6 +17,7 @@ A function argument is considered a local variable.
 The data type returned by each function, as well as of each argument, is a double.
 A function definition follows the form _identifier_ `(` _identifier-list_ `) {` _statement-block_ `}`.
 The statements in the function's body get executed in sequence and a value is returned by the `return` statement.
+A function with no `return` statement returns the value `0.0`.
 
 ## Expression
 An expression is built up from parenthised expressions, literals, identifier and function calls combined using various mathematical operations, that can be evaluated.
@@ -62,10 +63,10 @@ write(x) {
 
 main() {
     write(get_pi());
-    pi = 3;
+    pi = 3.0;
     write(pi);
-    write(1 + (3 * 4) % 5);
-    return 0;
+    write(1.0 + (3.0 * 4.0) % 5.0);
+    return 0.0;
 }
 ```
 

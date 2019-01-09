@@ -1,0 +1,17 @@
+pi = 3.14;
+
+get_pi() {
+    return pi;
+}
+
+write(x) {
+    println(x);
+}
+
+main() {
+    write(get_pi());
+    pi = 3.0;
+    write(pi);
+    write(1.0 + (3.0 * 4.0) % 5.0);
+    return 0.0;
+}
