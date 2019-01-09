@@ -16,8 +16,6 @@
 #include <functional>
 #include <basilisk/Parser.h>
 
-//TODO safe shutdown on lexer fail
-
 /**
  * \brief Print usage into standard error
  *

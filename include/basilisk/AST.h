@@ -399,7 +399,6 @@ namespace basilisk::ast {
              *
              * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
              */
-            //TODO Discard
             class Discard : public Statement {
                 public:
                     std::unique_ptr<Expression> expression;
