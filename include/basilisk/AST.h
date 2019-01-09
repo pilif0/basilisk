@@ -10,7 +10,6 @@
 #include <string>
 #include <memory>
 
-//TODO add docs to constructors
 //TODO determine whether definition order in program should matter
 //! Abstract Syntax Tree definitions
 namespace basilisk::ast {
@@ -58,6 +57,10 @@ namespace basilisk::ast {
 
     /** \class Expression
      * \brief Base class for expression nodes
+     *
+     * Base class for all expression nodes.
+     * Expressions (as opposed to statements) have a value.
+     * This class represents the top level in the precedence hierarchy (ie. modulo).
      */
     class Expression : public Node {
         protected:
@@ -69,7 +72,10 @@ namespace basilisk::ast {
     namespace expressions {
         // Expression levels
         /** \class Expression1
-         * \brief Base class for Expression1 and SumExpression and SubExpression
+         * \brief Base class for first-level expressions
+         *
+         * Base class for first-level expressions, as well as all lower levels.
+         * This class represents the first level in the precedence hierarchy (ie. summation, subtraction).
          */
         class Expression1 : public Expression {
             protected:
@@ -77,7 +83,10 @@ namespace basilisk::ast {
         };
 
         /** \class Expression2
-         * \brief Base class for Expression2, MulExpression and DivExpression
+         * \brief Base class for second-level expressions
+         *
+         * Base class for second-level expressions, as well as all lower levels.
+         * This class represents the second level in the precedence hierarchy (ie. multiplication, division).
          */
         class Expression2 : public Expression1 {
             protected:
@@ -85,7 +94,10 @@ namespace basilisk::ast {
         };
 
         /** \class Expression3
-         * \brief Base class for Expression3 and NegExpression
+         * \brief Base class for third-level expressions
+         *
+         * Base class for third-level expressions, as well as all lower levels.
+         * This class represents the third level in the precedence hierarchy (ie. negation).
          */
         class Expression3 : public Expression2 {
             protected:
@@ -93,7 +105,11 @@ namespace basilisk::ast {
         };
 
         /** \class Expression4
-         * \brief Base class for DoubleLitExpression, ParExpression, IdentifierExpression and FuncExpression
+         * \brief Base class for fourth-level expressions
+         *
+         * Base class for fourth-level expressions, as well as all lower levels.
+         * This class represents the fourth (bottom) level in the precedence hierarchy (ie. literals, identifiers,
+         *  parenthesised expressions, function calls).
          */
         class Expression4 : public Expression3 {
             protected:
@@ -109,6 +125,14 @@ namespace basilisk::ast {
                 std::unique_ptr<Expression1> x;
                 std::unique_ptr<Expression> m;
 
+                /**
+                 * \brief Construct a Modulo Expression node
+                 *
+                 * Construct a Modulo Expression node from the argument and divisor.
+                 *
+                 * \param x Pointer to argument expression
+                 * \param m Pointer to divisor expression
+                 */
                 Modulo(std::unique_ptr<Expression1> x, std::unique_ptr<Expression> m)
                     : x(std::move(x)), m(std::move(m)) {}
 
@@ -126,6 +150,14 @@ namespace basilisk::ast {
                 std::unique_ptr<Expression2> lhs;
                 std::unique_ptr<Expression1> rhs;
 
+                /**
+                 * \brief Construct a Summation Expression node
+                 *
+                 * Construct a Summation Expression node from the left and right hand sides.
+                 *
+                 * \param lhs Pointer to left hand side expression
+                 * \param rhs Pointer to right hand side expression
+                 */
                 Summation(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
@@ -142,6 +174,14 @@ namespace basilisk::ast {
                 std::unique_ptr<Expression2> lhs;
                 std::unique_ptr<Expression1> rhs;
 
+                /**
+                 * \brief Construct a Subtraction Expression node
+                 *
+                 * Construct a Subtraction Expression node from the left and right hand sides.
+                 *
+                 * \param lhs Pointer to left hand side expression
+                 * \param rhs Pointer to right hand side expression
+                 */
                 Subtraction(std::unique_ptr<Expression2> lhs, std::unique_ptr<Expression1> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
@@ -159,6 +199,14 @@ namespace basilisk::ast {
                 std::unique_ptr<Expression3> lhs;
                 std::unique_ptr<Expression2> rhs;
 
+                /**
+                 * \brief Construct a Multiplication Expression node
+                 *
+                 * Construct a Multiplication Expression node from the left and right hand sides.
+                 *
+                 * \param lhs Pointer to left hand side expression
+                 * \param rhs Pointer to right hand side expression
+                 */
                 Multiplication(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
@@ -175,6 +223,14 @@ namespace basilisk::ast {
                 std::unique_ptr<Expression3> lhs;
                 std::unique_ptr<Expression2> rhs;
 
+                /**
+                 * \brief Construct a Division Expression node
+                 *
+                 * Construct a Division Expression node from the left and right hand sides.
+                 *
+                 * \param lhs Pointer to left hand side expression
+                 * \param rhs Pointer to right hand side expression
+                 */
                 Division(std::unique_ptr<Expression3> lhs, std::unique_ptr<Expression2> rhs)
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
@@ -191,6 +247,13 @@ namespace basilisk::ast {
             public:
                 std::unique_ptr<Expression3> x;
 
+                /**
+                 * \brief Construct a Numeric Negation Expression node
+                 *
+                 * Construct a Numeric Negation Expression node from the negated expression.
+                 *
+                 * \param x Pointer to negated expression
+                 */
                 explicit NumericNegation(std::unique_ptr<Expression3> x)
                     : x(std::move(x)) {}
 
@@ -208,6 +271,13 @@ namespace basilisk::ast {
                 //! Value of the literal
                 double value;
 
+                /**
+                 * \brief Construct a Double Literal Expression node
+                 *
+                 * Construct a Double Literal Expression node from a value.
+                 *
+                 * \param value Value
+                 */
                 explicit LiteralDouble(double value)
                     : value(value) {}
 
@@ -224,6 +294,13 @@ namespace basilisk::ast {
                 //! Inner expression
                 std::unique_ptr<Expression> expression;
 
+                /**
+                 * \brief Construct a Parenthesised Expression node
+                 *
+                 * Construct a Parenthesised Expression node from the contained expression.
+                 *
+                 * \param expression Pointer to contained expression
+                 */
                 explicit Parenthesised(std::unique_ptr<Expression> expression)
                     : expression(std::move(expression)) {}
 
@@ -240,6 +317,13 @@ namespace basilisk::ast {
                 //! Contained identifier
                 Identifier identifier;
 
+                /**
+                 * \brief Construct a Identifier Expression node
+                 *
+                 * Construct an Identifier Expression node from an identifier.
+                 *
+                 * \param identifier Identifier
+                 */
                 explicit IdentifierExpression(Identifier identifier)
                     : identifier(std::move(identifier)) {}
 
@@ -258,6 +342,14 @@ namespace basilisk::ast {
                 //! Supplied expressions for arguments
                 std::vector<std::unique_ptr<Expression>> arguments;
 
+                /**
+                 * \brief Construct a Function Call Expression node
+                 *
+                 * Construct a Function Call Expression node from the function's identifier and the argument expressions.
+                 *
+                 * \param identifier Function identifier
+                 * \param arguments Pointers to expressions for each argument
+                 */
                 FunctionCall(Identifier identifier, std::vector<std::unique_ptr<Expression>> arguments)
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
 
@@ -287,6 +379,13 @@ namespace basilisk::ast {
                     //! Returned expression
                     std::unique_ptr<Expression> expression;
 
+                    /**
+                     * \brief Construct a Return Statement node
+                     *
+                     * Construct a Return Statement node from the return value expression.
+                     *
+                     * \param expression Pointer to return value expression
+                     */
                     explicit Return(std::unique_ptr<Expression> expression)
                             : expression(std::move(expression)) {}
 
@@ -305,6 +404,13 @@ namespace basilisk::ast {
                 public:
                     std::unique_ptr<Expression> expression;
 
+                    /**
+                     * \brief Construct a Standalone Statement node
+                     *
+                     * Construct a Standalone Statement node from an expression.
+                     *
+                     * \param expression Pointer to contained expression
+                     */
                     explicit Standalone(std::unique_ptr<Expression> expression)
                             : expression(std::move(expression)) {}
 
@@ -326,6 +432,14 @@ namespace basilisk::ast {
                     //! Value expression
                     std::unique_ptr<Expression> value;
 
+                    /**
+                     * \brief Construct a Variable Statement node
+                     *
+                     * Construct a Variable Statement node from the variable's identifier and value expression.
+                     *
+                     * \param id Identifier
+                     * \param val Pointer to value expression
+                     */
                     Variable(Identifier id, std::unique_ptr<Expression> val)
                             : identifier(std::move(id)), value(std::move(val)) {}
 
@@ -359,6 +473,15 @@ namespace basilisk::ast {
                 //! Statements acting as the function body
                 std::vector<std::unique_ptr<Statement>> body;
 
+                /**
+                 * \brief Construct a Function Definition node
+                 *
+                 * Construct a Function Definition node from the function's identifier, arguments and body.
+                 *
+                 * \param id Identifier
+                 * \param args Argument identifiers
+                 * \param body Pointers to statements comprising the function body
+                 */
                 Function(Identifier id, std::vector<Identifier> args, std::vector<std::unique_ptr<Statement>> body)
                         : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
 
@@ -376,6 +499,13 @@ namespace basilisk::ast {
             public:
                 std::unique_ptr<statements::Variable> statement;
 
+                /**
+                 * \brief Construct a Variable Definition node
+                 *
+                 * Construct a Variable Definition node from a variable statement.
+                 *
+                 * \param statement Pointer to the variable statement
+                 */
                 explicit Variable(std::unique_ptr<statements::Variable> statement)
                         : statement(std::move(statement)) {}
 
@@ -397,6 +527,13 @@ namespace basilisk::ast {
             //! Pointers to definitions in this program in order of definition
             std::vector<std::unique_ptr<Definition>> definitions;
 
+            /**
+             * \brief Construct a Program node
+             *
+             * Construct a Program node from the definitions comprising the program.
+             *
+             * \param defs Pointers to definitions comprising the program
+             */
             explicit Program(std::vector<std::unique_ptr<Definition>> defs)
                 : definitions(std::move(defs)) {}
 

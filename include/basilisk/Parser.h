@@ -54,9 +54,21 @@ namespace basilisk::parser {
      * @{
      */
 
-    //! Input get function type - no arguments and return a single character
+    /**
+     * \brief Input get function type
+     *
+     * Input get function type.
+     * Takes no argument.
+     * Pop the top element from the buffer and returns it.
+     */
     typedef std::function<tokens::Token ()> get_f_t;
-    //! Input peek function type - one input (offset to peek at with next being `0`) and return a single character
+    /**
+     * \brief Input peek function type
+     *
+     * Input peek function type.
+     * Takes an unsigned argument that is the offset of the token (top of the buffer has offset `0`).
+     * Returns the token `offset` elements from the top of the buffer.
+     */
     typedef std::function<tokens::Token (unsigned)> peek_f_t;
 
     /** \class ExpressionParser

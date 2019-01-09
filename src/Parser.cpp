@@ -15,16 +15,15 @@ namespace exp = basilisk::ast::expressions;
 #include <memory>
 #include <string>
 
-//TODO improve function docs
 //TODO improve reporting of unexpected tokens (might require a substantial redesign to have sufficient information)
 //TODO add recognition for error tokens (currently usually picked up as unexpected tokens)
 namespace basilisk::parser {
 
     //--- Start ExpressionParser implementation
     /**
-     * \brief Parse ParExpression from an input token buffer
+     * \brief Parse Parenthesised Expression node from the input
      *
-     * \return Pointer to resulting ParExpression node
+     * \return Pointer to resulting Parenthesised Expression node
      */
     std::unique_ptr<exp::Parenthesised> ExpressionParser::parenthesised() {
         // Parenthesised expression -> expecting LPAR Expression RPAR
@@ -58,7 +57,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse list of Expressions from an input token buffer
+     * \brief Parse list of Expression nodes from the input
      *
      * \return Vector of pointers to resulting Expression nodes
      */
@@ -85,7 +84,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Double Literal Expression from an input token buffer
+     * \brief Parse Double Literal Expression node from the input
      *
      * \return Pointers to the resulting Double Literal Expression node
      */
@@ -124,7 +123,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Function Call Expression from an input token buffer
+     * \brief Parse Function Call Expression node from the input
      *
      * \return Pointers to the resulting Function Call Expression node
      */
@@ -188,7 +187,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Identifier Expression from an input token buffer
+     * \brief Parse Identifier Expression node from the input
      *
      * \return Pointers to the resulting Identifier Expression node
      */
@@ -217,7 +216,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression4 from an input token buffer
+     * \brief Parse Expression4 node from the input
      *
      * \return Pointer to resulting Expression4 node
      */
@@ -252,7 +251,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression3 from an input token buffer
+     * \brief Parse Expression3 node from the input
      *
      * \return Pointer to resulting Expression3 node
      */
@@ -278,7 +277,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression2 from an input token buffer
+     * \brief Parse Expression2 node from the input
      *
      * \return Pointer to resulting Expression2 node
      */
@@ -319,7 +318,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression1 from an input token buffer
+     * \brief Parse Expression1 node from the input
      *
      * \return Pointer to resulting Expression1 node
      */
@@ -360,7 +359,7 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Expression from an input token buffer
+     * \brief Parse Expression node from the input
      *
      * \return Pointer to resulting Expression node
      */
@@ -391,10 +390,8 @@ namespace basilisk::parser {
 
     //--- Start StatementParser implementation
     /**
-     * \brief Parse Return Statement from an input token buffer
+     * \brief Parse Return Statement node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Return Statement node
      */
     std::unique_ptr<ast::statements::Return> StatementParser::return_kw() {
@@ -435,10 +432,8 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Standalone Statement from an input token buffer
+     * \brief Parse Standalone Statement node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Standalone Statement node
      */
     std::unique_ptr<ast::statements::Standalone> StatementParser::standalone() {
@@ -465,10 +460,8 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Variable Statement from an input token buffer
+     * \brief Parse Variable Statement node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Variable Statement node
      */
     std::unique_ptr<ast::statements::Variable> StatementParser::variable() {
@@ -527,10 +520,8 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Statement from an input token buffer
+     * \brief Parse Statement node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Statement node
      */
     std::unique_ptr<ast::Statement> StatementParser::statement() {
@@ -561,10 +552,8 @@ namespace basilisk::parser {
 
     //--- Start DefinitionParser implementation
     /**
-     * \brief Parse Variable Definition from an input token buffer
+     * \brief Parse Variable Definition node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Variable Definition node
      */
     std::unique_ptr<ast::definitions::Variable> DefinitionParser::variable() {
@@ -577,10 +566,8 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Function Definition from an input token buffer
+     * \brief Parse Function Definition node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Function Definition node
      */
     std::unique_ptr<ast::definitions::Function> DefinitionParser::function() {
@@ -709,10 +696,8 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Definition from an input token buffer
+     * \brief Parse Definition node from the input
      *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Pointer to resulting Definition node
      */
     std::unique_ptr<ast::Definition> DefinitionParser::definition() {
@@ -737,12 +722,8 @@ namespace basilisk::parser {
 
     //--- Start ProgramParser implementation
     /**
-     * \brief Parse Program from an input token buffer
+     * \brief Parse Program node from the input
      *
-     * Use `get` function to obtain tokens from an input buffer, parse those into an AST and return that tree.
-     *
-     * \param get Function to get the next input token
-     * \param peek Function to peek at the next input token
      * \return Resulting Program node
      */
     ast::Program ProgramParser::program() {

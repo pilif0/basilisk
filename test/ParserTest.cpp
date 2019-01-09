@@ -20,8 +20,6 @@ namespace tags = basilisk::tokens::tags;
 namespace parser = basilisk::parser;
 namespace ast = basilisk::ast;
 
-//TODO make all check messages properly descriptive
-
 //! Fixture that sets up two queues for use as lexer input and output
 struct QueuesFixture {
     //! Token queue type
@@ -78,7 +76,7 @@ struct QueuesFixture {
             basilisk::lexer::lex(lexer_get, lexer_peek, lexer_append);
         } catch (std::exception &/*e*/) {}
 
-        // Reverse order to move top of the queue to the back of the vecter
+        // Reverse order to move top of the queue to the back of the vector
         std::reverse(input.begin(), input.end());
     }
 
@@ -287,7 +285,7 @@ BOOST_AUTO_TEST_SUITE(Parser)
             BOOST_AUTO_TEST_SUITE_END()
 
             BOOST_AUTO_TEST_SUITE(expression_2)
-                // Note: correct mul and div recognition is taken care of by respecitve suites
+                // Note: correct mul and div recognition is taken care of by respective suites
 
                 // Check mixed expression mul of div
                 BOOST_AUTO_TEST_CASE( mixed_mul_div ) {
