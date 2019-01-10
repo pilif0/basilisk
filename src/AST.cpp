@@ -11,6 +11,43 @@
 
 namespace basilisk::ast {
 
+    //--- Start visitor accepting
+    void Node::accept(Visitor &visitor) { visitor.visit(*this); }
+
+    void Expression::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace expressions {
+        void Expression1::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression2::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression3::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression4::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Modulo::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Summation::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Subtraction::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Multiplication::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Division::accept(Visitor &visitor) { visitor.visit(*this); }
+        void NumericNegation::accept(Visitor &visitor) { visitor.visit(*this); }
+        void LiteralDouble::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Parenthesised::accept(Visitor &visitor) { visitor.visit(*this); }
+        void IdentifierExpression::accept(Visitor &visitor) { visitor.visit(*this); }
+        void FunctionCall::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Statement::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace statements {
+        void Return::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Discard::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Assignment::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Definition::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace definitions {
+        void Function::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Variable::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Program::accept(Visitor &visitor) { visitor.visit(*this); }
+    //--- End visitor accepting
+
     //--- Start node equality
     namespace expressions {
         bool Modulo::equals(Node *other) {
