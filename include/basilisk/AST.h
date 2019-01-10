@@ -540,40 +540,61 @@ namespace basilisk::ast {
     /** \class Visitor
      * \brief Base class for AST node visitors
      */
-     //TODO by default, relay everything to pure virtual Node* overload to have visitors handle general case instead of
-     //     quietly ignoring unhandled?
     class Visitor  {
         protected:
             Visitor() = default;
         public:
-            virtual void visit(Expression &) {}
-            virtual void visit(expressions::Modulo &) {}
-            virtual void visit(expressions::Expression1 &) {}
-            virtual void visit(expressions::Summation &) {}
-            virtual void visit(expressions::Subtraction &) {}
-            virtual void visit(expressions::Expression2 &) {}
-            virtual void visit(expressions::Multiplication &) {}
-            virtual void visit(expressions::Division &) {}
-            virtual void visit(expressions::Expression3 &) {}
-            virtual void visit(expressions::NumericNegation &) {}
-            virtual void visit(expressions::Expression4 &) {}
-            virtual void visit(expressions::IdentifierExpression &) {}
-            virtual void visit(expressions::Parenthesised &) {}
-            virtual void visit(expressions::FunctionCall &) {}
-            virtual void visit(expressions::LiteralDouble &) {}
+            virtual void visit(Expression &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(expressions::Modulo &node)
+                { visit(static_cast<Expression&>(node)); }
+            virtual void visit(expressions::Expression1 &node)
+                { visit(static_cast<Expression&>(node)); }
+            virtual void visit(expressions::Summation &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Subtraction &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Expression2 &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Multiplication &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::Division &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::Expression3 &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::NumericNegation &node)
+                { visit(static_cast<expressions::Expression3&>(node)); }
+            virtual void visit(expressions::Expression4 &node)
+                { visit(static_cast<expressions::Expression3&>(node)); }
+            virtual void visit(expressions::IdentifierExpression &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::Parenthesised &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::FunctionCall &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::LiteralDouble &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
 
-            virtual void visit(Statement &) {}
-            virtual void visit(statements::Assignment &) {}
-            virtual void visit(statements::Discard &) {}
-            virtual void visit(statements::Return &) {}
+            virtual void visit(Statement &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(statements::Assignment &node)
+                { visit(static_cast<Statement&>(node)); }
+            virtual void visit(statements::Discard &node)
+                { visit(static_cast<Statement&>(node)); }
+            virtual void visit(statements::Return &node)
+                { visit(static_cast<Statement&>(node)); }
 
-            virtual void visit(Definition &) {}
-            virtual void visit(definitions::Function &) {}
-            virtual void visit(definitions::Variable &) {}
+            virtual void visit(Definition &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(definitions::Function &node)
+                { visit(static_cast<Definition&>(node)); }
+            virtual void visit(definitions::Variable &node)
+                { visit(static_cast<Definition&>(node)); }
 
-            virtual void visit(Program &) {}
+            virtual void visit(Program &node)
+                { visit(static_cast<Node&>(node)); }
 
-            virtual void visit(Node &) {}
+            virtual void visit(Node &) = 0;
     };
 
     /**
