@@ -48,15 +48,6 @@ namespace basilisk::ast::util {
         return true;
     }
 
-    /**
-     * \brief Print the AST under the provided node to a string
-     *
-     * \param root AST root
-     * \return Resulting string
-     */
-     [[deprecated]]
-    std::string print_ast(Node *root);
-
     /** \class PrintVisitor
      * \brief Prints the AST to a string
      *

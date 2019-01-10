@@ -174,12 +174,12 @@ int main(int argc, char *argv[]) {
         // Write the output
         if (n < 2) {
             // Stdout output
-            std::cout << basilisk::ast::util::print_ast(&program);
+            std::cout << basilisk::ast::util::PrintVisitor::print(program);
         } else if (n == 2) {
             // File output
             std::string destination = argv[2];
             std::ofstream output(destination, std::ios::out);
-            output << basilisk::ast::util::print_ast(&program);
+            output << basilisk::ast::util::PrintVisitor::print(program);
         }
     } else {
         std::cerr << "No tokens could be lexed from the input.";
