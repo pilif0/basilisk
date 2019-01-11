@@ -10,7 +10,8 @@ set(basilisk_HEADERS
         "${INCL_DIR}/basilisk/Tokens.h"
         "${INCL_DIR}/basilisk/AST.h"
         "${INCL_DIR}/basilisk/AST_util.h"
-        "${INCL_DIR}/basilisk/Parser.h")
+        "${INCL_DIR}/basilisk/Parser.h"
+        "${INCL_DIR}/basilisk/Codegen.h")
 set(basilisk_SOURCES
         "${SRC_DIR}/Lexer.cpp"
         "${SRC_DIR}/Parser.cpp"
