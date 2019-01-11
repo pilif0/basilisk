@@ -16,7 +16,8 @@ set(basilisk_SOURCES
         "${SRC_DIR}/Lexer.cpp"
         "${SRC_DIR}/Parser.cpp"
         "${SRC_DIR}/AST.cpp"
-        "${SRC_DIR}/AST_util.cpp")
+        "${SRC_DIR}/AST_util.cpp"
+        "${SRC_DIR}/Codegen.cpp")
 
 # Copy source and header lists to parent for use in documentation
 set(basilisk_HEADERS ${basilisk_HEADERS} PARENT_SCOPE)
