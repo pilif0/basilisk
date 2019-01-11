@@ -127,8 +127,8 @@ void compare_ast(ast::Node *result, ast::Node *correct) {
     // Compare
     if (!result->equals(correct)) {
         // When wrong, display correct tree
-        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::print_ast(correct);
-        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::print_ast(result);
+        boost::unit_test::unit_test_log << "Correct tree:\n" << ast::util::PrintVisitor::print(*correct);
+        boost::unit_test::unit_test_log << "Resulting tree:\n" << ast::util::PrintVisitor::print(*result);
     }
     BOOST_TEST_CHECK(result->equals(correct), "Parsed tree must match hard-coded correct tree.");
 }
@@ -737,11 +737,11 @@ BOOST_AUTO_TEST_SUITE(Parser)
                         // When wrong, display correct list
                         boost::unit_test::unit_test_log << "Correct list:\n";
                         for (auto &e : correct) {
-                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                            boost::unit_test::unit_test_log << ast::util::PrintVisitor::print(*e.get());
                         }
                         boost::unit_test::unit_test_log << "Resulting list:\n";
                         for (auto &e : result) {
-                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                            boost::unit_test::unit_test_log << ast::util::PrintVisitor::print(*e.get());
                         }
                     }
                     BOOST_TEST_CHECK(ast::util::vec_equals(result, correct), "Parsed list must match hard-coded correct list.");
@@ -767,11 +767,11 @@ BOOST_AUTO_TEST_SUITE(Parser)
                         // When wrong, display correct list
                         boost::unit_test::unit_test_log << "Correct list:\n";
                         for (auto &e : correct) {
-                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                            boost::unit_test::unit_test_log << ast::util::PrintVisitor::print(*e.get());
                         }
                         boost::unit_test::unit_test_log << "Resulting list:\n";
                         for (auto &e : result) {
-                            boost::unit_test::unit_test_log << ast::util::print_ast(e.get());
+                            boost::unit_test::unit_test_log << ast::util::PrintVisitor::print(*e.get());
                         }
                     }
                     BOOST_TEST_CHECK(ast::util::vec_equals(result, correct), "Parsed list must match hard-coded correct list.");

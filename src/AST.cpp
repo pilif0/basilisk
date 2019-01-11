@@ -11,6 +11,43 @@
 
 namespace basilisk::ast {
 
+    //--- Start visitor accepting
+    void Node::accept(Visitor &visitor) { visitor.visit(*this); }
+
+    void Expression::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace expressions {
+        void Expression1::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression2::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression3::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Expression4::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Modulo::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Summation::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Subtraction::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Multiplication::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Division::accept(Visitor &visitor) { visitor.visit(*this); }
+        void NumericNegation::accept(Visitor &visitor) { visitor.visit(*this); }
+        void LiteralDouble::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Parenthesised::accept(Visitor &visitor) { visitor.visit(*this); }
+        void IdentifierExpression::accept(Visitor &visitor) { visitor.visit(*this); }
+        void FunctionCall::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Statement::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace statements {
+        void Return::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Discard::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Assignment::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Definition::accept(Visitor &visitor) { visitor.visit(*this); }
+    namespace definitions {
+        void Function::accept(Visitor &visitor) { visitor.visit(*this); }
+        void Variable::accept(Visitor &visitor) { visitor.visit(*this); }
+    }
+
+    void Program::accept(Visitor &visitor) { visitor.visit(*this); }
+    //--- End visitor accepting
+
     //--- Start node equality
     namespace expressions {
         bool Modulo::equals(Node *other) {
@@ -246,123 +283,4 @@ namespace basilisk::ast {
         return util::vec_equals(definitions, rhs->definitions);
     }
     //--- End node equality
-
-    //--- Start node descriptions
-    std::string expressions::Modulo::describe() { return "Modulo Expression: (1) % (2)"; }
-
-    std::string expressions::Summation::describe() { return "Summation Expression: (1) + (2)"; }
-
-    std::string expressions::Subtraction::describe() { return "Subtraction Expression: (1) - (2)"; }
-
-    std::string expressions::Multiplication::describe() { return "Multiplication Expression: (1) * (2)"; }
-
-    std::string expressions::Division::describe() { return "Division Expression: (1) / (2)"; }
-
-    std::string expressions::NumericNegation::describe() { return "Numeric Negation Expression: - (1)"; }
-
-    std::string expressions::LiteralDouble::describe() {
-        std::ostringstream result;
-        result << "Double Literal Expression: " << value;
-        return result.str();
-
-    }
-    std::string expressions::Parenthesised::describe() { return "Parenthesised Expression: ( (1) )"; }
-
-    std::string expressions::IdentifierExpression::describe() {
-        std::ostringstream result;
-        result << "Identifier Expression: " << identifier;
-        return result.str();
-    }
-
-    std::string expressions::FunctionCall::describe() {
-        std::ostringstream result;
-        result << "Function Call Expression: " << identifier << "(...)";
-        return result.str();
-    }
-
-    std::string statements::Return::describe() { return "Return Statement: return (1) ;"; }
-
-    std::string statements::Discard::describe() { return "Discard Statement: (1) ;"; }
-
-    std::string definitions::Function::describe() {
-        std::ostringstream result;
-        result << "Function Definition: " << identifier << "(";
-        bool not_first = false;
-        for (auto &c : arguments) {
-            // Print divider
-            if (not_first) {
-                result << ", ";
-            } else {
-                not_first = true;
-            }
-
-            // Print argument
-            result << c;
-        }
-        result << ")";
-        return result.str();
-    }
-
-    std::string statements::Assignment::describe() {
-        std::ostringstream result;
-        result << "Assignment Statement: " << identifier << " = (1) ;";
-        return result.str();
-    }
-
-    std::string definitions::Variable::describe() { return "Variable Definition: (1) ;"; }
-
-    std::string Program::describe() { return "Program:"; }
-    //--- End node descriptions
-
-    //--- Start node children
-    std::vector<Node *> expressions::Modulo::children() { return {x.get(), m.get()}; }
-
-    std::vector<Node *> expressions::Summation::children() { return {lhs.get(), rhs.get()}; }
-
-    std::vector<Node *> expressions::Subtraction::children() { return {lhs.get(), rhs.get()}; }
-
-    std::vector<Node *> expressions::Multiplication::children() { return {lhs.get(), rhs.get()}; }
-
-    std::vector<Node *> expressions::Division::children() { return {lhs.get(), rhs.get()}; }
-
-    std::vector<Node *> expressions::NumericNegation::children() { return {x.get()}; }
-
-    std::vector<Node *> expressions::LiteralDouble::children() { return {}; }
-
-    std::vector<Node *> expressions::Parenthesised::children() { return {expression.get()}; }
-
-    std::vector<Node *> expressions::IdentifierExpression::children() { return {}; }
-
-    std::vector<Node *> expressions::FunctionCall::children() {
-        std::vector<Node *> result;
-        for (auto &e : arguments) {
-            result.push_back(e.get());
-        }
-        return result;
-    }
-
-    std::vector<Node *> statements::Return::children() { return {expression.get()}; }
-
-    std::vector<Node *> statements::Discard::children() { return {expression.get()}; }
-
-    std::vector<Node *> definitions::Function::children() {
-        std::vector<Node *> result;
-        for (auto &e : body) {
-            result.push_back(e.get());
-        }
-        return result;
-    }
-
-    std::vector<Node *> statements::Assignment::children() { return {value.get()}; }
-
-    std::vector<Node *> definitions::Variable::children() { return {statement.get()}; }
-
-    std::vector<Node *> Program::children() {
-        std::vector<Node *> result;
-        for (auto &e : definitions) {
-            result.push_back(e.get());
-        }
-        return result;
-    }
-    //--- End node children
 }

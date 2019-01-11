@@ -21,6 +21,9 @@ namespace basilisk::ast {
      * @{
      */
 
+    // Forward-define visitor base class
+    class Visitor;
+
     /** \class Node
      * \brief Base class for all AST nodes
      */
@@ -36,17 +39,13 @@ namespace basilisk::ast {
              */
             virtual bool equals(Node *other) = 0;
             /**
-             * \brief Describe this node in one line
+             * \brief Accept a visitor
              *
-             * \return One line string description
-             */
-            virtual std::string describe() = 0;
-            /**
-             * \brief Vector of pointers to child nodes of this node
+             * Accept the visitor, calling the appropriate visit method.
              *
-             * \return Vector of pointers to Node
+             * \param visitor Visitor to accept
              */
-            virtual std::vector<Node*> children() = 0;
+            virtual void accept(Visitor &visitor);
 
             virtual ~Node() = default;
     };
@@ -65,6 +64,8 @@ namespace basilisk::ast {
     class Expression : public Node {
         protected:
             Expression() = default;
+        public:
+            void accept(Visitor &visitor) override;
     };
 
     //! Various types of expressions
@@ -80,6 +81,8 @@ namespace basilisk::ast {
         class Expression1 : public Expression {
             protected:
                 Expression1() = default;
+            public:
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Expression2
@@ -91,6 +94,8 @@ namespace basilisk::ast {
         class Expression2 : public Expression1 {
             protected:
                 Expression2() = default;
+            public:
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Expression3
@@ -102,6 +107,8 @@ namespace basilisk::ast {
         class Expression3 : public Expression2 {
             protected:
                 Expression3() = default;
+            public:
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Expression4
@@ -114,6 +121,8 @@ namespace basilisk::ast {
         class Expression4 : public Expression3 {
             protected:
                 Expression4() = default;
+            public:
+                void accept(Visitor &visitor) override;
         };
 
         // Base level
@@ -137,8 +146,7 @@ namespace basilisk::ast {
                     : x(std::move(x)), m(std::move(m)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         // 1st level
@@ -162,8 +170,7 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Subtraction
@@ -186,8 +193,7 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         // 2nd level
@@ -211,8 +217,7 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Division
@@ -235,8 +240,7 @@ namespace basilisk::ast {
                     : lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         // 3rd level
@@ -258,8 +262,7 @@ namespace basilisk::ast {
                     : x(std::move(x)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         // 4th level
@@ -282,8 +285,7 @@ namespace basilisk::ast {
                     : value(value) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Parenthesised
@@ -305,8 +307,7 @@ namespace basilisk::ast {
                     : expression(std::move(expression)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class IdentifierExpression
@@ -328,8 +329,7 @@ namespace basilisk::ast {
                     : identifier(std::move(identifier)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class FunctionCall
@@ -354,8 +354,7 @@ namespace basilisk::ast {
                         : identifier(std::move(identifier)), arguments(std::move(arguments)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
     }
 
@@ -365,6 +364,8 @@ namespace basilisk::ast {
     class Statement : public Node {
         protected:
             Statement() = default;
+        public:
+            void accept(Visitor &visitor) override;
     };
 
     //! Various types of statements
@@ -390,8 +391,7 @@ namespace basilisk::ast {
                             : expression(std::move(expression)) {}
 
                     bool equals(Node *other) override;
-                    std::string describe() override;
-                    std::vector<Node *> children() override;
+                    void accept(Visitor &visitor) override;
             };
 
             /** \class Standalone
@@ -414,8 +414,7 @@ namespace basilisk::ast {
                             : expression(std::move(expression)) {}
 
                     bool equals(Node *other) override;
-                    std::string describe() override;
-                    std::vector<Node *> children() override;
+                    void accept(Visitor &visitor) override;
             };
 
             /** \class Assignment
@@ -442,8 +441,7 @@ namespace basilisk::ast {
                             : identifier(std::move(id)), value(std::move(val)) {}
 
                     bool equals(Node *other) override;
-                    std::string describe() override;
-                    std::vector<Node *> children() override;
+                    void accept(Visitor &visitor) override;
             };
     }
 
@@ -453,6 +451,8 @@ namespace basilisk::ast {
     class Definition : public Node {
         protected:
             Definition() = default;
+        public:
+            void accept(Visitor &visitor) override;
     };
 
     //! Various types of definitions
@@ -484,8 +484,7 @@ namespace basilisk::ast {
                         : identifier(std::move(id)), arguments(std::move(args)), body(std::move(body)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
 
         /** \class Variable
@@ -508,8 +507,7 @@ namespace basilisk::ast {
                         : statement(std::move(statement)) {}
 
                 bool equals(Node *other) override;
-                std::string describe() override;
-                std::vector<Node *> children() override;
+                void accept(Visitor &visitor) override;
         };
     }
 
@@ -536,8 +534,67 @@ namespace basilisk::ast {
                 : definitions(std::move(defs)) {}
 
             bool equals(Node *other) override;
-            std::string describe() override;
-            std::vector<Node *> children() override;
+            void accept(Visitor &visitor) override;
+    };
+
+    /** \class Visitor
+     * \brief Base class for AST node visitors
+     */
+    class Visitor  {
+        protected:
+            Visitor() = default;
+        public:
+            virtual void visit(Expression &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(expressions::Modulo &node)
+                { visit(static_cast<Expression&>(node)); }
+            virtual void visit(expressions::Expression1 &node)
+                { visit(static_cast<Expression&>(node)); }
+            virtual void visit(expressions::Summation &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Subtraction &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Expression2 &node)
+                { visit(static_cast<expressions::Expression1&>(node)); }
+            virtual void visit(expressions::Multiplication &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::Division &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::Expression3 &node)
+                { visit(static_cast<expressions::Expression2&>(node)); }
+            virtual void visit(expressions::NumericNegation &node)
+                { visit(static_cast<expressions::Expression3&>(node)); }
+            virtual void visit(expressions::Expression4 &node)
+                { visit(static_cast<expressions::Expression3&>(node)); }
+            virtual void visit(expressions::IdentifierExpression &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::Parenthesised &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::FunctionCall &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+            virtual void visit(expressions::LiteralDouble &node)
+                { visit(static_cast<expressions::Expression4&>(node)); }
+
+            virtual void visit(Statement &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(statements::Assignment &node)
+                { visit(static_cast<Statement&>(node)); }
+            virtual void visit(statements::Discard &node)
+                { visit(static_cast<Statement&>(node)); }
+            virtual void visit(statements::Return &node)
+                { visit(static_cast<Statement&>(node)); }
+
+            virtual void visit(Definition &node)
+                { visit(static_cast<Node&>(node)); }
+            virtual void visit(definitions::Function &node)
+                { visit(static_cast<Definition&>(node)); }
+            virtual void visit(definitions::Variable &node)
+                { visit(static_cast<Definition&>(node)); }
+
+            virtual void visit(Program &node)
+                { visit(static_cast<Node&>(node)); }
+
+            virtual void visit(Node &) = 0;
     };
 
     /**
