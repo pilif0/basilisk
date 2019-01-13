@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <map>
+#include <vector>
 
 //! LLVM IR code generation
 namespace basilisk::codegen {
@@ -24,6 +25,28 @@ namespace basilisk::codegen {
      *
      * @{
      */
+
+    /** \class NamedValues
+     * \brief Named value map capable of handling nested scopes
+     *
+     * Wrapper around an `std::map`.
+     * Resolves identifiers to the respective named values.
+     * Handles nested scopes (including variable shadowing).
+     */
+     // Note: shadowing is by selecting the matching value from the top-most scope where it is present
+    class NamedValues {
+        public:
+            //! Type of the named value map
+            typedef std::map<ast::Identifier, llvm::Value *> map_t;
+            //! Vector of active scopes
+            std::vector<map_t> scopes;
+
+            void put(ast::Identifier identifier, llvm::Value *value);
+            llvm::Value* get(ast::Identifier identifier);
+
+            void push();
+            void pop();
+    };
 
     /** \class ExpressionCodegen
      * \brief Expression-specific code generation AST visitor
@@ -38,15 +61,15 @@ namespace basilisk::codegen {
             llvm::IRBuilder<> &builder;
             //! LLVM module
             std::unique_ptr<llvm::Module> &module;
-            //! Map of current named values
-            std::map<ast::Identifier, llvm::Value *> &named_values;
+            //! Named values
+            NamedValues &named_values;
 
             //! Pointer to the last value built
             llvm::Value *value;
         public:
             //TODO doc
             ExpressionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
-                    std::unique_ptr<llvm::Module> &module, std::map<ast::Identifier, llvm::Value *> &named_values)
+                    std::unique_ptr<llvm::Module> &module, NamedValues &named_values)
                 : context(context), builder(builder), module(module), named_values(named_values) {}
 
             void visit(ast::Expression &node) override;

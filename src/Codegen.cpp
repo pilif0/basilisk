@@ -10,6 +10,62 @@
 #include <vector>
 
 namespace basilisk::codegen {
+
+    //--- Start NamedValues implementation
+    /**
+     * \brief Set the value of the identifier in the current scope
+     *
+     * \param identifier Identifier to set
+     * \param value Value to set
+     */
+    void NamedValues::put(ast::Identifier identifier, llvm::Value *value) {
+        // Put the pair into the top map
+        scopes.back()[identifier] = value;
+    }
+
+    /**
+     * \brief Get the value of the identifier
+     *
+     * Get the value of the identifier.
+     * If the identifier is not set in current scope, parent scopes are checked up to the global scope.
+     *
+     * \param identifier Identifier to seek
+     * \return Pointer to the named value, or `nullptr` if not found
+     */
+    llvm::Value* NamedValues::get(ast::Identifier identifier) {
+        // Check scopes in reverse order
+        for (auto iter = scopes.rbegin(); iter != scopes.rend(); iter++) {
+            // Check identifier present
+            auto scope = *iter;
+            try {
+                return scope.at(identifier);
+            } catch (std::out_of_range &) {
+                // Ignore exception and continue to parent scope
+                continue;
+            }
+        }
+
+        // Not found in any scope --> nullptr
+        return nullptr;
+    }
+
+    /**
+     * \brief Push a new scope onto the stack
+     */
+    void NamedValues::push() {
+        scopes.emplace_back();
+    }
+
+    /**
+     * \brief Pop a scope from the stack
+     *
+     * Pop a scope from the stack, removing any named value definitions in that scope.
+     */
+    void NamedValues::pop() {
+        scopes.pop_back();
+    }
+    //--- End NamedValues implementation
+
     //--- Start ExpressionCodegen implementation
     /**
      * \brief Throw an exception on visiting an unsupported Expression node
@@ -157,7 +213,7 @@ namespace basilisk::codegen {
      */
     void ExpressionCodegen::visit(ast::expressions::IdentifierExpression &node) {
         // Look up value
-        llvm::Value *v = named_values[node.identifier];
+        llvm::Value *v = named_values.get(node.identifier);
 
         // Check value was found
         if (!v) {
