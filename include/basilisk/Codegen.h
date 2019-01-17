@@ -143,6 +143,36 @@ namespace basilisk::codegen {
             llvm::Function* get() { return function; }
     };
 
+    /** \class ProgramCodegen
+     * \brief Program-specific code generation AST visitor
+     *
+     * AST visitor that generates LLVM IR from program nodes.
+     */
+    class ProgramCodegen : public ast::Visitor {
+        private:
+            //! LLVM context
+            llvm::LLVMContext &context;
+            //! LLVM instruction generation helper
+            llvm::IRBuilder<> &builder;
+            //! LLVM module
+            std::unique_ptr<llvm::Module> &module;
+            //! Named values
+            NamedValues &named_values;
+        public:
+            //TODO doc
+            ProgramCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
+                    std::unique_ptr<llvm::Module> &module, NamedValues &named_values)
+            : context(context), builder(builder), module(module), named_values(named_values) {}
+
+            void visit(ast::Definition &node) override;
+            void visit(ast::definitions::Function &node) override;
+            void visit(ast::definitions::Variable &node) override;
+
+            void visit(ast::Program &node) override;
+
+            void visit(ast::Node &node) override;
+    };
+
     /** \class CodegenException
      * \brief Exception during code generation
      */

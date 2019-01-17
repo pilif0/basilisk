@@ -413,4 +413,58 @@ namespace basilisk::codegen {
         throw CodegenException("Function code generator encountered an unsupported node.");
     }
     //--- End FunctionCodegen implementation
+
+    //--- Start ProgramCodegen implementation
+    /**
+     * \brief Throw an exception on visiting an unsupported definition node
+     *
+     * \param node Visited definition node
+     */
+    void ProgramCodegen::visit(ast::Definition &/*node*/) {
+        throw CodegenException("Expression code generator encountered an unsupported node.");
+    }
+
+    /**
+     * \brief Generate code for function definition
+     *
+     * \param node Function definition node
+     */
+    void ProgramCodegen::visit(ast::definitions::Function &node) {
+        // Create function codegen and have it visit the function definition
+        FunctionCodegen func_cg(context, builder, module, named_values);
+        node.accept(func_cg);
+    }
+
+    /**
+     * \brief Generate value and add it to named values
+     *
+     * \param node Variable definition node
+     */
+    void ProgramCodegen::visit(ast::definitions::Variable &node) {
+        // Create function codegen and have it visit the assignment statement
+        FunctionCodegen func_cg(context, builder, module, named_values);
+        node.statement->accept(func_cg);
+    }
+
+    /**
+     * \brief Generate code for definitions in a program
+     *
+     * \param node Program node
+     */
+    void ProgramCodegen::visit(ast::Program &node) {
+        // Visit definitions in the program in order
+        for (auto &def : node.definitions) {
+            def->accept(*this);
+        }
+    }
+
+    /**
+     * \brief Throw an exception on visiting an unsupported node
+     *
+     * \param node Visited node
+     */
+    void ProgramCodegen::visit(ast::Node &/*node*/) {
+        throw CodegenException("Program code generator encountered an unsupported node.");
+    }
+    //--- End ProgramCodegen implementation
 }
