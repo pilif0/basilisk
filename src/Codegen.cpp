@@ -6,6 +6,8 @@
 
 #include <basilisk/Codegen.h>
 
+#include <llvm/IR/Verifier.h>
+
 #include <sstream>
 #include <vector>
 
@@ -291,4 +293,124 @@ namespace basilisk::codegen {
         throw CodegenException("Expression code generator encountered an unsupported node.");
     }
     //--- End ExpressionCodegen implementation
+
+    //--- Start FunctionCodegen implementation
+    /**
+     * \brief Throw an exception on visiting an unsupported statement node
+     *
+     * \param node Visited node
+     */
+    void FunctionCodegen::visit(ast::Statement &/*node*/) {
+        throw CodegenException("Function code generator encountered an unsupported statement node.");
+    }
+
+    /**
+     * \brief Generate value and set a named value to it
+     *
+     * \param node Assignment statement node
+     */
+    void FunctionCodegen::visit(ast::statements::Assignment &node) {
+        // Generate value
+        ExpressionCodegen expr_cg(context, builder, module, named_values);
+        node.value->accept(expr_cg);
+        llvm::Value *val = expr_cg.get();
+
+        // Set named value
+        named_values.put(node.identifier, val);
+    }
+
+    /**
+     * \brief Generate instructions for an expression and discard the value
+     *
+     * \param node Discard statement node
+     */
+    void FunctionCodegen::visit(ast::statements::Discard &node) {
+        // Generate value
+        ExpressionCodegen expr_cg(context, builder, module, named_values);
+        node.expression->accept(expr_cg);
+        expr_cg.get();
+
+        //TODO this should be enough to generate the instructions
+    }
+
+    /**
+     * \brief Generate return instruction
+     *
+     * \param node Return statement node
+     */
+    void FunctionCodegen::visit(ast::statements::Return &node) {
+        // Generate value
+        ExpressionCodegen expr_cg(context, builder, module, named_values);
+        node.expression->accept(expr_cg);
+        llvm::Value *val = expr_cg.get();
+
+        // Generate instruction
+        builder.CreateRet(val);
+    }
+
+    /**
+     * \brief Generate function definition
+     *
+     * \param node Function definition node
+     */
+    void FunctionCodegen::visit(ast::definitions::Function &node) {
+        // Prepare the function pointer
+        std::vector<llvm::Type *> arg_types(node.arguments.size(), llvm::Type::getDoubleTy(context));
+        llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getDoubleTy(context), arg_types, false);
+        llvm::Function *f = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, node.identifier, module.get());
+
+        // Set argument names
+        unsigned i = 0;
+        for (auto &arg : f->args()) {
+            arg.setName(node.arguments[i]);
+            i++;
+        }
+
+        // Push a new scope and add arguments
+        named_values.push();
+        for (auto &arg : f->args()) {
+            named_values.put(arg.getName(), &arg);
+        }
+
+        // Add body
+        llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", f);
+        f->getBasicBlockList().push_back(body);
+
+        // Start inserting into the body
+        builder.SetInsertPoint(body);
+
+        // Emit body
+        //TODO will using the same builder here as for the expressions emit extra value instructions? shouldn't, but check
+        for (auto &stmt : node.body) {
+            stmt->accept(*this);
+        }
+
+        // Return 0 if last statement wasn't return
+        auto last_stmt = dynamic_cast<ast::statements::Return *>(node.body.back().get());
+        if (!last_stmt) {
+            // Last statement is not a return statement
+            llvm::Value *ret_val = llvm::ConstantFP::get(context, llvm::APFloat(0.0));
+            builder.CreateRet(ret_val);
+        }
+
+        // Stop inserting into the body and pop scope
+        builder.ClearInsertionPoint();
+        named_values.pop();
+
+        // Validate generated code
+        llvm::verifyFunction(*f);
+
+        // Set the function to the generated one
+        function = f;
+    }
+
+    /**
+     * \brief Throw an exception on visiting an unsupported node
+     *
+     * \param node Visited node
+     */
+    void FunctionCodegen::visit(ast::Node &/*node*/) {
+        throw CodegenException("Function code generator encountered an unsupported node.");
+    }
+    //--- End FunctionCodegen implementation
 }

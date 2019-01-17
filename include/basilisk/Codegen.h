@@ -51,7 +51,7 @@ namespace basilisk::codegen {
     /** \class ExpressionCodegen
      * \brief Expression-specific code generation AST visitor
      *
-     * AST visitor that generates LLVM IR Value from expression nodes
+     * AST visitor that generates LLVM IR Value from expression nodes.
      */
     class ExpressionCodegen : public ast::Visitor {
         private:
@@ -93,6 +93,54 @@ namespace basilisk::codegen {
             void visit(ast::expressions::LiteralDouble &node) override;
 
             void visit(ast::Node &node) override;
+
+            /**
+             * \brief Get pointer to the last value built
+             *
+             * \return Pointer to the last value built
+             */
+            llvm::Value* get() { return value; }
+    };
+
+    /** \class FunctionCodegen
+     * \brief Function-specific code generation AST visitor
+     *
+     * AST visitor that generates LLVM IR from function definition nodes.
+     */
+    class FunctionCodegen : public ast::Visitor {
+        private:
+            //! LLVM context
+            llvm::LLVMContext &context;
+            //! LLVM instruction generation helper
+            llvm::IRBuilder<> &builder;
+            //! LLVM module
+            std::unique_ptr<llvm::Module> &module;
+            //! Named values
+            NamedValues &named_values;
+
+            //! Pointer to the last function built
+            llvm::Function *function;
+        public:
+            //TODO doc
+            FunctionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
+                    std::unique_ptr<llvm::Module> &module, NamedValues &named_values)
+            : context(context), builder(builder), module(module), named_values(named_values) {}
+
+            void visit(ast::Statement &node) override;
+            void visit(ast::statements::Assignment &node) override;
+            void visit(ast::statements::Discard &node) override;
+            void visit(ast::statements::Return &node) override;
+
+            void visit(ast::definitions::Function &node) override;
+
+            void visit(ast::Node &node) override;
+
+            /**
+             * \brief Get pointer to the last function built
+             *
+             * \return Pointer to the last function built
+             */
+            llvm::Function* get() { return function; }
     };
 
     /** \class CodegenException
