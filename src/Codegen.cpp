@@ -374,7 +374,6 @@ namespace basilisk::codegen {
 
         // Add body
         llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", f);
-        f->getBasicBlockList().push_back(body);
 
         // Start inserting into the body
         builder.SetInsertPoint(body);
