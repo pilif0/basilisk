@@ -39,7 +39,7 @@ namespace basilisk::codegen {
             //! Type of the named value map
             typedef std::map<ast::Identifier, llvm::Value *> map_t;
             //! Vector of active scopes
-            std::vector<map_t> scopes;
+            std::vector<map_t> scopes{{}};
 
             void put(ast::Identifier identifier, llvm::Value *value);
             llvm::Value* get(ast::Identifier identifier);
