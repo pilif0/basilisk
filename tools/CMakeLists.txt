@@ -10,3 +10,6 @@ add_executable(lexer_executable lexer_executable.cpp)
 
 # Add parser executable
 add_executable(parser_executable parser_executable.cpp)
+
+# Add codegen executable
+add_executable(codegen_executable codegen_executable.cpp)
