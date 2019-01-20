@@ -1,5 +1,5 @@
 # Include Boost and Basilisk headers
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 include_directories(${INCL_DIR})
 
 # Link libraries
@@ -13,3 +13,4 @@ add_executable(parser_executable parser_executable.cpp)
 
 # Add codegen executable
 add_executable(codegen_executable codegen_executable.cpp)
+target_link_libraries(codegen_executable ${llvm_libs})

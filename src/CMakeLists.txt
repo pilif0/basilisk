@@ -1,6 +1,6 @@
 # Link and include libraries
-link_libraries()
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+link_libraries( ${llvm_libs})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 include_directories(${INCL_DIR})
 
 # Set up source and header lists

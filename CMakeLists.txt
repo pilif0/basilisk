@@ -42,9 +42,10 @@ if(NOT (Boost_FOUND))
 endif()
 
 # LLVM
-set(LLVM_DIR "${basilisk_LLVM}/build/lib/cmake/llvm")
-find_package(LLVM REQUIRED CONFIG)
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+find_package(LLVM 9 REQUIRED CONFIG HINTS "${basilisk_LLVM}/build/lib/cmake/llvm")
+llvm_map_components_to_libnames(llvm_libs all)
+link_directories(${LLVM_LIBRARY_DIR})
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION} in ${LLVM_DIR} with headers in ${LLVM_INCLUDE_DIRS}")
 
 # Doxygen
 if (basilisk_BUILD_DOC)
