@@ -368,8 +368,6 @@ namespace basilisk::codegen {
         ExpressionCodegen expr_cg(context, builder, module, named_values);
         node.expression->accept(expr_cg);
         expr_cg.get();
-
-        //TODO this should be enough to generate the instructions
     }
 
     /**
@@ -393,7 +391,16 @@ namespace basilisk::codegen {
      * \param node Function definition node
      */
     void FunctionCodegen::visit(ast::definitions::Function &node) {
-        //TODO check if already present
+        // Check if already present
+        if (auto f = module->getFunction(node.identifier)) {
+            // Check for same number of arguments
+            if (f->arg_size() == node.arguments.size()) {
+                std::ostringstream message;
+                message << "Function \"" << node.identifier << "\" with " << node.arguments.size()
+                        << " arguments is already defined.";
+                throw CodegenException(message.str());
+            }
+        }
 
         // Prepare the function pointer
         std::vector<llvm::Type *> arg_types(node.arguments.size(), llvm::Type::getDoubleTy(context));
@@ -420,7 +427,6 @@ namespace basilisk::codegen {
         builder.SetInsertPoint(body);
 
         // Emit body
-        //TODO will using the same builder here as for the expressions emit extra value instructions? shouldn't, but check
         for (auto &stmt : node.body) {
             stmt->accept(*this);
         }
