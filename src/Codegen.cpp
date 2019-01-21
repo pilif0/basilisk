@@ -64,6 +64,11 @@ namespace basilisk::codegen {
      * Pop a scope from the stack, removing any named value definitions in that scope.
      */
     void NamedValues::pop() {
+        // Don't pop global scope
+        if (scopes.size() <= 1) {
+            return;
+        }
+
         scopes.pop_back();
     }
     //--- End NamedValues implementation
