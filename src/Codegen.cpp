@@ -11,7 +11,6 @@
 #include <sstream>
 #include <vector>
 
-//TODO make sure not attempting to pop global scope
 //TODO make main return i32, not double
 namespace basilisk::codegen {
 
@@ -513,6 +512,8 @@ namespace basilisk::codegen {
             // Add internal println
             llvm::Function *println;
             {
+                // Note: doesn't add named values, so not pushing or popping scope
+
                 // double println(double)
                 std::vector<llvm::Type *> arg_types{llvm::Type::getDoubleTy(context)};
                 llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getDoubleTy(context), arg_types, false);
@@ -551,7 +552,6 @@ namespace basilisk::codegen {
 
                 // Stop inserting into the body and pop scope
                 builder.ClearInsertionPoint();
-                named_values.pop();
 
                 // Validate generated code
                 llvm::verifyFunction(*println);
