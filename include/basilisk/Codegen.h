@@ -26,7 +26,62 @@ namespace basilisk::codegen {
      * @{
      */
 
-    /** \class NamedValues
+    /** \class NamedValuesMap
+     * \brief Named values data structure capable of handling nested scopes
+     *
+     * Resolves identifiers to the respective named values from the top-most scope where they are found.
+     */
+    class NamedValues {
+        protected:
+            NamedValues() = default;
+        public:
+            /**
+             * \brief Set the value of the identifier in the current scope
+             *
+             * \param identifier Identifier to set
+             * \param value Value to set
+             */
+            virtual void put(ast::Identifier identifier, llvm::Value *value) = 0;
+            /**
+             * \brief Get the value of the identifier
+             *
+             * Get the value of the identifier from the top-most scope where it is found.
+             *
+             * \param identifier Identifier to seek
+             * \return Pointer to the named value, or `nullptr` if not found
+             */
+            virtual llvm::Value* get(ast::Identifier identifier) = 0;
+
+            //! Push a new scope on the stack
+            virtual void push() = 0;
+            //! Pop a scope off of the stack
+            virtual void pop() = 0;
+
+            virtual ~NamedValues() = default;
+    };
+
+    /** \class NamedValuesStacks
+     * \brief Named values data structure backed by two stacks
+     *
+     * Named Values data structure backed by a stack of identifier - value pairs and a stack of scope value counts.
+     */
+     // Note: This implementation uses the fact that one always inserts named values into the top-most scope
+    class NamedValuesStacks : public NamedValues {
+        private:
+            //! Type of the identifier - value pair
+            typedef std::pair<ast::Identifier, llvm::Value *> pair_t;
+            //! Stack of identifier - value pairs
+            std::vector<pair_t> data;
+            //! Stack of value counts in the active scopes
+            std::vector<std::size_t> counts{0};
+        public:
+            void put(ast::Identifier identifier, llvm::Value *value) override;
+            llvm::Value *get(ast::Identifier identifier) override;
+            void push() override;
+            void pop() override;
+    };
+
+    /** \class NamedValuesMap
      * \brief Named value map capable of handling nested scopes
      *
      * Wrapper around an `std::map`.
@@ -34,18 +89,19 @@ namespace basilisk::codegen {
      * Handles nested scopes (including variable shadowing).
      */
      // Note: shadowing is by selecting the matching value from the top-most scope where it is present
-    class NamedValues {
+     // Note: This implementation uses the trivial interpretation of named values as a stack of identifier - value maps
+    class NamedValuesMap : public NamedValues {
         public:
             //! Type of the named value map
             typedef std::map<ast::Identifier, llvm::Value *> map_t;
             //! Vector of active scopes
             std::vector<map_t> scopes{{}};
 
-            void put(ast::Identifier identifier, llvm::Value *value);
-            llvm::Value* get(ast::Identifier identifier);
+            void put(ast::Identifier identifier, llvm::Value *value) override;
+            llvm::Value* get(ast::Identifier identifier) override;
 
-            void push();
-            void pop();
+            void push() override;
+            void pop() override;
     };
 
     /** \class ExpressionCodegen

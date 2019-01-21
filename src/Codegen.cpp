@@ -11,30 +11,71 @@
 #include <sstream>
 #include <vector>
 
+//TODO make sure not attempting to pop global scope
 namespace basilisk::codegen {
 
-    //--- Start NamedValues implementation
-    /**
-     * \brief Set the value of the identifier in the current scope
-     *
-     * \param identifier Identifier to set
-     * \param value Value to set
-     */
-    void NamedValues::put(ast::Identifier identifier, llvm::Value *value) {
+    //--- Start NamedValuesStacks implementation
+    void NamedValuesStacks::put(ast::Identifier identifier, llvm::Value *value) {
+        // Try to find in current scope
+        auto n = counts.back();
+        auto iter = data.rbegin();
+        for (std::size_t i = 0; i < n ; i++) {
+            // Check if equal identifier
+            if (iter->first == identifier) {
+                // Overwrite
+                iter->second = value;
+                return;
+            }
+
+            // Increment iterator
+            iter++;
+        }
+
+        // Otherwise push on top and increment count
+        data.emplace_back(identifier, value);
+        counts.back()++;
+    }
+
+    llvm::Value *NamedValuesStacks::get(ast::Identifier identifier) {
+        // Try to find from back to front
+        for (auto iter = data.rbegin(); iter != data.rend(); iter++) {
+            // Check if equal identifier
+            if (iter->first == identifier) {
+                return iter->second;
+            }
+        }
+
+        // Return null if not found
+        return nullptr;
+    }
+
+    void NamedValuesStacks::push() {
+        // Push a 0 onto the counts
+        counts.emplace_back(0);
+    }
+
+    void NamedValuesStacks::pop() {
+        // Don't pop global scope
+        if (counts.size() <= 1) {
+            return;
+        }
+
+        // Pop top of counts and that many pairs
+        auto n = counts.back();
+        counts.pop_back();
+        for (std::size_t i = 0; i < n; i++) {
+            data.pop_back();
+        }
+    }
+    //--- End NamedValuesStacks implementation
+
+    //--- Start NamedValuesMap implementation
+    void NamedValuesMap::put(ast::Identifier identifier, llvm::Value *value) {
         // Put the pair into the top map
         scopes.back()[identifier] = value;
     }
 
-    /**
-     * \brief Get the value of the identifier
-     *
-     * Get the value of the identifier.
-     * If the identifier is not set in current scope, parent scopes are checked up to the global scope.
-     *
-     * \param identifier Identifier to seek
-     * \return Pointer to the named value, or `nullptr` if not found
-     */
-    llvm::Value* NamedValues::get(ast::Identifier identifier) {
+    llvm::Value* NamedValuesMap::get(ast::Identifier identifier) {
         // Check scopes in reverse order
         for (auto iter = scopes.rbegin(); iter != scopes.rend(); iter++) {
             // Check identifier present
@@ -51,19 +92,11 @@ namespace basilisk::codegen {
         return nullptr;
     }
 
-    /**
-     * \brief Push a new scope onto the stack
-     */
-    void NamedValues::push() {
+    void NamedValuesMap::push() {
         scopes.emplace_back();
     }
 
-    /**
-     * \brief Pop a scope from the stack
-     *
-     * Pop a scope from the stack, removing any named value definitions in that scope.
-     */
-    void NamedValues::pop() {
+    void NamedValuesMap::pop() {
         // Don't pop global scope
         if (scopes.size() <= 1) {
             return;
@@ -71,7 +104,7 @@ namespace basilisk::codegen {
 
         scopes.pop_back();
     }
-    //--- End NamedValues implementation
+    //--- End NamedValuesMap implementation
 
     //--- Start ExpressionCodegen implementation
     /**

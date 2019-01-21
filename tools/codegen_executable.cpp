@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
         llvm::LLVMContext context;
         llvm::IRBuilder<> builder(context);
         llvm::Module module("standalone codegen", context);
-        basilisk::codegen::NamedValues named_values;
+        basilisk::codegen::NamedValuesStacks named_values;
         basilisk::codegen::ProgramCodegen program_cg(context, builder, &module, named_values);
         program.accept(program_cg);
 
