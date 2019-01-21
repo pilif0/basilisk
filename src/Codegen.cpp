@@ -492,71 +492,76 @@ namespace basilisk::codegen {
     }
 
     /**
+     * \brief Generate LLVM IR definitions for the STL function `println` and the supporting external function `printf`
+     *
+     * \param context LLVM context
+     * \param module LLVM module
+     * \param builder IR builder
+     */
+    void generate_stl(llvm::LLVMContext &context, llvm::Module *module, llvm::IRBuilder<> &builder) {
+        // Add external printf
+        llvm::Function *printf;
+        {
+            // i32 printf(i8*, ...)
+            std::vector<llvm::Type *> arg_types{llvm::Type::getInt8PtrTy(context)};
+            auto *func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), arg_types, true);
+            printf = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, "printf", module);
+        }
+
+        // Add internal println
+        llvm::Function *println;
+        {
+            // Note: doesn't add named values, so not pushing or popping scope
+
+            // double println(double)
+            std::vector<llvm::Type *> arg_types{llvm::Type::getDoubleTy(context)};
+            llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getDoubleTy(context), arg_types, false);
+            println = llvm::Function::Create(func_type, llvm::Function::PrivateLinkage, "println", module);
+
+            // Add body
+            llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", println);
+
+            // Start inserting into the body
+            builder.SetInsertPoint(body);
+
+            // Check printf was found
+            if (!printf) {
+                std::ostringstream message;
+                message << "Could not find STL function \'printf\'.";
+                throw CodegenException(message.str());
+            }
+
+            // Generate pointer to format string
+            auto format_ptr = builder.CreateGlobalStringPtr("%f\n", "println_format");
+
+            // Put arguments into vector
+            std::vector<llvm::Value *> args;
+            args.push_back(format_ptr);
+            args.push_back(println->arg_begin());
+
+            // Emit function call
+            builder.CreateCall(printf, args, "printf_tmp");
+
+            // Return 0
+            llvm::Value *ret_val = llvm::ConstantFP::get(context, llvm::APFloat(0.0));
+            builder.CreateRet(ret_val);
+
+            // Stop inserting into the body and pop scope
+            builder.ClearInsertionPoint();
+
+            // Validate generated code
+            llvm::verifyFunction(*println);
+        }
+    }
+
+    /**
      * \brief Generate code for definitions in a program
      *
      * \param node Program node
      */
     void ProgramCodegen::visit(ast::Program &node) {
         // Add standard library definitions
-        //TODO extract this
-        {
-            // Add external printf
-            llvm::Function *printf;
-            {
-                // i32 printf(i8*, ...)
-                std::vector<llvm::Type *> arg_types{llvm::Type::getInt8PtrTy(context)};
-                auto *func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), arg_types, true);
-                printf = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, "printf", module);
-            }
-
-            // Add internal println
-            llvm::Function *println;
-            {
-                // Note: doesn't add named values, so not pushing or popping scope
-
-                // double println(double)
-                std::vector<llvm::Type *> arg_types{llvm::Type::getDoubleTy(context)};
-                llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getDoubleTy(context), arg_types, false);
-                println = llvm::Function::Create(func_type, llvm::Function::PrivateLinkage, "println", module);
-
-                // Add body
-                llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", println);
-
-                // Start inserting into the body
-                builder.SetInsertPoint(body);
-
-                // Emit body
-                {
-                    // Check printf was found
-                    if (!printf) {
-                        std::ostringstream message;
-                        message << "Could not find STL function \'printf\'.";
-                        throw CodegenException(message.str());
-                    }
-
-                    // Generate pointer to format string
-                    auto format_ptr = builder.CreateGlobalStringPtr("%f\n", "println_format");
-
-                    // Put arguments into vector
-                    std::vector<llvm::Value *> args;
-                    args.push_back(format_ptr);
-                    args.push_back(println->arg_begin());
-
-                    // Emit function call
-                    builder.CreateCall(printf, args, "printf_tmp");
-                }
-
-                // Return 0
-                llvm::Value *ret_val = llvm::ConstantFP::get(context, llvm::APFloat(0.0));
-                builder.CreateRet(ret_val);
-
-                // Stop inserting into the body and pop scope
-                builder.ClearInsertionPoint();
-
-                // Validate generated code
-                llvm::verifyFunction(*println);
-            }
-        }
+        generate_stl(context, module, builder);
 
         // Visit definitions in the program in order
         for (auto &def : node.definitions) {
