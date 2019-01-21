@@ -11,7 +11,6 @@
 #include <sstream>
 #include <vector>
 
-//TODO make main return i32, not double
 namespace basilisk::codegen {
 
     //--- Start NamedValuesStacks implementation
@@ -390,6 +389,12 @@ namespace basilisk::codegen {
      * \param node Function definition node
      */
     void FunctionCodegen::visit(ast::definitions::Function &node) {
+        // Change main() function name to main_ to support wrapper
+        //TODO remove this when sufficient data types are added to the language to support returning i32
+        if (node.identifier == "main" && node.arguments.empty()) {
+            node.identifier = "main_";
+        }
+
         // Check if already present
         if (auto f = module->getFunction(node.identifier)) {
             // Check for same number of arguments
@@ -566,6 +571,37 @@ namespace basilisk::codegen {
         // Visit definitions in the program in order
         for (auto &def : node.definitions) {
             def->accept(*this);
+        }
+
+        // Insert main wrapper
+        //TODO remove when no longer necessary
+        if (auto main = module->getFunction("main_")) {
+            // Define new main that calls the renamed one
+
+            // double println(double)
+            std::vector<llvm::Type *> arg_types;
+            llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), arg_types, false);
+            auto main_wrap = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, "main", module);
+
+            // Add body
+            llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", main_wrap);
+
+            // Start inserting into the body
+            builder.SetInsertPoint(body);
+
+            // Emit main function call
+            std::vector<llvm::Value *> args;
+            auto main_ret = builder.CreateCall(main, args, "main_tmp");
+
+            // Return i32 cast of main return
+            auto ret_val = builder.CreateCast(llvm::Instruction::CastOps::FPToSI, main_ret, llvm::Type::getInt32Ty(context), "ret_val");
+            builder.CreateRet(ret_val);
+
+            // Stop inserting into the body and pop scope
+            builder.ClearInsertionPoint();
+
+            // Validate generated code
+            llvm::verifyFunction(*main_wrap);
         }
     }
 
