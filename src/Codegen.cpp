@@ -13,6 +13,20 @@
 
 namespace basilisk::codegen {
 
+    //--- Start Helper functions
+    /**
+     * \brief Add a local variable alloca to the function entry block
+     *
+     * \param f Pointer to function to whose entry block to add alloca
+     * \param identifier Identifier of the pointer temporary
+     * \return Pointer to the alloca instruction
+     */
+    llvm::AllocaInst *create_entry_block_alloca(llvm::LLVMContext &context, llvm::Function *f, ast::Identifier identifier) {
+        llvm::IRBuilder<> temp_builder(&f->getEntryBlock(), f->getEntryBlock().begin());
+        return temp_builder.CreateAlloca(llvm::Type::getDoubleTy(context), 0, identifier + "_ptr");
+    }
+    //--- End Helper functions
+
     //--- Start NamedValuesStacks implementation
     void NamedValuesStacks::put(ast::Identifier identifier, llvm::Value *value) {
         // Try to find in current scope
@@ -246,20 +260,23 @@ namespace basilisk::codegen {
     }
 
     /**
-     * \brief Look up value represented by the identifier
+     * \brief Load value of variable represented by the identifier
      *
      * \param node Identifier expression node
      */
     void ExpressionCodegen::visit(ast::expressions::IdentifierExpression &node) {
-        // Look up value
-        llvm::Value *v = named_values.get(node.identifier);
+        // Look up pointer
+        llvm::Value *ptr = variables.get(node.identifier);
 
-        // Check value was found
-        if (!v) {
+        // Check pointer was found
+        if (!ptr) {
             std::ostringstream message;
-            message << "Could not find value for identifier \"" << node.identifier << "\".";
+            message << "Could not find pointer for identifier \"" << node.identifier << "\".";
             throw CodegenException(message.str());
         }
+
+        // Load the value
+        llvm::Value *v = builder.CreateLoad(ptr, node.identifier + "_value");
 
         // Set value as the found one
         value = v;
@@ -347,13 +364,74 @@ namespace basilisk::codegen {
      * \param node Assignment statement node
      */
     void FunctionCodegen::visit(ast::statements::Assignment &node) {
-        // Generate value
-        ExpressionCodegen expr_cg(context, builder, module, named_values);
-        node.value->accept(expr_cg);
-        llvm::Value *val = expr_cg.get();
+        // Try to get variable pointer
+        llvm::Value *ptr = variables.get(node.identifier);
 
-        // Set named value
-        named_values.put(node.identifier, val);
+        // Check whether a function is being built
+        if (current) {
+            // Function being built -> local variable
+
+            // Allocate if not found
+            if (!ptr) {
+                // Add alloca to function entry block
+                ptr = create_entry_block_alloca(context, current, node.identifier);
+
+                // Add to named values
+                variables.put(node.identifier, ptr);
+            }
+
+            // Generate value
+            ExpressionCodegen expr_cg(context, builder, module, variables);
+            node.value->accept(expr_cg);
+            llvm::Value *val = expr_cg.get();
+
+            // Store value
+            builder.CreateStore(val, ptr);
+        } else {
+            // TODO this permits multiple initializers of a single global variable (in proper order) which is weird,
+            //          but not necessarily wrong (the variable retains the latest initializer for full execution)
+
+            // Otherwise -> global variable
+
+            // Allocate if not found
+            if (!ptr) {
+                // Create global variable initialized as 0.0
+                module->getOrInsertGlobal(node.identifier, llvm::Type::getDoubleTy(context));
+                auto var = module->getGlobalVariable(node.identifier);
+                var->setInitializer(llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0));
+                ptr = var;
+
+                // Add to named values
+                variables.put(node.identifier, ptr);
+            }
+
+            // Add intializer to global variable intializer function
+            {
+                // Get initializer function pointer
+                llvm::Function *init_f = module->getFunction("global_var_init");
+
+                // Check initializer function found
+                if (!init_f) {
+                    std::ostringstream message;
+                    message << "Could not find global variable initializer function.";
+                    throw CodegenException(message.str());
+                }
+
+                // Move builder to insert into entry
+                builder.SetInsertPoint(&init_f->getEntryBlock());
+
+                // Generate value
+                ExpressionCodegen expr_cg(context, builder, module, variables);
+                node.value->accept(expr_cg);
+                llvm::Value *val = expr_cg.get();
+
+                // Store value
+                builder.CreateStore(val, ptr);
+
+                // Clear builder insert
+                builder.ClearInsertionPoint();
+            }
+        }
     }
 
     /**
@@ -363,7 +441,7 @@ namespace basilisk::codegen {
      */
     void FunctionCodegen::visit(ast::statements::Discard &node) {
         // Generate value
-        ExpressionCodegen expr_cg(context, builder, module, named_values);
+        ExpressionCodegen expr_cg(context, builder, module, variables);
         node.expression->accept(expr_cg);
         expr_cg.get();
     }
@@ -375,7 +453,7 @@ namespace basilisk::codegen {
      */
     void FunctionCodegen::visit(ast::statements::Return &node) {
         // Generate value
-        ExpressionCodegen expr_cg(context, builder, module, named_values);
+        ExpressionCodegen expr_cg(context, builder, module, variables);
         node.expression->accept(expr_cg);
         llvm::Value *val = expr_cg.get();
 
@@ -410,25 +488,31 @@ namespace basilisk::codegen {
         std::vector<llvm::Type *> arg_types(node.arguments.size(), llvm::Type::getDoubleTy(context));
         llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getDoubleTy(context), arg_types, false);
         llvm::Function *f = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, node.identifier, module);
+        current = f;
 
-        // Set argument names
+        // Add body and start inserting to it
+        llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", f);
+        builder.SetInsertPoint(body);
+
+        // Push a new scope and add argument pointers
+        variables.push();
         unsigned i = 0;
         for (auto &arg : f->args()) {
-            arg.setName(node.arguments[i]);
+            // Get argument identifier
+            auto identifier = node.arguments[i];
+
+            // Add alloca to function entry block
+            llvm::Value *ptr = create_entry_block_alloca(context, current, identifier);
+
+            // Store the value
+            builder.CreateStore(&arg, ptr);
+
+            // Add to named values
+            variables.put(identifier, ptr);
+
+            // Increment name index
             i++;
         }
-
-        // Push a new scope and add arguments
-        named_values.push();
-        for (auto &arg : f->args()) {
-            named_values.put(arg.getName(), &arg);
-        }
-
-        // Add body
-        llvm::BasicBlock *body = llvm::BasicBlock::Create(context, "entry", f);
-
-        // Start inserting into the body
-        builder.SetInsertPoint(body);
 
         // Emit body
         for (auto &stmt : node.body) {
@@ -445,13 +529,14 @@ namespace basilisk::codegen {
 
         // Stop inserting into the body and pop scope
         builder.ClearInsertionPoint();
-        named_values.pop();
+        variables.pop();
 
         // Validate generated code
         llvm::verifyFunction(*f);
 
         // Set the function to the generated one
         function = f;
+        current = nullptr;
     }
 
     /**
@@ -481,7 +566,7 @@ namespace basilisk::codegen {
      */
     void ProgramCodegen::visit(ast::definitions::Function &node) {
         // Create function codegen and have it visit the function definition
-        FunctionCodegen func_cg(context, builder, module, named_values);
+        FunctionCodegen func_cg(context, builder, module, variables);
         node.accept(func_cg);
     }
 
@@ -492,7 +577,7 @@ namespace basilisk::codegen {
      */
     void ProgramCodegen::visit(ast::definitions::Variable &node) {
         // Create function codegen and have it visit the assignment statement
-        FunctionCodegen func_cg(context, builder, module, named_values);
+        FunctionCodegen func_cg(context, builder, module, variables);
         node.statement->accept(func_cg);
     }
 
@@ -568,9 +653,56 @@ namespace basilisk::codegen {
         // Add standard library definitions
         generate_stl(context, module, builder);
 
+        // Add global variable initializer function
+        llvm::Function *init_f;
+        {
+            // void global_var_init()
+            std::vector<llvm::Type *> arg_types;
+            llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getVoidTy(context), arg_types, false);
+            init_f = llvm::Function::Create(func_type, llvm::Function::InternalLinkage, "global_var_init", module);
+
+            // Add entry and return block
+            llvm::BasicBlock::Create(context, "entry", init_f);
+
+            // Validate generated code
+            llvm::verifyFunction(*init_f);
+
+            // Set as global constructor
+            {
+                // Prepare type
+                auto struct_type = llvm::StructType::create(
+                        "global_ctors_element",
+                        llvm::Type::getInt32Ty(context),
+                        llvm::PointerType::get(llvm::FunctionType::get(llvm::Type::getVoidTy(context), false), 0),
+                        llvm::Type::getInt8PtrTy(context));
+                auto type = llvm::ArrayType::get(struct_type, 1);
+
+                // Create global
+                module->getOrInsertGlobal("llvm.global_ctors", type);
+                auto ctors_ptr = module->getGlobalVariable("llvm.global_ctors");
+                ctors_ptr->setLinkage(llvm::GlobalVariable::AppendingLinkage);
+
+                // Create and set initializer
+                std::vector<llvm::Constant *> elements{
+                        llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 65535),
+                        init_f,
+                        llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(context))};
+                auto strct = llvm::ConstantStruct::get(struct_type, elements);
+                auto ctors_val = llvm::ConstantArray::get(type, strct);
+                ctors_ptr->setInitializer(ctors_val);
+            }
+        }
+
         // Visit definitions in the program in order
         for (auto &def : node.definitions) {
             def->accept(*this);
+        }
+
+        // Add return to global variable initializer function
+        {
+            builder.SetInsertPoint(&init_f->getEntryBlock());
+            builder.CreateRetVoid();
+            builder.ClearInsertionPoint();
         }
 
         // Insert main wrapper
@@ -578,7 +710,7 @@ namespace basilisk::codegen {
         if (auto main = module->getFunction("main_")) {
             // Define new main that calls the renamed one
 
-            // double println(double)
+            // i32 main()
             std::vector<llvm::Type *> arg_types;
             llvm::FunctionType *func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), arg_types, false);
             auto main_wrap = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, "main", module);

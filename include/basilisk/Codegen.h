@@ -117,16 +117,16 @@ namespace basilisk::codegen {
             llvm::IRBuilder<> &builder;
             //! LLVM module
             llvm::Module *module;
-            //! Named values
-            NamedValues &named_values;
+            //! Pointers to variables
+            NamedValues &variables;
 
             //! Pointer to the last value built
-            llvm::Value *value;
+            llvm::Value *value = nullptr;
         public:
             //TODO doc
             ExpressionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
-                    llvm::Module *module, NamedValues &named_values)
-                : context(context), builder(builder), module(module), named_values(named_values) {}
+                    llvm::Module *module, NamedValues &variables)
+                : context(context), builder(builder), module(module), variables(variables) {}
 
             void visit(ast::Expression &node) override;
             void visit(ast::expressions::Modulo &node) override;
@@ -171,16 +171,19 @@ namespace basilisk::codegen {
             llvm::IRBuilder<> &builder;
             //! LLVM module
             llvm::Module *module;
-            //! Named values
-            NamedValues &named_values;
+            //! Pointers to variables
+            NamedValues &variables;
+
+            //! Pointer to the function being currently built, or `nullptr` if none is being built
+            llvm::Function *current = nullptr;
 
             //! Pointer to the last function built
-            llvm::Function *function;
+            llvm::Function *function = nullptr;
         public:
             //TODO doc
             FunctionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
-                    llvm::Module *module, NamedValues &named_values)
-            : context(context), builder(builder), module(module), named_values(named_values) {}
+                    llvm::Module *module, NamedValues &variables)
+            : context(context), builder(builder), module(module), variables(variables) {}
 
             void visit(ast::Statement &node) override;
             void visit(ast::statements::Assignment &node) override;
@@ -212,13 +215,13 @@ namespace basilisk::codegen {
             llvm::IRBuilder<> &builder;
             //! LLVM module
             llvm::Module *module;
-            //! Named values
-            NamedValues &named_values;
+            //! Pointers to variables
+            NamedValues &variables;
         public:
             //TODO doc
             ProgramCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
-                    llvm::Module *module, NamedValues &named_values)
-            : context(context), builder(builder), module(module), named_values(named_values) {}
+                    llvm::Module *module, NamedValues &variables)
+            : context(context), builder(builder), module(module), variables(variables) {}
 
             void visit(ast::Definition &node) override;
             void visit(ast::definitions::Function &node) override;
