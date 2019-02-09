@@ -139,7 +139,50 @@ BOOST_AUTO_TEST_SUITE(Codegen)
         }
     }
 
-    //TODO check function parameters get put on stack (alloca + store)
+    BOOST_AUTO_TEST_CASE( arguments_on_stack ) {
+        // Generate code
+        Generator generator;
+        generator.from_source("f (a, b, c) {\n"
+                              "    return 0.0;"
+                              "}");
+
+        // Check if there is exactly three allocas and each argument gets stored in one
+        auto f = generator.module.getFunction("f");
+        BOOST_TEST_CHECK(f, "Function f has to be present.");
+        if (f) {
+            // Get entry block
+            auto &entry = f->getEntryBlock();
+
+            // Check correct number of allocas
+            unsigned count = 0;
+            for (auto iter = entry.begin(); iter != entry.end(); iter++) {
+                auto instr = &*iter;
+
+                if (llvm::isa<llvm::AllocaInst>(instr)) {
+                    count++;
+                }
+            }
+            BOOST_TEST_CHECK(count == 3, "Entry block of f must contain exactly three alloca instructions.");
+
+            // Check each argument gets stored in alloca'd space
+            for (auto &v : f->args()) {
+                bool stored = false;
+
+                for (auto iter = entry.begin(); iter != entry.end(); iter++) {
+                    auto instr = &*iter;
+
+                    if (auto store_inst = llvm::dyn_cast<llvm::StoreInst>(instr)) {
+                        if (store_inst->getOperand(0) == &v) {
+                            stored = true;
+                        }
+                    }
+                }
+
+                BOOST_TEST_CHECK(stored, "Entry block of f has to contain a store for argument " << v.getName().str() << ".");
+            }
+        }
+    }
+
     //TODO check local variables get put on stack (alloca + store)
     //TODO check local variable access is through stack (load)
 
