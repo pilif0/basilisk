@@ -520,8 +520,7 @@ namespace basilisk::codegen {
         }
 
         // Return 0 if last statement wasn't return
-        auto last_stmt = dynamic_cast<ast::statements::Return *>(node.body.back().get());
-        if (!last_stmt) {
+        if (node.body.empty() || !dynamic_cast<ast::statements::Return *>(node.body.back().get())) {
             // Last statement is not a return statement
             llvm::Value *ret_val = llvm::ConstantFP::get(context, llvm::APFloat(0.0));
             builder.CreateRet(ret_val);

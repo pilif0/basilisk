@@ -183,6 +183,16 @@ BOOST_AUTO_TEST_SUITE(Codegen)
         }
     }
 
+    BOOST_AUTO_TEST_CASE( empty_body ) {
+        // Generate code
+        Generator generator;
+        generator.from_source("f () {}");
+
+        // Note: this test succeeds by successfully generating code and not crashing, but check presence to be sure
+        auto f = generator.module.getFunction("f");
+        BOOST_TEST_CHECK(f, "Function f must be present.");
+    }
+
     //TODO check local variables get put on stack (alloca + store)
     //TODO check local variable access is through stack (load)
 
