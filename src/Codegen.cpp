@@ -501,6 +501,9 @@ namespace basilisk::codegen {
             // Get argument identifier
             auto identifier = node.arguments[i];
 
+            // Name the argument
+            arg.setName(identifier);
+
             // Add alloca to function entry block
             llvm::Value *ptr = create_entry_block_alloca(context, current, identifier);
 
