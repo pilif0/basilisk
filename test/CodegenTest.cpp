@@ -110,7 +110,34 @@ class Generator {
 
 BOOST_AUTO_TEST_SUITE(Codegen)
 
-    //TODO check return 0.0; is appended to functions with no return
+    BOOST_AUTO_TEST_CASE( return_append ) {
+        // Generate code
+        Generator generator;
+        generator.from_source("f () {\n"
+                              "    x = 1.0;\n"
+                              "}");
+
+        // Check that the last instruction of the function is return 0.0
+        auto f = generator.module.getFunction("f");
+        BOOST_TEST_CHECK(f, "Function f has to be present.");
+        if (f) {
+            // Check last instruction is return
+            auto last = &*f->getEntryBlock().rbegin();
+            BOOST_TEST_CHECK(llvm::isa<llvm::ReturnInst>(last), "Last instruction must be return.");
+
+            // Check return type is double
+            auto ret = llvm::dyn_cast<llvm::ReturnInst>(last);
+            auto val = ret->getReturnValue();
+            BOOST_TEST_CHECK(val->getType() == llvm::Type::getDoubleTy(generator.context),
+                             "Function f must return double.");
+
+            // Check return value is 0.0
+            BOOST_TEST_CHECK(llvm::isa<llvm::ConstantFP>(val), "Function f return value must be a constant.");
+            auto const_val = llvm::dyn_cast<llvm::ConstantFP>(val);
+            auto zero = llvm::ConstantFP::get(generator.context, llvm::APFloat(0.0));
+            BOOST_TEST_CHECK(const_val == zero, "Function f must return zero.");
+        }
+    }
 
     //TODO check function parameters get put on stack (alloca + store)
     //TODO check local variables get put on stack (alloca + store)
