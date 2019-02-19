@@ -196,7 +196,47 @@ BOOST_AUTO_TEST_SUITE(Codegen)
     //TODO check local variables get put on stack (alloca + store)
     //TODO check local variable access is through stack (load)
 
-    //TODO check global variables get last global initializer
+    BOOST_AUTO_TEST_CASE( global_vars_last_init ) {
+        // Generate code
+        Generator generator;
+        generator.from_source("a = 1.0;\n"
+                              "a = 2.0;");
+
+        // Find global variable initializer function
+        auto global_init = generator.module.getFunction("global_var_init");
+        BOOST_TEST_CHECK(global_init, "Global variable initializer function must be present.");
+
+        // Check global variable pi
+        auto global_a = generator.module.getGlobalVariable("a");
+        BOOST_TEST_CHECK(global_a, "Global variable a must be present.");
+        if (global_a) {
+            // Check initializer is 0
+            auto zero = llvm::ConstantFP::get(generator.context, llvm::APFloat(0.0));
+            BOOST_TEST_CHECK(global_a->hasInitializer(), "Global variable a must have initializer.");
+            BOOST_TEST_CHECK(global_a->getInitializer() == zero, "Global variable a must have initializer of 0.0 .");
+
+            // Check global variable initializer function contains store of 2.0
+            auto &init_f_entry = global_init->getEntryBlock();
+            bool last_store_correct = false;
+            for (auto iter = init_f_entry.begin(); iter != init_f_entry.end(); iter++) {
+                auto ptr = &*iter;
+                if (ptr && llvm::isa<llvm::StoreInst>(ptr)) {
+                    auto store = llvm::dyn_cast<llvm::StoreInst>(ptr);
+
+                    // Check destination is pi
+                    if (store->getOperand(1) != global_a) {
+                        continue;
+                    }
+
+                    // Check value is 2.0
+                    auto val = llvm::ConstantFP::get(generator.context, llvm::APFloat(2.0));
+                    last_store_correct = store->getOperand(0) == val;
+                }
+            }
+            BOOST_TEST_CHECK(last_store_correct, "Global variable initializer must end by initializing a to 2.0");
+        }
+    }
+
     //TODO check global variables
 
     BOOST_AUTO_TEST_CASE( example_program ) {
