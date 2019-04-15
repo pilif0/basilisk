@@ -309,8 +309,7 @@ BOOST_AUTO_TEST_SUITE(Codegen)
             // Check last instruction is return void
             auto last = &*global_init->getEntryBlock().rbegin();
             BOOST_TEST_CHECK(llvm::isa<llvm::ReturnInst>(last), "Last global initializer instruction must be return.");
-            auto ret = llvm::dyn_cast<llvm::ReturnInst>(last);
-            BOOST_TEST_CHECK(ret->getType() == llvm::Type::getVoidTy(generator.context),
+            BOOST_TEST_CHECK(global_init->getReturnType() == llvm::Type::getVoidTy(generator.context),
                     "Global initializer must return void.");
         }
 
