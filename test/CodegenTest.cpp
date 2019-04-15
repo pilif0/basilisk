@@ -193,8 +193,46 @@ BOOST_AUTO_TEST_SUITE(Codegen)
         BOOST_TEST_CHECK(f, "Function f must be present.");
     }
 
-    //TODO check local variables get put on stack (alloca + store)
-    //TODO check local variable access is through stack (load)
+    BOOST_AUTO_TEST_CASE( local_vars_stack ) {
+        // Generate code
+        Generator generator;
+        generator.from_source("f () {x = 1.0; y = x; }");
+
+        // Find f
+        auto f = generator.module.getFunction("f");
+        BOOST_TEST_CHECK(f, "Function f must be present.");
+
+        // Entry block of f has to start with 2 allocas
+        //TODO could make more general by counting allocas instead of assuming they are first and second, but that would
+        //  make check of store destination harder to do
+        auto entry = f->getEntryBlock().begin();
+        auto y_alloca = llvm::dyn_cast<llvm::AllocaInst>(&*(entry++));
+        BOOST_TEST_CHECK(y_alloca, "First instruction must be alloca.");
+        auto x_alloca = llvm::dyn_cast<llvm::AllocaInst>(&*(entry++));
+        BOOST_TEST_CHECK(x_alloca, "Second instruction must be alloca.");
+
+        // Value of x should be stored to alloca'd space
+        auto x_store = llvm::dyn_cast<llvm::StoreInst>(&*(entry++));
+        BOOST_TEST_CHECK(x_store, "Third instruction must be store.");
+        if (x_store) {
+            BOOST_TEST_CHECK(x_store->getOperand(1) == x_alloca, "Third instruction must store to x.");
+        }
+
+        // Value of x should be loaded from alloca'd space
+        auto x_load = llvm::dyn_cast<llvm::LoadInst>(&*(entry++));
+        BOOST_TEST_CHECK(x_load ,"Fourth instruction must be load.");
+        if (x_load) {
+            BOOST_TEST_CHECK(x_load->getOperand(0) == x_alloca, "Fourth instruction must load from x.");
+        }
+
+        // Loaded value should be stored to y's alloca'd space
+        auto y_store = llvm::dyn_cast<llvm::StoreInst>(&*(entry++));
+        BOOST_TEST_CHECK(y_store, "Fifth instruction must be store.");
+        if (y_store) {
+            BOOST_TEST_CHECK(y_store->getOperand(0) == x_load, "Fifth instruction must store loaded value.");
+            BOOST_TEST_CHECK(y_store->getOperand(1) == y_alloca, "Fifth instruction must store to y.");
+        }
+    }
 
     BOOST_AUTO_TEST_CASE( global_vars_last_init ) {
         // Generate code
