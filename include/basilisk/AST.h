@@ -130,7 +130,9 @@ namespace basilisk::ast {
          */
         class Modulo : public Expression {
             public:
+                //! Argument
                 std::unique_ptr<Expression1> x;
+                //! Divisor
                 std::unique_ptr<Expression> m;
 
                 /**
@@ -154,7 +156,9 @@ namespace basilisk::ast {
          */
         class Summation : public Expression1 {
             public:
+                //! Left-hand side
                 std::unique_ptr<Expression2> lhs;
+                //! Right-hand side
                 std::unique_ptr<Expression1> rhs;
 
                 /**
@@ -177,7 +181,9 @@ namespace basilisk::ast {
          */
         class Subtraction : public Expression1 {
             public:
+                //! Left-hand side
                 std::unique_ptr<Expression2> lhs;
+                //! Right-hand side
                 std::unique_ptr<Expression1> rhs;
 
                 /**
@@ -201,7 +207,9 @@ namespace basilisk::ast {
          */
         class Multiplication : public Expression2 {
             public:
+                //! Left-hand side
                 std::unique_ptr<Expression3> lhs;
+                //! Right-hand side
                 std::unique_ptr<Expression2> rhs;
 
                 /**
@@ -224,7 +232,9 @@ namespace basilisk::ast {
          */
         class Division : public Expression2 {
             public:
+                //! Left-hand side
                 std::unique_ptr<Expression3> lhs;
+                //! Right-hand side
                 std::unique_ptr<Expression2> rhs;
 
                 /**
@@ -248,6 +258,7 @@ namespace basilisk::ast {
          */
         class NumericNegation : public Expression3 {
             public:
+                //! Negation argument
                 std::unique_ptr<Expression3> x;
 
                 /**
@@ -393,19 +404,20 @@ namespace basilisk::ast {
                     void accept(Visitor &visitor) override;
             };
 
-            /** \class Standalone
-             * \brief Standalone Statement node
+            /** \class Discard
+             * \brief Discard Statement node
              *
-             * Standalone Statement node contains an expression that is evaluated and its value is then discarded.
+             * Discard Statement node contains an expression that is evaluated and its value is then discarded.
              */
             class Discard : public Statement {
                 public:
+                    //! Expression to be evaluated
                     std::unique_ptr<Expression> expression;
 
                     /**
-                     * \brief Construct a Standalone Statement node
+                     * \brief Construct a Discard Statement node
                      *
-                     * Construct a Standalone Statement node from an expression.
+                     * Construct a Discard Statement node from an expression.
                      *
                      * \param expression Pointer to contained expression
                      */
@@ -493,6 +505,7 @@ namespace basilisk::ast {
          */
         class Variable : public Definition {
             public:
+                //! Contained assignment statement
                 std::unique_ptr<statements::Assignment> statement;
 
                 /**
@@ -543,56 +556,80 @@ namespace basilisk::ast {
         protected:
             Visitor() = default;
         public:
+            //! Delegate up to \ref visit(Node&)
             virtual void visit(Expression &node)
                 { visit(static_cast<Node&>(node)); }
+            //! Delegate up to \ref visit(Expression&)
             virtual void visit(expressions::Modulo &node)
                 { visit(static_cast<Expression&>(node)); }
+            //! Delegate up to \ref visit(Expression&)
             virtual void visit(expressions::Expression1 &node)
                 { visit(static_cast<Expression&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression1&)
             virtual void visit(expressions::Summation &node)
                 { visit(static_cast<expressions::Expression1&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression1&)
             virtual void visit(expressions::Subtraction &node)
                 { visit(static_cast<expressions::Expression1&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression1&)
             virtual void visit(expressions::Expression2 &node)
                 { visit(static_cast<expressions::Expression1&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression2&)
             virtual void visit(expressions::Multiplication &node)
                 { visit(static_cast<expressions::Expression2&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression2&)
             virtual void visit(expressions::Division &node)
                 { visit(static_cast<expressions::Expression2&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression2&)
             virtual void visit(expressions::Expression3 &node)
                 { visit(static_cast<expressions::Expression2&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression3&)
             virtual void visit(expressions::NumericNegation &node)
                 { visit(static_cast<expressions::Expression3&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression3&)
             virtual void visit(expressions::Expression4 &node)
                 { visit(static_cast<expressions::Expression3&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression4&)
             virtual void visit(expressions::IdentifierExpression &node)
                 { visit(static_cast<expressions::Expression4&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression4&)
             virtual void visit(expressions::Parenthesised &node)
                 { visit(static_cast<expressions::Expression4&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression4&)
             virtual void visit(expressions::FunctionCall &node)
                 { visit(static_cast<expressions::Expression4&>(node)); }
+            //! Delegate up to \ref visit(expressions::Expression4&)
             virtual void visit(expressions::LiteralDouble &node)
                 { visit(static_cast<expressions::Expression4&>(node)); }
 
+            //! Delegate up to \ref visit(Node&)
             virtual void visit(Statement &node)
                 { visit(static_cast<Node&>(node)); }
+            //! Delegate up to \ref visit(Statement&)
             virtual void visit(statements::Assignment &node)
                 { visit(static_cast<Statement&>(node)); }
+            //! Delegate up to \ref visit(Statement&)
             virtual void visit(statements::Discard &node)
                 { visit(static_cast<Statement&>(node)); }
+            //! Delegate up to \ref visit(Statement&)
             virtual void visit(statements::Return &node)
                 { visit(static_cast<Statement&>(node)); }
 
+            //! Delegate up to \ref visit(Node&)
             virtual void visit(Definition &node)
                 { visit(static_cast<Node&>(node)); }
+            //! Delegate up to \ref visit(Definition&)
             virtual void visit(definitions::Function &node)
                 { visit(static_cast<Definition&>(node)); }
+            //! Delegate up to \ref visit(Definition&)
             virtual void visit(definitions::Variable &node)
                 { visit(static_cast<Definition&>(node)); }
 
+            //! Delegate up to \ref visit(Node&)
             virtual void visit(Program &node)
                 { visit(static_cast<Node&>(node)); }
 
+            //! Pure virtual general node visit
             virtual void visit(Node &) = 0;
     };
 

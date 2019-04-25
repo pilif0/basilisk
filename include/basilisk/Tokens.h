@@ -78,12 +78,15 @@ namespace basilisk::tokens {
         //! Tag content if tag is not enough, empty otherwise
         std::string content;
 
+        //! Tokens are equal iff their tag and content are equal
         friend bool operator==(const Token &lhs, const Token &rhs) {
             return lhs.tag == rhs.tag && lhs.content == rhs.content;
         }
 
+        //! Tokens are distinct iff their tag or content are distinct
         friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
 
+        //! Tokens can be appended to a stream as the tag followed by the content in parentheses if not empty
         friend std::ostream &operator<<(std::ostream &os, const Token &token) {
             // Tag labels in the same order as the enumeration
             static const char* labels[] = {

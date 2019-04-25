@@ -432,9 +432,9 @@ namespace basilisk::parser {
     }
 
     /**
-     * \brief Parse Standalone Statement node from the input
+     * \brief Parse Discard Statement node from the input
      *
-     * \return Pointer to resulting Standalone Statement node
+     * \return Pointer to resulting Discard Statement node
      */
     std::unique_ptr<ast::statements::Discard> StatementParser::discard() {
         // Discard Statement -> expecting Expression SEMICOLON

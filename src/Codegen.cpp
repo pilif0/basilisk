@@ -17,6 +17,7 @@ namespace basilisk::codegen {
     /**
      * \brief Add a local variable alloca to the function entry block
      *
+     * \param context Current LLVM context
      * \param f Pointer to function to whose entry block to add alloca
      * \param identifier Identifier of the pointer temporary
      * \return Pointer to the alloca instruction

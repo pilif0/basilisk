@@ -26,7 +26,7 @@ namespace basilisk::codegen {
      * @{
      */
 
-    /** \class NamedValuesMap
+    /** \class NamedValues
      * \brief Named values data structure capable of handling nested scopes
      *
      * Resolves identifiers to the respective named values from the top-most scope where they are found.
@@ -259,6 +259,7 @@ namespace basilisk::codegen {
      */
     class CodegenException : public std::runtime_error {
         public:
+            //! Construct a codegen exception from its message
             explicit CodegenException(const std::string &message) : std::runtime_error(message) {}
     };
 

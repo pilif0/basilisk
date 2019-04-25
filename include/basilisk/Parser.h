@@ -190,6 +190,7 @@ namespace basilisk::parser {
      */
     class ParserException : public std::runtime_error {
         public:
+            //! Construct a parser exception from its message
             explicit ParserException(const std::string &message) : std::runtime_error(message) {}
     };
 

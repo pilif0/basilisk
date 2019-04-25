@@ -42,6 +42,7 @@ namespace basilisk::lexer {
      */
     class LexerException : public std::runtime_error {
         public:
+            //! Construct a lexer exception from its message
             explicit LexerException(const std::string &message) : std::runtime_error(message) {}
     };
 
