@@ -15,7 +15,6 @@
 #include <sstream>
 #include <fstream>
 #include <functional>
-#include <basilisk/Parser.h>
 
 /**
  * \brief Print usage into standard error
@@ -186,10 +185,16 @@ int main(int argc, char *argv[]) {
             module.print(llvm::outs(), nullptr);
         } else if (n == 2) {
             // File output
-            //TODO print llvm, not parsed tree
             std::string destination = argv[2];
-            std::ofstream output(destination, std::ios::out);
-            output << basilisk::ast::util::PrintVisitor::print(program);
+            std::error_code ec;
+            llvm::raw_fd_ostream stream = llvm::raw_fd_ostream(destination, ec);
+            if (ec) {
+                // Error -> print message
+                std::cerr << ec.message();
+            } else {
+                // Fine -> print module
+                module.print(stream, nullptr);
+            }
         }
     } else {
         std::cerr << "No tokens could be lexed from the input.";
