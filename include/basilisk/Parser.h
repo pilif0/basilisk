@@ -12,6 +12,7 @@
 #include <memory>
 
 // Forward declarations
+///\cond
 namespace basilisk::tokens {
     struct Token;
 }
@@ -40,20 +41,17 @@ namespace basilisk::ast {
     }
     class Program;
 }
+///\endcond
 
-//! Namespace for all parser-related code
+/** \namespace basilisk::parser
+ * \brief Namespace for all parser-related code
+ *
+ * The main parsing tool is \ref ProgramParser, which returns the parse tree resulting from consuming all tokens until
+ *  the first \c END token.
+ * Each parser needs a function to get the next input token (\ref get_f_t) and a function to peek at the input tokens
+ *  (\ref peek_f_t).
+ */
 namespace basilisk::parser {
-    /** \addtogroup Parser
-     * \brief Parsing module
-     *
-     * Module that contains any code related exclusively to parsing.
-     * The main parsing function is \c parse.
-     * It needs a function to get the next input token and returns the parse tree resulting from consuming all tokens
-     *  until the first \c END token.
-     *
-     * @{
-     */
-
     /**
      * \brief Input get function type
      *
@@ -193,11 +191,6 @@ namespace basilisk::parser {
             //! Construct a parser exception from its message
             explicit ParserException(const std::string &message) : std::runtime_error(message) {}
     };
-
-    /**
-     * @}
-     */
-
 }
 
 #endif //BASILISK_PARSER_H

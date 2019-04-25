@@ -11,23 +11,21 @@
 #include <exception>
 
 // Forward declarations
+///\cond
 namespace basilisk::tokens {
     struct Token;
 }
+///\endcond
 
-//! Namespace for all lexer-related code
+/** \namespace basilisk::lexer
+ * \brief Namespace for all lexer-related code
+ *
+ * The main lexing function is \ref lex.
+ * It needs a function to get the next input character (\ref get_function_t), a function to peek at the next input
+ *  character (\ref peek_function_t, and a function to append a Token to the output buffer (\ref append_function_t).
+ * Whitespace is ignored when lexing, apart from separating tokens.
+ */
 namespace basilisk::lexer {
-    /** \addtogroup Lexer
-     * \brief Lexing module
-     *
-     * Module that contains any code related exclusively to lexing.
-     * The main lexing function is \c lex.
-     * It needs a function to get the next input character, and a function to append a Token to the output buffer.
-     * Whitespace is ignored when lexing, apart from separating tokens.
-     *
-     * @{
-     */
-
     //! Input get function type - no arguments and return a single character
     typedef std::function<char ()> get_function_t;
     //! Input peek function type - no arguments and return a single character
@@ -45,10 +43,6 @@ namespace basilisk::lexer {
             //! Construct a lexer exception from its message
             explicit LexerException(const std::string &message) : std::runtime_error(message) {}
     };
-
-    /**
-     * @}
-     */
 
 }
 

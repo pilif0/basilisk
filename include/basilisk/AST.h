@@ -10,16 +10,12 @@
 #include <string>
 #include <memory>
 
-//! Abstract Syntax Tree definitions
+/** \namespace basilisk::ast
+ * \brief Abstract Syntax Tree definitions
+ *
+ * Definitions of nodes of the Abstract Syntax Tree.
+ */
 namespace basilisk::ast {
-    /** \addtogroup AST
-     * \brief Abstract Syntax Tree definitions
-     *
-     * Definitions of nodes of the Abstract Syntax Tree.
-     *
-     * @{
-     */
-
     // Forward-define visitor base class
     class Visitor;
 
@@ -632,10 +628,6 @@ namespace basilisk::ast {
             //! Pure virtual general node visit
             virtual void visit(Node &) = 0;
     };
-
-    /**
-     * @}
-     */
 }
 
 #endif //BASILISK_AST_H

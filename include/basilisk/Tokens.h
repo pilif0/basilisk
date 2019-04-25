@@ -9,34 +9,31 @@
 #include <string>
 #include <ostream>
 
-//! Token definitions
+/** \namespace basilisk::tokens
+ * \brief Token definitions
+ *
+ * Definitions of tokens created by the lexer and used by the parser.
+ *
+ * Tokens:
+ *  - `IDENTIFIER`      = letter followed by alphanumeric or `_`
+ *  - `LPAR`            = `(`
+ *  - `RPAR`            = `)`
+ *  - `LBRAC`           = `{`
+ *  - `RBRAC`           = `}`
+ *  - `COMMA`           = `,`
+ *  - `SEMICOLON`       = `;`
+ *  - `ASSIGN`          = `=`
+ *  - `RETURN`          = `return`
+ *  - `DOUBLE_LITERAL`  = at least one digit followed by a decimal point and then at least one digit
+ *  - `PLUS`            = `+`
+ *  - `MINUS`           = `-`
+ *  - `STAR`            = `*`
+ *  - `SLASH`           = `/`
+ *  - `PERCENT`         = `%`
+ *  - `END`             = represents the end of input
+ *  - `ERROR`           = represents a lexing error
+ */
 namespace basilisk::tokens {
-    /** \addtogroup Tokens
-     * \brief Token definitions
-     *
-     * Definitions of tokens created by the lexer and used by the parser.
-     *
-     * Tokens:
-     *  - `IDENTIFIER`      = letter followed by alphanumeric or `_`
-     *  - `LPAR`            = `(`
-     *  - `RPAR`            = `)`
-     *  - `LBRAC`           = `{`
-     *  - `RBRAC`           = '}`
-     *  - `COMMA`           = `,`
-     *  - `SEMICOLON`       = `;`
-     *  - `ASSIGN`          = `=`
-     *  - `RETURN`          = `return`
-     *  - `DOUBLE_LITERAL`  = at least one digit followed by a decimal point and then at least one digit
-     *  - `PLUS`            = `+`
-     *  - `MINUS`           = `-`
-     *  - `STAR`            = `*`
-     *  - `SLASH`           = `/`
-     *  - `PERCENT`         = `%`
-     *  - `END`             = represents the end of input
-     *  - `ERROR`           = represents a lexing error
-     * @{
-     */
-
     //! Token tags
     namespace tags {
         /** \enum token_tag
@@ -124,11 +121,6 @@ namespace basilisk::tokens {
             return os;
         }
     };
-
-
-    /**
-     * @}
-     */
 }
 
 #endif //BASILISK_TOKENS_H

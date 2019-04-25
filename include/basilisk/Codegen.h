@@ -16,16 +16,12 @@
 #include <map>
 #include <vector>
 
-//! LLVM IR code generation
+/** \namespace basilisk::codegen
+ * \brief LLVM IR code generation
+ *
+ * Generation of LLVM IR from the AST.
+ */
 namespace basilisk::codegen {
-    /** \addtogroup Codegen
-     * \brief LLVM IR code generation
-     *
-     * Generation of LLVM IR from the AST.
-     *
-     * @{
-     */
-
     /** \class NamedValues
      * \brief Named values data structure capable of handling nested scopes
      *
@@ -262,10 +258,6 @@ namespace basilisk::codegen {
             //! Construct a codegen exception from its message
             explicit CodegenException(const std::string &message) : std::runtime_error(message) {}
     };
-
-    /**
-     * @}
-     */
 }
 
 #endif //BASILISK_CODEGEN_H
