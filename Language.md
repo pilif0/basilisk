@@ -74,6 +74,8 @@ Basilisk supports expressions made up of the following operations, in order of i
 
 where _expression-n_ is an expression with precedence level _n_ or lower and all binary operators are right associative.
 
+Note that the modulo operation (`%`) results in a value with the same sign as the dividend (left-hand side).
+
 # Standard Library
 There is a standard library of functions that are accessible from basilisk.
 

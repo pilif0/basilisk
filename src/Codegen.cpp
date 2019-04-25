@@ -134,7 +134,6 @@ namespace basilisk::codegen {
      *
      * \param node Modulo node
      */
-     //TODO remainder has the same sign as dividend, should probably mention that somewhere in the docs
     void ExpressionCodegen::visit(ast::expressions::Modulo &node) {
          // Generate the values of the contained expressions
          node.x->accept(*this);
