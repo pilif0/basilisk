@@ -10,7 +10,6 @@
 #include <string>
 #include <memory>
 
-//TODO determine whether definition order in program should matter
 //! Abstract Syntax Tree definitions
 namespace basilisk::ast {
     /** \addtogroup AST

@@ -275,8 +275,6 @@ BOOST_AUTO_TEST_SUITE(Codegen)
         }
     }
 
-    //TODO check global variables
-
     BOOST_AUTO_TEST_CASE( example_program ) {
         // Generate code
         Generator generator;
