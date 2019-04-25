@@ -123,7 +123,14 @@ namespace basilisk::codegen {
             //! Pointer to the last value built
             llvm::Value *value = nullptr;
         public:
-            //TODO doc
+            /**
+             * \brief Construct an AST visitor to generate LLVM IR from expression nodes into the provided module
+             *
+             * \param context LLVM context
+             * \param builder LLVM IR builder
+             * \param module LLVM module
+             * \param variables Variable scope
+             */
             ExpressionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
                     llvm::Module *module, NamedValues &variables)
                 : context(context), builder(builder), module(module), variables(variables) {}
@@ -180,7 +187,15 @@ namespace basilisk::codegen {
             //! Pointer to the last function built
             llvm::Function *function = nullptr;
         public:
-            //TODO doc
+            /**
+             * \brief Construct an AST visitor to generate LLVM IR from function definition and statement nodes into the
+             *  provided module
+             *
+             * \param context LLVM context
+             * \param builder LLVM IR builder
+             * \param module LLVM module
+             * \param variables Variable scope
+             */
             FunctionCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
                     llvm::Module *module, NamedValues &variables)
             : context(context), builder(builder), module(module), variables(variables) {}
@@ -218,7 +233,14 @@ namespace basilisk::codegen {
             //! Pointers to variables
             NamedValues &variables;
         public:
-            //TODO doc
+            /**
+             * \brief Construct an AST visitor to generate LLVM IR from the program node into the provided module
+             *
+             * \param context LLVM context
+             * \param builder LLVM IR builder
+             * \param module LLVM module
+             * \param variables Variable scope
+             */
             ProgramCodegen(llvm::LLVMContext &context, llvm::IRBuilder<> &builder,
                     llvm::Module *module, NamedValues &variables)
             : context(context), builder(builder), module(module), variables(variables) {}
