@@ -15,3 +15,9 @@ clang-tidy.log
 
 # Basilisk parsed files
 *.stone
+
+# Valgrind dumps
+vgcore.*
+
+# LLVM IR
+*.ll
