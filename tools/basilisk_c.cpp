@@ -9,6 +9,7 @@
 #include <basilisk/Tokens.h>
 #include <basilisk/Parser.h>
 #include <basilisk/AST.h>
+#include <basilisk/AST_util.h>
 #include <basilisk/Codegen.h>
 
 #include <string>
@@ -284,13 +285,41 @@ int main(int argc, char *argv[]) {
                         error() << "LLVM IR generation failed.\n";
                     } else {
                         // Otherwise only codegen requested -> output LLVM IR
-                        //TODO
+                        if (file_out) {
+                            // Open a stream to the output file and print the module into it
+                            std::error_code ec;
+                            llvm::raw_fd_ostream stream = llvm::raw_fd_ostream(filename_out, ec);
+                            if (ec) {
+                                // Error -> print message
+                                error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
+                            } else {
+                                // Fine -> print module
+                                module.print(stream, nullptr);
+                            }
+                        } else {
+                            // Print AST to the stream
+                            module.print(llvm::outs(), nullptr);
+                        }
                     }
                 } else if (!parse_success) {
                     error() << "Parsing failed.\n";
                 } else {
                     // Otherwise only parsing requested -> output AST
-                    //TODO
+                    if (file_out) {
+                        // Open a stream to the output file
+                        std::ofstream stream(filename_out, std::ios::out);
+
+                        if (!stream.is_open()) {
+                            // Print error if output not open
+                            error() << "Failed to open file " << filename_out << '\n';
+                        } else {
+                            // Print AST to the stream
+                            stream << basilisk::ast::util::PrintVisitor::print(program);
+                        }
+                    } else {
+                        // Print AST to the stream
+                        std::cout << basilisk::ast::util::PrintVisitor::print(program);
+                    }
                 }
             } else if (!lex_success) {
                 error() << "Lexing failed.\n";
@@ -298,7 +327,31 @@ int main(int argc, char *argv[]) {
                 error() << "Lexing resulted in no tokens.\n";
             } else {
                 // Otherwise only lexing requested -> output tokens
-                //TODO
+                if (file_out) {
+                    // Open a stream to the output file
+                    std::ofstream stream(filename_out, std::ios::out);
+
+                    if (!stream.is_open()) {
+                        // Print error if output not open
+                        error() << "Failed to open file " << filename_out << '\n';
+                    } else {
+                        // Print tokens to the stream separated with vertical bars
+                        for (basilisk::tokens::Token t : buffer) {
+                            std::cout << t;
+                            if (t != *(buffer.end())) {
+                                std::cout << '|';
+                            }
+                        }
+                    }
+                } else {
+                    // Print tokens to the stream separated with vertical bars
+                    for (basilisk::tokens::Token t : buffer) {
+                        std::cout << t;
+                        if (t != *(buffer.end())) {
+                            std::cout << '|';
+                        }
+                    }
+                }
             }
         }
     }
