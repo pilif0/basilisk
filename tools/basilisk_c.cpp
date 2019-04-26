@@ -64,7 +64,7 @@ bool lex_stdin(const basilisk::lexer::append_function_t &append_f) {
         basilisk::lexer::lex(get_f, peek_f, append_f);
     } catch (basilisk::lexer::LexerException e) {
         // Print exception and return failure
-        error() << "Lexer exception - " << e.what();
+        error() << "Lexer exception - " << e.what() << '\n';
         return false;
     }
 
@@ -100,7 +100,7 @@ bool lex_file(const std::string &source_filename, const basilisk::lexer::append_
             basilisk::lexer::lex(get_f, peek_f, append_f);
         } catch (basilisk::lexer::LexerException e) {
             // Print exception and return failure
-            error() << "Lexer exception - " << e.what();
+            error() << "Lexer exception - " << e.what() << '\n';
             return false;
         }
     }
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
                     program = basilisk::parser::ProgramParser(get_f, peek_f).program();
                 } catch (basilisk::parser::ParserException e) {
                     // Print exception and note failure
-                    error() << "Parser exception - " << e.what();
+                    error() << "Parser exception - " << e.what() << '\n';
                     parse_success = false;
                 }
 
@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
                         program.accept(program_cg);
                     } catch (std::exception e) {
                         // Print exception and note failure
-                        error() << "LLVM IR generation exception - " << e.what();
+                        error() << "LLVM IR generation exception - " << e.what() << '\n';
                         codegen_success = false;
                     }
 
@@ -281,21 +281,21 @@ int main(int argc, char *argv[]) {
                     if (codegen_success && ops == 0) {
                         //TODO
                     } else if (!codegen_success) {
-                        error() << "LLVM IR generation failed.";
+                        error() << "LLVM IR generation failed.\n";
                     } else {
                         // Otherwise only codegen requested -> output LLVM IR
                         //TODO
                     }
                 } else if (!parse_success) {
-                    error() << "Parsing failed.";
+                    error() << "Parsing failed.\n";
                 } else {
                     // Otherwise only parsing requested -> output AST
                     //TODO
                 }
             } else if (!lex_success) {
-                error() << "Lexing failed.";
+                error() << "Lexing failed.\n";
             } else if (buffer.empty()) {
-                error() << "Lexing resulted in no tokens.";
+                error() << "Lexing resulted in no tokens.\n";
             } else {
                 // Otherwise only lexing requested -> output tokens
                 //TODO
