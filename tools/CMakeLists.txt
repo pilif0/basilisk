@@ -14,3 +14,8 @@ add_executable(parser_executable parser_executable.cpp)
 # Add codegen executable
 add_executable(codegen_executable codegen_executable.cpp)
 target_link_libraries(codegen_executable ${llvm_libs})
+
+# Add basilisk executable
+add_executable(basilisk_c basilisk_c.cpp)
+target_link_libraries(basilisk_c ${llvm_libs})
+set_target_properties(basilisk_c PROPERTIES OUTPUT_NAME "basilisk")
