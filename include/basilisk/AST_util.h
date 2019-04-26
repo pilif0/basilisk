@@ -13,7 +13,9 @@
 #include <string>
 #include <sstream>
 
-//! AST utility functions
+/** \namespace basilisk::ast::util
+ * \brief AST utility functions
+ */
 namespace basilisk::ast::util {
     /**
      * \brief Check whether two pointers contain equal nodes

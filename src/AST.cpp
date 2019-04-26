@@ -270,7 +270,6 @@ namespace basilisk::ast {
         }
     }
 
-    //TODO adjust when determined whether definition order matters
     bool Program::equals(Node *other) {
         // Two programs are equal if they have equivalent definitions
 

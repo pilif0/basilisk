@@ -9,34 +9,31 @@
 #include <string>
 #include <ostream>
 
-//! Token definitions
+/** \namespace basilisk::tokens
+ * \brief Token definitions
+ *
+ * Definitions of tokens created by the lexer and used by the parser.
+ *
+ * Tokens:
+ *  - `IDENTIFIER`      = letter followed by alphanumeric or `_`
+ *  - `LPAR`            = `(`
+ *  - `RPAR`            = `)`
+ *  - `LBRAC`           = `{`
+ *  - `RBRAC`           = `}`
+ *  - `COMMA`           = `,`
+ *  - `SEMICOLON`       = `;`
+ *  - `ASSIGN`          = `=`
+ *  - `RETURN`          = `return`
+ *  - `DOUBLE_LITERAL`  = at least one digit followed by a decimal point and then at least one digit
+ *  - `PLUS`            = `+`
+ *  - `MINUS`           = `-`
+ *  - `STAR`            = `*`
+ *  - `SLASH`           = `/`
+ *  - `PERCENT`         = `%`
+ *  - `END`             = represents the end of input
+ *  - `ERROR`           = represents a lexing error
+ */
 namespace basilisk::tokens {
-    /** \addtogroup Tokens
-     * \brief Token definitions
-     *
-     * Definitions of tokens created by the lexer and used by the parser.
-     *
-     * Tokens:
-     *  - `IDENTIFIER`      = letter followed by alphanumeric or `_`
-     *  - `LPAR`            = `(`
-     *  - `RPAR`            = `)`
-     *  - `LBRAC`           = `{`
-     *  - `RBRAC`           = '}`
-     *  - `COMMA`           = `,`
-     *  - `SEMICOLON`       = `;`
-     *  - `ASSIGN`          = `=`
-     *  - `RETURN`          = `return`
-     *  - `DOUBLE_LITERAL`  = at least one digit followed by a decimal point and then at least one digit
-     *  - `PLUS`            = `+`
-     *  - `MINUS`           = `-`
-     *  - `STAR`            = `*`
-     *  - `SLASH`           = `/`
-     *  - `PERCENT`         = `%`
-     *  - `END`             = represents the end of input
-     *  - `ERROR`           = represents a lexing error
-     * @{
-     */
-
     //! Token tags
     namespace tags {
         /** \enum token_tag
@@ -78,12 +75,15 @@ namespace basilisk::tokens {
         //! Tag content if tag is not enough, empty otherwise
         std::string content;
 
+        //! Tokens are equal iff their tag and content are equal
         friend bool operator==(const Token &lhs, const Token &rhs) {
             return lhs.tag == rhs.tag && lhs.content == rhs.content;
         }
 
+        //! Tokens are distinct iff their tag or content are distinct
         friend bool operator!=(const Token &lhs, const Token &rhs) { return !(rhs == lhs); }
 
+        //! Tokens can be appended to a stream as the tag followed by the content in parentheses if not empty
         friend std::ostream &operator<<(std::ostream &os, const Token &token) {
             // Tag labels in the same order as the enumeration
             static const char* labels[] = {
@@ -121,11 +121,6 @@ namespace basilisk::tokens {
             return os;
         }
     };
-
-
-    /**
-     * @}
-     */
 }
 
 #endif //BASILISK_TOKENS_H

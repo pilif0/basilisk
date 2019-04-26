@@ -1,6 +1,6 @@
 # Link and include libraries
-link_libraries()
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+link_libraries( ${llvm_libs})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 include_directories(${INCL_DIR})
 
 # Set up source and header lists
@@ -10,12 +10,14 @@ set(basilisk_HEADERS
         "${INCL_DIR}/basilisk/Tokens.h"
         "${INCL_DIR}/basilisk/AST.h"
         "${INCL_DIR}/basilisk/AST_util.h"
-        "${INCL_DIR}/basilisk/Parser.h")
+        "${INCL_DIR}/basilisk/Parser.h"
+        "${INCL_DIR}/basilisk/Codegen.h")
 set(basilisk_SOURCES
         "${SRC_DIR}/Lexer.cpp"
         "${SRC_DIR}/Parser.cpp"
         "${SRC_DIR}/AST.cpp"
-        "${SRC_DIR}/AST_util.cpp")
+        "${SRC_DIR}/AST_util.cpp"
+        "${SRC_DIR}/Codegen.cpp")
 
 # Copy source and header lists to parent for use in documentation
 set(basilisk_HEADERS ${basilisk_HEADERS} PARENT_SCOPE)

@@ -7,9 +7,10 @@ foreach(test_file ${TEST_FILES})
     # Extract the filename
     get_filename_component(test_name ${test_file} NAME_WE)
 
-    # Include Boost and Basilisk headers
-    include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+    # Include Boost, Basilisk and LLVm headers and link LLVM
+    include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
     include_directories(${INCL_DIR})
+    link_libraries( ${llvm_libs})
 
     # Add test target
     add_executable(${test_name} ${test_file})
