@@ -37,10 +37,10 @@ void show_usage() {
               << "OPTIONS:\n"
               << "\t-h --help\tShow this screen.\n"
               << "\t-v --version\tShow Basilisk version.\n"
-              << "\t-o --output\tPath to output file. If not set, uses standard output stream."
-              << "\t-l --lex\tPerform only lexing, and output the tokens."
-              << "\t-p --parse\tPerform only lexing and parsing, and output the AST."
-              << "\t-g --codegen\tPerform only lexing, parsing and code generation, and output the LLVM IR.";
+              << "\t-o --output\tPath to output file. If not set, uses standard output stream.\n"
+              << "\t-l --lex\tPerform only lexing, and output the tokens.\n"
+              << "\t-p --parse\tPerform only lexing and parsing, and output the AST.\n"
+              << "\t-g --codegen\tPerform only lexing, parsing and code generation, and output the LLVM IR.\n";
 }
 
 //! Print version into standard output
