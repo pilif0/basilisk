@@ -12,6 +12,15 @@
 #include <basilisk/AST_util.h>
 #include <basilisk/Codegen.h>
 
+#include <llvm/IR/LegacyPassManager.h>
+#include <llvm/Transforms/InstCombine/InstCombine.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -280,7 +289,82 @@ int main(int argc, char *argv[]) {
 
                     // Only continue iff codegen succeeded and further steps are requested
                     if (codegen_success && ops == 0) {
-                        //TODO
+                        // Initialize optimization passes
+                        auto pass_manager = llvm::legacy::PassManager();
+
+                        // Add passes recommended in https://llvm.org/docs/tutorial/LangImpl04.html
+                        pass_manager.add(llvm::createInstructionCombiningPass());   // Merge instructions
+                        pass_manager.add(llvm::createReassociatePass());    // Use associativity to improve constant propagation
+                        pass_manager.add(llvm::createGVNPass());    // Most importantly promote stack to registers
+                        pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
+
+                        // Run the passes
+                        //TODO can this fail? might want to catch exceptions and only continue on success
+                        pass_manager.run(module);
+
+                        // Pick target
+                        auto target_triple = llvm::sys::getDefaultTargetTriple();
+                        llvm::InitializeAllTargetInfos();
+                        llvm::InitializeAllTargets();
+                        llvm::InitializeAllTargetMCs();
+                        llvm::InitializeAllAsmParsers();
+                        llvm::InitializeAllAsmPrinters();
+                        std::string err;
+                        auto target = llvm::TargetRegistry::lookupTarget(target_triple, err);
+
+                        // Emit object code
+                        if (target) {
+                            // Get target machine
+                            auto cpu = "generic";
+                            auto features = "";
+                            llvm::TargetOptions options;
+                            auto relocation_model = llvm::Optional<llvm::Reloc::Model>(llvm::Reloc::Model::PIC_);
+                            auto target_machine = target->createTargetMachine(target_triple, cpu, features, options, relocation_model);
+
+                            // Configure module
+                            module.setDataLayout(target_machine->createDataLayout());
+                            module.setTargetTriple(target_triple);
+
+                            // Prepare output stream and emit the object code
+                            if (file_out) {
+                                // Open a stream to the output file and emit the code into it
+                                std::error_code ec;
+                                auto stream = llvm::raw_fd_ostream(filename_out, ec);
+                                if (ec) {
+                                    // Error -> print message
+                                    error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
+                                } else {
+                                    // Fine -> create and run pass to emit object code
+                                    llvm::legacy::PassManager pass;
+                                    auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
+                                    if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
+                                        // Error -> print message
+                                        error() << "File emit pass error - TargetMachine can't emit a file of this type";
+                                    } else {
+                                        // Otherwise -> run the pass
+                                        pass.run(module);
+                                    }
+                                }
+                            } else {
+                                // Emit the code to the a small string
+                                llvm::SmallString<0> small_string;
+                                auto stream = llvm::raw_svector_ostream(small_string);
+                                llvm::legacy::PassManager pass;
+                                auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
+                                if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
+                                    // Error -> print message
+                                    error() << "File emit pass error - TargetMachine can't emit a file of this type";
+                                } else {
+                                    // Otherwise -> run the pass
+                                    pass.run(module);
+                                }
+
+                                // Print the small string into standard output
+                                std::cout << small_string.c_str();
+                            }
+                        } else {
+                            error() << "Failed to look up target - " << err;
+                        }
                     } else if (!codegen_success) {
                         error() << "LLVM IR generation failed.\n";
                     } else {
