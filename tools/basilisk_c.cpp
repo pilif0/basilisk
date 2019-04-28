@@ -101,6 +101,7 @@ bool lex_file(const std::string &source_filename, const basilisk::lexer::append_
     if (!stream.is_open()) {
         // Print error if not open
         error() << "Failed to open file " << source_filename << '\n';
+        return false;
     } else {
         auto get_f = std::bind(&file_get, &stream);
         auto peek_f = std::bind(&file_peek, &stream);
@@ -191,7 +192,6 @@ int main(int argc, char *argv[]) {
         bool file_in = false;
         std::string filename_in;
         unsigned ops = 0; // 0 -> full, 1+ -> lex, 2+ -> parse, 3+ -> codegen
-        bool exit = false;
 
         // Go through arguments
         for (int i = 1; i < argc; i++) {
@@ -202,13 +202,11 @@ int main(int argc, char *argv[]) {
             if (arg == "-h" || arg == "--help") {
                 // Help -> show usage, flag for exit and stop processing
                 show_usage();
-                exit = true;
-                break;
+                return 0;
             } else if (arg == "-v" || arg == "--version") {
                 // Version -> show version, flag for exit and stop processing
                 show_version();
-                exit = true;
-                break;
+                return 0;
             } else if (arg == "-o" || arg == "--output") {
                 // Output -> update state, incrementing i to consume the following argument (filename)
                 file_out = true;
@@ -234,199 +232,41 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // Only continue if exit was not requested
-        if (!exit) {
-            // Lex the input
-            std::vector<basilisk::tokens::Token> buffer;
-            auto append_f = [&buffer](basilisk::tokens::Token t){ buffer.push_back(t); };
-            bool lex_success = false;
-            if (file_in) {
-                // File input
-                lex_success = lex_file(filename_in, append_f);
-            } else {
-                // Standard input
-                lex_success = lex_stdin(append_f);
-            }
+        // Lex the input
+        std::vector<basilisk::tokens::Token> buffer;
+        auto append_f = [&buffer](basilisk::tokens::Token t){ buffer.push_back(t); };
+        bool lex_success;
+        if (file_in) {
+            // File input
+            lex_success = lex_file(filename_in, append_f);
+        } else {
+            // Standard input
+            lex_success = lex_stdin(append_f);
+        }
 
-            // Only continue iff lexing succeeded, token buffer is not empty, and further steps are requested
-            if (lex_success && !buffer.empty() && ops != 1) {
-                // Reverse tokens to prepare buffer
-                std::reverse(buffer.begin(), buffer.end());
+        // Print error and terminate on lexing failure
+        if (!lex_success) {
+            error() << "Lexing failed.\n";
+            return 1;
+        }
 
-                // Bind functions
-                auto get_f = std::bind(&parser_get, &buffer);
-                auto peek_f = std::bind(&parser_peek, &buffer, std::placeholders::_1);
+        // Print error and terminate on no tokens
+        if (buffer.empty()) {
+            error() << "Lexing resulted in no tokens.\n";
+            return 1;
+        }
 
-                // Parse program
-                bool parse_success = true;
-                basilisk::ast::Program program({});
-                try {
-                    program = basilisk::parser::ProgramParser(get_f, peek_f).program();
-                } catch (basilisk::parser::ParserException e) {
-                    // Print exception and note failure
-                    error() << "Parser exception - " << e.what() << '\n';
-                    parse_success = false;
-                }
+        // Output tokens if only lexing requested
+        if (ops == 1) {
+            // Only lexing requested -> output tokens
+            if (file_out) {
+                // Open a stream to the output file
+                std::ofstream stream(filename_out, std::ios::out);
 
-                // Only continue iff parsing succeeded and further steps are requested
-                if (parse_success && (ops == 0 || ops == 3)) {
-                    // Prepare state
-                    llvm::LLVMContext context;
-                    llvm::IRBuilder<> builder(context);
-                    llvm::Module module("standalone codegen", context); //TODO different module name? e.g. src file name
-                    basilisk::codegen::NamedValuesStacks named_values;
-                    basilisk::codegen::ProgramCodegen program_cg(context, builder, &module, named_values);
-
-                    // Generate LLVM IR
-                    bool codegen_success = true;
-                    try {
-                        program.accept(program_cg);
-                    } catch (std::exception e) {
-                        // Print exception and note failure
-                        error() << "LLVM IR generation exception - " << e.what() << '\n';
-                        codegen_success = false;
-                    }
-
-                    // Only continue iff codegen succeeded and further steps are requested
-                    if (codegen_success && ops == 0) {
-                        // Initialize optimization passes
-                        auto pass_manager = llvm::legacy::PassManager();
-
-                        // Add passes recommended in https://llvm.org/docs/tutorial/LangImpl04.html
-                        pass_manager.add(llvm::createInstructionCombiningPass());   // Merge instructions
-                        pass_manager.add(llvm::createReassociatePass());    // Use associativity to improve constant propagation
-                        pass_manager.add(llvm::createGVNPass());    // Most importantly promote stack to registers
-                        pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
-
-                        // Run the passes
-                        //TODO can this fail? might want to catch exceptions and only continue on success
-                        pass_manager.run(module);
-
-                        // Pick target
-                        auto target_triple = llvm::sys::getDefaultTargetTriple();
-                        llvm::InitializeAllTargetInfos();
-                        llvm::InitializeAllTargets();
-                        llvm::InitializeAllTargetMCs();
-                        llvm::InitializeAllAsmParsers();
-                        llvm::InitializeAllAsmPrinters();
-                        std::string err;
-                        auto target = llvm::TargetRegistry::lookupTarget(target_triple, err);
-
-                        // Emit object code
-                        if (target) {
-                            // Get target machine
-                            auto cpu = "generic";
-                            auto features = "";
-                            llvm::TargetOptions options;
-                            auto relocation_model = llvm::Optional<llvm::Reloc::Model>(llvm::Reloc::Model::PIC_);
-                            auto target_machine = target->createTargetMachine(target_triple, cpu, features, options, relocation_model);
-
-                            // Configure module
-                            module.setDataLayout(target_machine->createDataLayout());
-                            module.setTargetTriple(target_triple);
-
-                            // Prepare output stream and emit the object code
-                            if (file_out) {
-                                // Open a stream to the output file and emit the code into it
-                                std::error_code ec;
-                                auto stream = llvm::raw_fd_ostream(filename_out, ec);
-                                if (ec) {
-                                    // Error -> print message
-                                    error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
-                                } else {
-                                    // Fine -> create and run pass to emit object code
-                                    llvm::legacy::PassManager pass;
-                                    auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
-                                    if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
-                                        // Error -> print message
-                                        error() << "File emit pass error - TargetMachine can't emit a file of this type";
-                                    } else {
-                                        // Otherwise -> run the pass
-                                        pass.run(module);
-                                    }
-                                }
-                            } else {
-                                // Emit the code to the a small string
-                                llvm::SmallString<0> small_string;
-                                auto stream = llvm::raw_svector_ostream(small_string);
-                                llvm::legacy::PassManager pass;
-                                auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
-                                if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
-                                    // Error -> print message
-                                    error() << "File emit pass error - TargetMachine can't emit a file of this type";
-                                } else {
-                                    // Otherwise -> run the pass
-                                    pass.run(module);
-                                }
-
-                                // Print the small string into standard output
-                                std::cout << small_string.c_str();
-                            }
-                        } else {
-                            error() << "Failed to look up target - " << err;
-                        }
-                    } else if (!codegen_success) {
-                        error() << "LLVM IR generation failed.\n";
-                    } else {
-                        // Otherwise only codegen requested -> output LLVM IR
-                        if (file_out) {
-                            // Open a stream to the output file and print the module into it
-                            std::error_code ec;
-                            llvm::raw_fd_ostream stream = llvm::raw_fd_ostream(filename_out, ec);
-                            if (ec) {
-                                // Error -> print message
-                                error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
-                            } else {
-                                // Fine -> print module
-                                module.print(stream, nullptr);
-                            }
-                        } else {
-                            // Print AST to the stream
-                            module.print(llvm::outs(), nullptr);
-                        }
-                    }
-                } else if (!parse_success) {
-                    error() << "Parsing failed.\n";
-                } else {
-                    // Otherwise only parsing requested -> output AST
-                    if (file_out) {
-                        // Open a stream to the output file
-                        std::ofstream stream(filename_out, std::ios::out);
-
-                        if (!stream.is_open()) {
-                            // Print error if output not open
-                            error() << "Failed to open file " << filename_out << '\n';
-                        } else {
-                            // Print AST to the stream
-                            stream << basilisk::ast::util::PrintVisitor::print(program);
-                        }
-                    } else {
-                        // Print AST to the stream
-                        std::cout << basilisk::ast::util::PrintVisitor::print(program);
-                    }
-                }
-            } else if (!lex_success) {
-                error() << "Lexing failed.\n";
-            } else if (buffer.empty()) {
-                error() << "Lexing resulted in no tokens.\n";
-            } else {
-                // Otherwise only lexing requested -> output tokens
-                if (file_out) {
-                    // Open a stream to the output file
-                    std::ofstream stream(filename_out, std::ios::out);
-
-                    if (!stream.is_open()) {
-                        // Print error if output not open
-                        error() << "Failed to open file " << filename_out << '\n';
-                    } else {
-                        // Print tokens to the stream separated with vertical bars
-                        for (basilisk::tokens::Token t : buffer) {
-                            std::cout << t;
-                            if (t != *(buffer.end())) {
-                                std::cout << '|';
-                            }
-                        }
-                    }
+                if (!stream.is_open()) {
+                    // Output not open -> print error and terminate
+                    error() << "Failed to open file " << filename_out << '\n';
+                    return 1;
                 } else {
                     // Print tokens to the stream separated with vertical bars
                     for (basilisk::tokens::Token t : buffer) {
@@ -436,7 +276,184 @@ int main(int argc, char *argv[]) {
                         }
                     }
                 }
+            } else {
+                // Print tokens to the stream separated with vertical bars
+                for (basilisk::tokens::Token t : buffer) {
+                    std::cout << t;
+                    if (t != *(buffer.end())) {
+                        std::cout << '|';
+                    }
+                }
+            }
+        } else {
+            // Otherwise -> parse
+
+            // Reverse tokens to prepare buffer
+            std::reverse(buffer.begin(), buffer.end());
+
+            // Bind functions
+            auto get_f = std::bind(&parser_get, &buffer);
+            auto peek_f = std::bind(&parser_peek, &buffer, std::placeholders::_1);
+
+            // Parse program
+            basilisk::ast::Program program({});
+            try {
+                program = basilisk::parser::ProgramParser(get_f, peek_f).program();
+            } catch (basilisk::parser::ParserException e) {
+                // Print exception and note failure
+                error() << "Parser exception - " << e.what() << '\n'
+                        << "Parsing failed.\n";
+                return 1;
+            }
+
+            // Output AST if only parsing requested
+            if (ops == 2) {
+                // Only parsing requested -> output AST
+                if (file_out) {
+                    // Open a stream to the output file
+                    std::ofstream stream(filename_out, std::ios::out);
+
+                    if (!stream.is_open()) {
+                        // Print error if output not open
+                        error() << "Failed to open file " << filename_out << '\n';
+                        return 1;
+                    } else {
+                        // Print AST to the stream
+                        stream << basilisk::ast::util::PrintVisitor::print(program);
+                    }
+                } else {
+                    // Print AST to the stream
+                    std::cout << basilisk::ast::util::PrintVisitor::print(program);
+                }
+            } else {
+                // Otherwise -> generate LLVM IR
+
+                // Prepare state
+                llvm::LLVMContext context;
+                llvm::IRBuilder<> builder(context);
+                llvm::Module module("standalone codegen", context); //TODO different module name? e.g. src file name
+                basilisk::codegen::NamedValuesStacks named_values;
+                basilisk::codegen::ProgramCodegen program_cg(context, builder, &module, named_values);
+
+                // Generate LLVM IR
+                try {
+                    program.accept(program_cg);
+                } catch (std::exception e) {
+                    // Print exception and note failure
+                    error() << "LLVM IR generation exception - " << e.what() << '\n'
+                            << "LLVM IR generation failed.\n";
+                    return 1;
+                }
+
+                // Output LLVM IR if only code generation was requested
+                if (ops == 3) {
+                    // Only codegen requested -> output LLVM IR
+                    if (file_out) {
+                        // Open a stream to the output file and print the module into it
+                        std::error_code ec;
+                        llvm::raw_fd_ostream stream = llvm::raw_fd_ostream(filename_out, ec);
+                        if (ec) {
+                            // Error -> print message
+                            error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
+                            return 1;
+                        } else {
+                            // Fine -> print module
+                            module.print(stream, nullptr);
+                        }
+                    } else {
+                        // Print AST to the stream
+                        module.print(llvm::outs(), nullptr);
+                    }
+                } else {
+                    // Otherwise -> output object code
+
+                    // Initialize optimization passes
+                    auto pass_manager = llvm::legacy::PassManager();
+
+                    // Add passes recommended in https://llvm.org/docs/tutorial/LangImpl04.html
+                    pass_manager.add(llvm::createInstructionCombiningPass());   // Merge instructions
+                    pass_manager.add(llvm::createReassociatePass());    // Use associativity to improve constant propagation
+                    pass_manager.add(llvm::createGVNPass());    // Most importantly promote stack to registers
+                    pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
+
+                    // Run the passes
+                    //TODO can this fail? might want to catch exceptions and only continue on success
+                    pass_manager.run(module);
+
+                    // Pick target
+                    auto target_triple = llvm::sys::getDefaultTargetTriple();
+                    llvm::InitializeAllTargetInfos();
+                    llvm::InitializeAllTargets();
+                    llvm::InitializeAllTargetMCs();
+                    llvm::InitializeAllAsmParsers();
+                    llvm::InitializeAllAsmPrinters();
+                    std::string err;
+                    auto target = llvm::TargetRegistry::lookupTarget(target_triple, err);
+
+                    // Print error and terminate if target lookup failed
+                    if (!target) {
+                        error() << "Failed to look up target - " << err;
+                        return 1;
+                    }
+
+                    // Get target machine
+                    auto cpu = "generic";
+                    auto features = "";
+                    llvm::TargetOptions options;
+                    auto relocation_model = llvm::Optional<llvm::Reloc::Model>(llvm::Reloc::Model::PIC_);
+                    auto target_machine = target->createTargetMachine(target_triple, cpu, features, options, relocation_model);
+
+                    // Configure module
+                    module.setDataLayout(target_machine->createDataLayout());
+                    module.setTargetTriple(target_triple);
+
+                    // Prepare output stream and emit the object code
+                    if (file_out) {
+                        // Open a stream to the output file and emit the code into it
+                        std::error_code ec;
+                        auto stream = llvm::raw_fd_ostream(filename_out, ec);
+
+                        // Print error and terminate on file open error
+                        if (ec) {
+                            error() << "Failed to open file " << filename_out << " - " << ec.message() <<'\n';
+                            return 1;
+                        }
+
+                        // Create and run pass to emit object code
+                        llvm::legacy::PassManager pass;
+                        auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
+                        if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
+                            // Error -> print message
+                            error() << "File emit pass error - TargetMachine can't emit a file of this type";
+                            return 1;
+                        } else {
+                            // Otherwise -> run the pass
+                            pass.run(module);
+                        }
+                    } else {
+                        // Prepare a stream to a small string
+                        llvm::SmallString<0> small_string;
+                        auto stream = llvm::raw_svector_ostream(small_string);
+
+                        // Create and run pass to emit object code
+                        llvm::legacy::PassManager pass;
+                        auto file_type = llvm::TargetMachine::CGFT_ObjectFile;
+                        if (target_machine->addPassesToEmitFile(pass, stream, nullptr, file_type)) {
+                            // Error -> print message
+                            error() << "File emit pass error - TargetMachine can't emit a file of this type";
+                            return 1;
+                        } else {
+                            // Otherwise -> run the pass
+                            pass.run(module);
+                        }
+
+                        // Print the small string into standard output
+                        std::cout << small_string.c_str();
+                    }
+                }
             }
         }
     }
+
+    return 0;
 }
