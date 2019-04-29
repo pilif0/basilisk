@@ -377,8 +377,14 @@ int main(int argc, char *argv[]) {
                     pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
 
                     // Run the passes
-                    //TODO can this fail? might want to catch exceptions and only continue on success
-                    pass_manager.run(module);
+                    try {
+                        pass_manager.run(module);
+                    } catch (std::exception e) {
+                        // Print exception, note failure and terminate
+                        error() << "LLVM optimization pass exception - " << e.what() << '\n'
+                                << "LLVM optimization failed.\n";
+                        return 1;
+                    }
 
                     // Pick target
                     auto target_triple = llvm::sys::getDefaultTargetTriple();
