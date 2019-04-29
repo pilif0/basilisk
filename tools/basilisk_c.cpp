@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
                 // Prepare state
                 llvm::LLVMContext context;
                 llvm::IRBuilder<> builder(context);
-                llvm::Module module("standalone codegen", context); //TODO different module name? e.g. src file name
+                llvm::Module module(file_in ? filename_in : "standard input", context);
                 basilisk::codegen::NamedValuesStacks named_values;
                 basilisk::codegen::ProgramCodegen program_cg(context, builder, &module, named_values);
 
