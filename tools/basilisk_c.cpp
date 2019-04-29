@@ -40,7 +40,8 @@ void show_usage() {
               << "\t-o --output\tPath to output file. If not set, uses standard output stream.\n"
               << "\t-l --lex\tPerform only lexing, and output the tokens.\n"
               << "\t-p --parse\tPerform only lexing and parsing, and output the AST.\n"
-              << "\t-g --codegen\tPerform only lexing, parsing and code generation, and output the LLVM IR.\n";
+              << "\t-g --codegen\tPerform only lexing, parsing and code generation, and output the LLVM IR.\n"
+              << "\t-G --codegen-opt\tPerform only lexing, parsing, code generation and optimization, and output the optimized LLVM IR.\n";
 }
 
 //! Print version into standard output
@@ -191,7 +192,7 @@ int main(int argc, char *argv[]) {
         std::string filename_out;
         bool file_in = false;
         std::string filename_in;
-        unsigned ops = 0; // 0 -> full, 1+ -> lex, 2+ -> parse, 3+ -> codegen
+        unsigned ops = 0; // 0 -> full, 1+ -> lex, 2+ -> parse, 3+ -> codegen, 4+ -> codegen-opt
 
         // Go through arguments
         for (int i = 1; i < argc; i++) {
@@ -220,6 +221,9 @@ int main(int argc, char *argv[]) {
             } else if (arg == "-g" || arg == "--codegen") {
                 // Codegen -> set ops to at least codegen
                 ops = std::max(ops, 3u);
+            } else if (arg == "-G" || arg == "--codegen-opt") {
+                // Codegen -> set ops to at least codegen
+                ops = std::max(ops, 4u);
             } else if (arg == "-") {
                 // Standard input -> set file input to false and stop processing
                 file_in = false;
@@ -345,8 +349,30 @@ int main(int argc, char *argv[]) {
                     return 1;
                 }
 
-                // Output LLVM IR if only code generation was requested
-                if (ops == 3) {
+                // Optimize unless unoptimized code generation was requested
+                if (ops != 3) {
+                    // Initialize optimization passes
+                    auto pass_manager = llvm::legacy::PassManager();
+
+                    // Add passes recommended in https://llvm.org/docs/tutorial/LangImpl04.html
+                    pass_manager.add(llvm::createInstructionCombiningPass());   // Merge instructions
+                    pass_manager.add(llvm::createReassociatePass());    // Use associativity to improve constant propagation
+                    pass_manager.add(llvm::createGVNPass());    // Most importantly promote stack to registers
+                    pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
+
+                    // Run the passes
+                    try {
+                        pass_manager.run(module);
+                    } catch (std::exception e) {
+                        // Print exception, note failure and terminate
+                        error() << "LLVM optimization pass exception - " << e.what() << '\n'
+                                << "LLVM optimization failed.\n";
+                        return 1;
+                    }
+                }
+
+                // Output LLVM IR if only (optimized or unoptimized) code generation was requested
+                if (ops == 3 || ops == 4) {
                     // Only codegen requested -> output LLVM IR
                     if (file_out) {
                         // Open a stream to the output file and print the module into it
@@ -366,25 +392,6 @@ int main(int argc, char *argv[]) {
                     }
                 } else {
                     // Otherwise -> output object code
-
-                    // Initialize optimization passes
-                    auto pass_manager = llvm::legacy::PassManager();
-
-                    // Add passes recommended in https://llvm.org/docs/tutorial/LangImpl04.html
-                    pass_manager.add(llvm::createInstructionCombiningPass());   // Merge instructions
-                    pass_manager.add(llvm::createReassociatePass());    // Use associativity to improve constant propagation
-                    pass_manager.add(llvm::createGVNPass());    // Most importantly promote stack to registers
-                    pass_manager.add(llvm::createCFGSimplificationPass());  // Simplify control flow graph
-
-                    // Run the passes
-                    try {
-                        pass_manager.run(module);
-                    } catch (std::exception e) {
-                        // Print exception, note failure and terminate
-                        error() << "LLVM optimization pass exception - " << e.what() << '\n'
-                                << "LLVM optimization failed.\n";
-                        return 1;
-                    }
 
                     // Pick target
                     auto target_triple = llvm::sys::getDefaultTargetTriple();
