@@ -35,13 +35,13 @@ void show_usage() {
     std::cout << "OVERVIEW: basilisk LLVM compiler\n\n"
               << "USAGE: basilisk [options] file\n\n"
               << "OPTIONS:\n"
-              << "\t-h --help\tShow this screen.\n"
-              << "\t-v --version\tShow Basilisk version.\n"
-              << "\t-o --output\tPath to output file. If not set, uses standard output stream.\n"
-              << "\t-l --lex\tPerform only lexing, and output the tokens.\n"
-              << "\t-p --parse\tPerform only lexing and parsing, and output the AST.\n"
-              << "\t-g --codegen\tPerform only lexing, parsing and code generation, and output the LLVM IR.\n"
-              << "\t-G --codegen-opt\tPerform only lexing, parsing, code generation and optimization, and output the optimized LLVM IR.\n";
+              << "\t-h, --help\n\t\tShow this screen.\n"
+              << "\t-v, --version\n\t\tShow Basilisk version.\n"
+              << "\t-o, --output\n\t\tPath to output file. If not set, uses standard output stream.\n"
+              << "\t-l, --lex\n\t\tPerform only lexing, and output the tokens.\n"
+              << "\t-p, --parse\n\t\tPerform only lexing and parsing, and output the AST.\n"
+              << "\t-g, --codegen\n\t\tPerform only lexing, parsing and code generation, and output the LLVM IR.\n"
+              << "\t-G, --codegen-opt\n\t\tPerform only lexing, parsing, code generation and optimization, and output the optimized LLVM IR.\n";
 }
 
 //! Print version into standard output
