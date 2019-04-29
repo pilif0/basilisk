@@ -211,13 +211,13 @@ int main(int argc, char *argv[]) {
                 // Output -> update state, incrementing i to consume the following argument (filename)
                 file_out = true;
                 filename_out = argv[++i];
-            } else if (arg == "-l" || arg == "--output") {
+            } else if (arg == "-l" || arg == "--lex") {
                 // Lex -> set ops to at least lex
                 ops = std::max(ops, 1u);
-            } else if (arg == "-p" || arg == "--output") {
+            } else if (arg == "-p" || arg == "--parse") {
                 // Parse -> set ops to at least parse
                 ops = std::max(ops, 2u);
-            } else if (arg == "-g" || arg == "--output") {
+            } else if (arg == "-g" || arg == "--codegen") {
                 // Codegen -> set ops to at least codegen
                 ops = std::max(ops, 3u);
             } else if (arg == "-") {
