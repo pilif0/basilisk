@@ -383,7 +383,6 @@ BOOST_AUTO_TEST_CASE(double_whitespace) {
 
 BOOST_AUTO_TEST_SUITE_END() // special_end_complex
 
-//TODO: test errors and exceptions happen where expected
 //! Test exceptions and errors on invalid input
 BOOST_AUTO_TEST_SUITE(exceptions_and_errors)
 

@@ -68,7 +68,6 @@ namespace basilisk::lexer {
 
         // Consume characters until the next one is not alphanumeric or underscore
         // Note: the requirement for the first character to be only alpha is satisfied by how this function is called
-        //TODO allow underscore to start identifiers? (common C++ convention)
         for (char c = peek(); std::isalnum(c) > 0 || c == '_'; c = peek()) {
             stream << get();
         }

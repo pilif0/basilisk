@@ -203,8 +203,6 @@ BOOST_AUTO_TEST_SUITE(Codegen)
         BOOST_TEST_CHECK(f, "Function f must be present.");
 
         // Entry block of f has to start with 2 allocas
-        //TODO could make more general by counting allocas instead of assuming they are first and second, but that would
-        //  make check of store destination harder to do
         auto entry = f->getEntryBlock().begin();
         auto y_alloca = llvm::dyn_cast<llvm::AllocaInst>(&*(entry++));
         BOOST_TEST_CHECK(y_alloca, "First instruction must be alloca.");
