@@ -388,9 +388,6 @@ namespace basilisk::codegen {
             // Store value
             builder.CreateStore(val, ptr);
         } else {
-            // TODO this permits multiple initializers of a single global variable (in proper order) which is weird,
-            //          but not necessarily wrong (the variable retains the latest initializer for full execution)
-
             // Otherwise -> global variable
 
             // Allocate if not found
@@ -468,7 +465,6 @@ namespace basilisk::codegen {
      */
     void FunctionCodegen::visit(ast::definitions::Function &node) {
         // Change main() function name to main_ to support wrapper
-        //TODO remove this when sufficient data types are added to the language to support returning i32
         if (node.identifier == "main" && node.arguments.empty()) {
             node.identifier = "main_";
         }
@@ -708,7 +704,6 @@ namespace basilisk::codegen {
         }
 
         // Insert main wrapper
-        //TODO remove when no longer necessary
         if (auto main = module->getFunction("main_")) {
             // Define new main that calls the renamed one
 

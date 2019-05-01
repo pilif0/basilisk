@@ -15,8 +15,6 @@ namespace exp = basilisk::ast::expressions;
 #include <memory>
 #include <string>
 
-//TODO improve reporting of unexpected tokens (might require a substantial redesign to have sufficient information)
-//TODO add recognition for error tokens (currently usually picked up as unexpected tokens)
 namespace basilisk::parser {
 
     //--- Start ExpressionParser implementation

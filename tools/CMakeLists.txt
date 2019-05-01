@@ -2,15 +2,7 @@
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
 include_directories(${INCL_DIR})
 
-# Link libraries
-link_libraries(${Boost_LIBRARIES} basilisk)
-
-# Add lexer executable
-add_executable(lexer_executable lexer_executable.cpp)
-
-# Add parser executable
-add_executable(parser_executable parser_executable.cpp)
-
-# Add codegen executable
-add_executable(codegen_executable codegen_executable.cpp)
-target_link_libraries(codegen_executable ${llvm_libs})
+# Add basilisk executable
+add_executable(basilisk_c basilisk_c.cpp)
+target_link_libraries(basilisk_c ${Boost_LIBRARIES} basilisk ${llvm_libs})
+set_target_properties(basilisk_c PROPERTIES OUTPUT_NAME "basilisk")
